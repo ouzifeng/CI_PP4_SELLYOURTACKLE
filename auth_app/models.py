@@ -71,7 +71,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-class UserProfile(models.Model):
+class MangoPay(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     
     # Mangopay-related fields
