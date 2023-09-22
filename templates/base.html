@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Your Tackle</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/b096332bd5.js" crossorigin="anonymous"></script>
+    {% load static %}
+    <!-- Custom Stylesheet (create this in a static directory) -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+    <!-- Nav Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container px-5">
+            <a class="navbar-brand" href="/">SELL YOUR TACKLE</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/form">Sell</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/pricing">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/faq">FAQ</a></li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <b>Hi {{ user.first_name }}</b>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            {% if user.profile.user_type == "buyer" %}
+                            <li><a class="dropdown-item" href="#">My Account</a></li>
+                            {% elif user.profile.user_type == "seller" %}
+                            <li><a class="dropdown-item" href="#">My Account</a></li>
+                            {% endif %}
+                            <!-- Add more dropdown menu items as needed -->
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+
+
+    </nav>
+
+    <!-- Main Content -->
+    <main class="my-5">
+        <div class="container-main">
+            {% block content %}
+            <!-- Content from child templates will be injected here -->
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-3">
+        <div class="container-footer">
+            <p class="mb-0">© 2023 Sell Your Tackle. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS & Popper.js -->
+    <script src="    https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Script (create this in a static directory) -->
+    <script src="{% static 'js/custom.js' %}"></script>
+</body>
+
+</html>
