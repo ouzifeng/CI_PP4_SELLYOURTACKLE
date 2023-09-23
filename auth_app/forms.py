@@ -1,5 +1,6 @@
 from django import forms
 from .models import CustomUser
+from crispy_forms.helper import FormHelper
 
 class CustomUserSignupForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -31,3 +32,7 @@ class CustomUserSignupForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+    def __init__(self, *args, **kwargs):
+        super(CustomUserSignupForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)

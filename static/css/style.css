@@ -13055,3 +13055,14 @@ html {
   background-color: #2a71f9;
   color: white;
 }
+
+.login-container {
+  max-width: 375px;
+  margin: auto;
+}
+
+@media only screen and (max-width: 600px) {
+  .container-main {
+    margin: 15px;
+  }
+}
