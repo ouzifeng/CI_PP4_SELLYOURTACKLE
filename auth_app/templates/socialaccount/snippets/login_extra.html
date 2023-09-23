@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 {% endblock %}
 
 {% block content %}
@@ -10,10 +11,11 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    Sign In Via Google
+                    Confirm {{ provider.name }} Login
                 </div>
                 <div class="card-body">
-                    <p>You are about to sign in using a third party account from Google.</p>
+                    <p>You are about to sign in using your {{ provider.name }} account. If you wish to proceed, click
+                        the "Continue" button.</p>
                     <form method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary">Continue</button>

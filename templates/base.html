@@ -42,11 +42,8 @@
                             <b>Hi {{ user.first_name }}</b>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            {% if user.profile.user_type == "buyer" %}
-                            <li><a class="dropdown-item" href="#">My Account</a></li>
-                            {% elif user.profile.user_type == "seller" %}
-                            <li><a class="dropdown-item" href="#">My Account</a></li>
-                            {% endif %}
+                            <li><a class="dropdown-item" href="#">Buying</a></li>
+                            <li><a class="dropdown-item" href="#">Selling</a></li>
                             <!-- Add more dropdown menu items as needed -->
                             <li>
                                 <hr class="dropdown-divider">
