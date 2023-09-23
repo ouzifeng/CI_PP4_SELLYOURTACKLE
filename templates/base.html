@@ -51,7 +51,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="#">Logout</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                         </ul>
                     </li>
                     {% else %}
@@ -99,6 +99,7 @@
 
     <!-- Bootstrap JS & Popper.js -->
     <script src="    https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 
     <!-- Custom Script (create this in a static directory) -->
     <script src="{% static 'js/custom.js' %}"></script>

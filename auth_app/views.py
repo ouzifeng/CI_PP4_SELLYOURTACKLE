@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import CustomUserSignupForm
+from django.contrib.auth import logout
 
 def signup(request):
     if request.method == 'POST':
@@ -11,3 +12,8 @@ def signup(request):
     else:
         form = CustomUserSignupForm()
     return render(request, 'signup.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
