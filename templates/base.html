@@ -20,21 +20,49 @@
 </head>
 
 <body>
+    <div class="container-header">
+        <div class="container-main">
+            <ul class="navbar-nav d-lg-flex flex-row">
+                <li class="nav-item mr-3">
+                    <a class="nav-link " href="/about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+
+
     <!-- Nav Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container px-5">
-            <a class="navbar-brand" href="/">SELL YOUR TACKLE</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+    <nav class="navbar navbar-expand-lg">
+        <div class="container px-lg-5 d-flex align-items-center justify-content-between">
+
+            <!-- Logo -->
+            <a class="navbar-brand text-center text-lg-left" href="/">SELL YOUR TACKLE</a>
+
+            <!-- Toggle for smaller screens -->
+            <button class="navbar-toggler order-lg-0 mt-2 ml-auto" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/form">Sell</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/pricing">Pricing</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/faq">FAQ</a></li>
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Search Bar -->
+            <form class="d-flex search-bar order-lg-1 my-2 my-lg-0" method="get" action="/search/">
+                <input class="form-control me-2" type="search" placeholder="Find your next tackle...." id="search_text"
+                    name="search_text" aria-label="Search">
+            </form>
+
+
+            <!-- Navbar links -->
+            <div class="collapse navbar-collapse order-lg-2" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary" href="/form">Sell Your Tackle</a>
+                    </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -42,13 +70,19 @@
                             <b>Hi {{ user.first_name }}</b>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Buying</a></li>
-                            <li><a class="dropdown-item" href="#">Selling</a></li>
+                            <li>
+                                <a class="dropdown-item" href="#">Buying</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">Selling</a>
+                            </li>
                             <!-- Add more dropdown menu items as needed -->
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                            </li>
                         </ul>
                     </li>
                     {% else %}
@@ -62,10 +96,10 @@
                 </ul>
             </div>
         </div>
-
-
-
+        </div>
     </nav>
+
+
 
     <!-- Main Content -->
     <main class="my-5">
@@ -77,18 +111,18 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark py-4 mt-auto">
+    <footer class="footer py-4 mt-auto">
         <div class="container px-5">
             <div class="row align-items-center justify-content-between flex-column flex-sm-row">
                 <div class="col-auto">
-                    <div class="small m-0 text-white">Copyright &copy; Sell Your Tackle 2023</div>
+                    <div class="small m-0">Copyright &copy; Sell Your Tackle 2023</div>
                 </div>
                 <div class="col-auto">
-                    <a class="link-light small" href="#!">Privacy</a>
-                    <span class="text-white mx-1">&middot;</span>
-                    <a class="link-light small" href="#!">Terms</a>
-                    <span class="text-white mx-1">&middot;</span>
-                    <a class="link-light small" href="#!">Contact</a>
+                    <a class="link-dark small" href="#!">Privacy</a>
+                    <span class="mx-1">&middot;</span>
+                    <a class="link-dark small" href="#!">Terms</a>
+                    <span class="mx-1">&middot;</span>
+                    <a class="link-dark small" href="#!">Contact</a>
                 </div>
             </div>
         </div>
