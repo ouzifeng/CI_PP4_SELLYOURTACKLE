@@ -163,3 +163,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 
+SENDINBLUE_API_KEY = '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'
+

@@ -9,7 +9,7 @@
             <p class="m-3 text-center">Login</p>
             <div class="text-center">
                 <a href="{% provider_login_url 'google' %}" class="btn btn-primary mb-3"><i
-                        class="fa-brands fa-google mr-3"></i>Sign in with Google</a>
+                        class="fa-brands fa-google"></i>Sign in with Google</a>
 
                 <hr>
                 <p>Or Sign In With Email</p>
@@ -17,7 +17,7 @@
             <form method="post">
                 {% csrf_token %}
                 {{ form|crispy }}
-                <button class="btn btn-secondary" type="submit">Login</button>
+                <button class="btn btn-secondary mb-3" type="submit">Login</button>
             </form>
         </div>
     </div>

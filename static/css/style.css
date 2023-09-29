@@ -26,6 +26,10 @@ li .btn {
     margin-right: 5px;
 }
 
+.navbar {
+  border-bottom: 2px solid #fac28b;
+}
+
 .navbar-collapse {
   flex-grow: 0;
 }
@@ -36,6 +40,10 @@ li .btn {
 
 .nav-link {
   font-size: 14px;
+}
+
+.fa-google {
+  margin-right: 8px;
 }
 
 .form-control {

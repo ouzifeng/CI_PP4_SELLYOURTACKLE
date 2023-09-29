@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils.crypto import get_random_string
  
 
 class CustomUserManager(BaseUserManager):
@@ -12,7 +13,7 @@ class CustomUserManager(BaseUserManager):
         
         # Generate a unique username based on email prefix
         email_prefix = email.split('@')[0]
-        all_usernames = CustomUser.objects.values_list('username', flat=True)
+        all_usernames = list(CustomUser.objects.values_list('username', flat=True))
         username = self.generate_unique_username(email_prefix, all_usernames)
         
         user.username = username
@@ -31,6 +32,7 @@ class CustomUserManager(BaseUserManager):
         while username in existing_users:
             username = f"{email_prefix}{counter}"
             counter += 1
+            existing_users.append(username) 
         return username
 
 
@@ -84,8 +86,10 @@ class MangoPay(models.Model):
     # For legal users
     legal_rep_first_name = models.CharField(max_length=255, blank=True, null=True)
     legal_rep_last_name = models.CharField(max_length=255, blank=True, null=True)
-    # ... (add more fields for legal representative info as needed)
-    
-    # Other fields
-    # profile_picture = models.ImageField(upload_to='profiles/', null=True, blank=True)
-    # ... (any other fields specific to user profiles)
+
+class EmailConfirmationToken(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    token = models.CharField(max_length=50, default=get_random_string)
+
+    def generate_token(self):
+        return get_random_string(50)

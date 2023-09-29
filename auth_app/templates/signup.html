@@ -2,29 +2,31 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="login-container">
-    <h2 class="mb-5">Sign up</h2>
-    <form method="post">
-        {% csrf_token %}
-        {% load socialaccount %}
-        <a href="{% provider_login_url 'google' %}" class="btn btn-primary">Sign in with Google</a>
-
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
-
-        <div class="row">
-            <div class="col-md-6">
-                {{ form.first_name|as_crispy_field }}
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="login-container">
+            <div class="text-center">
+                <p class="mb-3">Sign up</p>
+                <form method="post">
+                    {% csrf_token %}
+                    {% load socialaccount %}
+                    <a href="{% provider_login_url 'google' %}" class="btn btn-primary mb-3"><i
+                            class="fa-brands fa-google"></i>Sign in with Google</a>
+                    <hr>
+                    <p class="mb-3">Or Create An Account With Email</p>
             </div>
-            <div class="col-md-6">
-                {{ form.last_name|as_crispy_field }}
-            </div>
+            {{ form.first_name|as_crispy_field }}
+            {{ form.last_name|as_crispy_field }}
+            {{ form.email|as_crispy_field }}
+            {{ form.password1|as_crispy_field }}
+            {{ form.password2|as_crispy_field }}
+
+            <button class="btn btn-primary" type="submit">Sign up</button>
+            </form>
         </div>
-
-        {{ form.email|as_crispy_field }}
-        {{ form.password1|as_crispy_field }}
-        {{ form.password2|as_crispy_field }}
-
-        <button class="btn btn-primary" type="submit">Sign up</button>
-    </form>
+    </div>
+    <div class="col-md-4"></div>
 </div>
+
 {% endblock %}
