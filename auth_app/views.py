@@ -33,13 +33,13 @@ class SignupView(View):
             confirmation_link = f"http://localhost:8000/auth/confirm-email/{user.id}/{token}/"
             send_confirmation_email(user.email, confirmation_link)
             
-            return redirect('/') 
+            return redirect('confirm-email-link') 
 
         return render(request, 'signup.html', {'form': form})
 
 
 class LogoutView(RedirectView):
-    pattern_name = '/'  
+    pattern_name = 'home'  
 
     def get(self, request, *args, **kwargs):
         logout(request)
@@ -47,6 +47,13 @@ class LogoutView(RedirectView):
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
+    
+class ConfirmEmailPageView(View):
+    template_name = 'confirm-email.html'
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+   
 
 class ConfirmEmailView(View):
 
@@ -65,7 +72,7 @@ class ConfirmEmailView(View):
             # Log the user in
             login(request, user)
 
-            return redirect('/')  # Redirect to the homepage
+            return redirect('home')  # Redirect to the homepage
 
         return HttpResponse("This email has already been confirmed.")
 
