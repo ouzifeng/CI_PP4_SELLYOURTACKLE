@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import CustomUserSignupForm
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
 from .email import send_confirmation_email
 from .models import EmailConfirmationToken, CustomUser
@@ -19,18 +19,24 @@ class SignupView(View):
         form = CustomUserSignupForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False  
+            user.is_active = False
+            
+            email_prefix = user.email.split('@')[0]
+            all_usernames = list(CustomUser.objects.values_list('username', flat=True))
+            user.username = CustomUser.objects.generate_unique_username(email_prefix, all_usernames)
+            
             user.save()
             
             token = uuid4()
             EmailConfirmationToken.objects.create(user=user, token=token)
             
-            confirmation_link = f"http://localhost:8000/confirm-email/{user.id}/{token}/"
+            confirmation_link = f"http://localhost:8000/auth/confirm-email/{user.id}/{token}/"
             send_confirmation_email(user.email, confirmation_link)
             
             return redirect('/') 
 
         return render(request, 'signup.html', {'form': form})
+
 
 class LogoutView(RedirectView):
     pattern_name = '/'  
@@ -55,7 +61,12 @@ class ConfirmEmailView(View):
             user.is_active = True
             user.save()
             token_obj.delete()  # Optionally delete the token after it's used
+
+            # Log the user in
+            login(request, user)
+
             return redirect('/')  # Redirect to the homepage
+
         return HttpResponse("This email has already been confirmed.")
 
 
