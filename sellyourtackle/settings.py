@@ -153,6 +153,11 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -163,5 +168,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 
-SENDINBLUE_API_KEY = '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'
+MAILJET_API_KEY = 'b4c51316efb7def7288ed1ecf3396718'
+MAILJET_SECRET_KEY = 'adf3932781050304a81f52bcd90f2ce2'
 
+
+LOGIN_URL = '/auth/login/'

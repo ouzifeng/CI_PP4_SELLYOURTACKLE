@@ -1,26 +1,24 @@
-from sib_api_v3_sdk import SendSmtpEmail, SendSmtpEmailTo, ApiClient, Configuration, TransactionalEmailsApi
+from mailjet_rest import Client
 from django.conf import settings
 
-def send_confirmation_email(to_email, confirmation_link):
-    # Configure API key authorization: api-key
-    configuration = Configuration()
-    configuration.api_key['api-key'] = settings.SENDINBLUE_API_KEY
-
-
-    api_instance = TransactionalEmailsApi(ApiClient(configuration))
+def send_confirmation_email(to_email, confirmation_link, first_name):
+    api_key = settings.MAILJET_API_KEY       # Assuming you've added these to your Django settings
+    api_secret = settings.MAILJET_SECRET_KEY 
+    mailjet = Client(auth=(api_key, api_secret), version='v3.1')
     
-    # Define the email recipients
-    to = [SendSmtpEmailTo(email=to_email)]
+    data = {
+        'Messages': [{
+            "From": {"Email": "hello@sellyourtackle.co.uk", "Name": "Sell Your Tackle"},
+            "To": [{"Email": to_email, "Name": first_name}],
+            "TemplateID": 11261190, 
+            "TemplateLanguage": True,
+            "Subject": "Confirm your email address",
+            "Variables": {
+                "first_name": first_name,
+                "confirmation_link": confirmation_link
+            }
+        }]
+    }
     
-    # Define the email content
-    subject = "Confirm your email address"
-    html_content = f"<p>Please click the link below to confirm your email:</p><a href='{confirmation_link}'>Confirm Email</a>"
-    
-    # Send the email
-    email = SendSmtpEmail(to=to, subject=subject, html_content=html_content, sender=SendSmtpEmailTo(email="hello@sellyourtackle.co.uk"))
-    try:
-        # Send a transactional email
-        api_response = api_instance.send_transac_email(email)
-        print(api_response)
-    except Exception as e:
-        print("Exception when calling TransactionalEmailsApi->send_transac_email: %s\n" % e)
+    result = mailjet.send.create(data=data)
+    print(result.status_code, result.json())

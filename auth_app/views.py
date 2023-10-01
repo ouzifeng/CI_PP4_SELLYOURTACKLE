@@ -8,6 +8,9 @@ from django.http import HttpResponse
 from uuid import uuid4
 from django.views import View
 from django.views.generic import RedirectView
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from tackle.models import Product, ProductImage
 
 class SignupView(View):
 
@@ -31,7 +34,8 @@ class SignupView(View):
             EmailConfirmationToken.objects.create(user=user, token=token)
             
             confirmation_link = f"http://localhost:8000/auth/confirm-email/{user.id}/{token}/"
-            send_confirmation_email(user.email, confirmation_link)
+            send_confirmation_email(user.email, confirmation_link, user.first_name)
+
             
             return redirect('confirm-email-link') 
 
@@ -53,8 +57,8 @@ class ConfirmEmailPageView(View):
     
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
-   
-
+ 
+ 
 class ConfirmEmailView(View):
 
     def get(self, request, user_id, token, *args, **kwargs):
@@ -77,3 +81,35 @@ class ConfirmEmailView(View):
         return HttpResponse("This email has already been confirmed.")
 
 
+@method_decorator(login_required, name='dispatch')    
+class MyAccount(View):
+    template_name = 'my-account.html'
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)    
+    
+@method_decorator(login_required, name='dispatch')    
+class Buying(View):
+    template_name = 'buying.html'
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)       
+    
+@method_decorator(login_required, name='dispatch')    
+class Selling(View):
+    template_name = 'selling.html'
+    
+    def get(self, request, *args, **kwargs):
+        user_products = Product.objects.filter(user=request.user)
+        product_images = {}
+        
+        for product in user_products:
+            first_image = ProductImage.objects.filter(product=product).first()
+            if first_image:
+                product_images[product.id] = first_image.image.url
+        
+        context = {
+            'user_products': user_products,
+            'product_images': product_images
+        }
+        return render(request, self.template_name, context)

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% block content %}
+<h1 class="mb-5">Selling</h1>
+<div class="row">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th class="d-none d-md-table-cell"></th>
+                <th></th>
+                <th class="d-none d-md-table-cell"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in user_products %}
+            {% with image_url=product_images|lookup:product.id %}
+            <tr onclick="window.location.href='/';"> <!-- replace '#' with the URL to edit the product -->
+                <td>
+                    {% if image_url %}
+                    <img src="{{ image_url }}" alt="{{ product.name }}" class="product-image-table">
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="product-title-mobile">{{ product.name }}</span>
+                </td>
+                <td class="d-none d-md-table-cell">{{ product.condition }}</td>
+                <td class="d-md-none">£{{ product.price }}
+                    <br>
+                    {{ product.status }}
+                </td>
+                <td class="d-md-block d-none">£{{ product.price }}</td>
+                <td class="d-md-block d-none">{{ product.status }}</td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+{% endblock %}

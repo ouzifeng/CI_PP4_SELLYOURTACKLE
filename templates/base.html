@@ -61,7 +61,7 @@
             <div class="collapse navbar-collapse order-lg-2" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="btn btn-outline-primary" href="/form">Sell Your Tackle</a>
+                        <a class="btn btn-outline-primary" href="{% url 'list-product' %}">Sell Your Tackle</a>
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
@@ -71,10 +71,10 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li>
-                                <a class="dropdown-item" href="#">Buying</a>
+                                <a class="dropdown-item" href="{% url 'buying' %}">Buying</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#">Selling</a>
+                                <a class="dropdown-item" href="{% url 'selling' %}">Selling</a>
                             </li>
                             <!-- Add more dropdown menu items as needed -->
                             <li>
@@ -127,6 +127,10 @@
 
     <!-- Bootstrap JS & Popper.js -->
     <script src="    https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
     <!-- Custom Script (create this in a static directory) -->
