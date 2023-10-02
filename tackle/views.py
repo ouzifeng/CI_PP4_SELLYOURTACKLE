@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .models import Brand, Category, Product, ProductImage
 from slugify import slugify
+from decimal import Decimal, InvalidOperation
+
 
 @method_decorator(login_required, name='dispatch')
 class ListProduct(View):
@@ -18,8 +20,9 @@ class ListProduct(View):
         # Get data from the form
         brand_name = request.POST.get('brand')
         category_name = request.POST.get('category')
-        price = request.POST.get('price', 0)  # Get price, default to 0 if not provided
-
+        price = request.POST.get('price', 0)
+        shipping = request.POST.get('shipping', 0)
+        
         # Validation for positive price
         try:
             price = float(price)
@@ -28,6 +31,17 @@ class ListProduct(View):
         except ValueError:
             context = {
                 'error_message': 'Please enter a valid positive price.'
+            }
+            return render(request, self.template_name, context)
+
+        # Validation for positive shipping
+        try:
+            shipping = float(shipping)
+            if shipping < 0:
+                raise ValueError
+        except ValueError:
+            context = {
+                'error_message': 'Please enter a valid positive shipping cost.'
             }
             return render(request, self.template_name, context)
 
@@ -57,7 +71,8 @@ class ListProduct(View):
             variation2=variation2,
             condition=condition,
             description=description,
-            price=price,  # Add the price here
+            price=price,
+            shipping=shipping,
             user=request.user
         )
         product.save()
@@ -92,3 +107,34 @@ class SearchCategories(View):
 
 def home(request):
     return render(request, 'index.html')
+
+
+@method_decorator(login_required, name='dispatch')
+class EditProduct(View):
+    template_name = 'product-seller-page.html'
+
+    def get(self, request, product_id):
+        product = get_object_or_404(Product, id=product_id, user=request.user)
+        context = {
+            'product': product
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, id=product_id, user=request.user)
+        product.name = request.POST.get('name')
+        product.save()
+        product_refreshed = Product.objects.get(id=product.id)
+        
+        # Handle image deletion
+        images_to_delete = request.POST.getlist('delete_images')
+        for image_id in images_to_delete:
+            image = ProductImage.objects.get(id=image_id)
+            image.delete()
+
+        # Handle new image uploads
+        for uploaded_file in request.FILES.getlist('images'):
+            ProductImage.objects.create(product=product, image=uploaded_file)        
+
+        return redirect('selling')
+

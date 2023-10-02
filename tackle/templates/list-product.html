@@ -127,10 +127,21 @@
                                 <p class="mb-1">Upload Images <span class="star">*</span></p>
                                 <input type="file" name="images" id="images" multiple required>
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="number" step="0.01" name="price" id="price" class="form-control"
-                                    placeholder="Price" required>
-                                <label for="price">Price in £<span class="star">*</span></label>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="number" step="0.01" name="price" id="price" class="form-control"
+                                            placeholder="Price" required>
+                                        <label for="price">Price in £<span class="star">*</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="number" step="0.01" name="shipping" id="shipping"
+                                            class="form-control" placeholder="Shipping" required>
+                                        <label for="shipping">Shipping in £<span class="star">*</span></label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="checkbox-container mb-4" style="display: flex; align-items: center;">
                                 <input type="checkbox" name="confirm" id="confirm" required>

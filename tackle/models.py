@@ -47,6 +47,7 @@ class Product(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    shipping = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     status = models.CharField(
         max_length=10,
         choices=ProductStatus.choices,
@@ -57,27 +58,20 @@ class Product(models.Model):
         return f"Product id: {str(self.id)}, name: {self.name}, brand: {self.brand.name}, category: {self.category.name}, condition: {self.condition}"
 
     def save(self, *args, **kwargs):
-        # Combine the item name with variations before saving
-        variations = []
-        if self.variation1:
-            variations.append(self.variation1)
-        if self.variation2:
-            variations.append(self.variation2)
-        if variations:
-            self.name = f"{self.name} - {', '.join(variations)}"
-        
-        # Generate the slug
-        slug_str = slugify(self.name)
-        unique_slug = slug_str
-        num = 1
-        
-        while Product.objects.filter(slug=unique_slug).exists():
-            unique_slug = f"{slug_str}-{num}"
-            num += 1
+        # Only generate a slug for new products
+        if not self.pk:
+            slug_str = slugify(self.name)
+            unique_slug = slug_str
+            num = 1
+            
+            while Product.objects.filter(slug=unique_slug).exists():
+                unique_slug = f"{slug_str}-{num}"
+                num += 1
 
-        self.slug = unique_slug
+            self.slug = unique_slug
 
         super(Product, self).save(*args, **kwargs)
+
 
 
 class ProductImage(models.Model):

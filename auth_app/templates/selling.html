@@ -1,9 +1,42 @@
 {% extends "base.html" %}
 {% load custom_filters %}
 {% block content %}
-<h1 class="mb-5">Selling</h1>
+<h2 class="mb-3">Selling</h2>
 <div class="row">
-    <table class="table table-hover">
+    <!-- Desktop/Laptop Table -->
+    <table class="table table-hover d-none d-md-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Condition</th>
+                <th>Price</th>
+                <th>Shipping</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in user_products %}
+            {% with image_url=product_images|lookup:product.id %}
+            <tr onclick="window.location.href='{% url 'edit_product' product.id %}';">
+                <td>
+                    {% if image_url %}
+                    <img src="{{ image_url }}" alt="{{ product.name }}" class="product-image-table">
+                    {% endif %}
+                </td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.condition }}</td>
+                <td>£{{ product.price }}</td>
+                <td>£{{ product.shipping }}</td>
+                <td>{{ product.status|capfirst }}</td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Mobile Table -->
+    <table class="table table-hover d-md-none">
         <thead>
             <tr>
                 <th></th>
@@ -16,7 +49,7 @@
         <tbody>
             {% for product in user_products %}
             {% with image_url=product_images|lookup:product.id %}
-            <tr onclick="window.location.href='/';"> <!-- replace '#' with the URL to edit the product -->
+            <tr onclick="window.location.href='{% url 'edit_product' product.id %}';">
                 <td>
                     {% if image_url %}
                     <img src="{{ image_url }}" alt="{{ product.name }}" class="product-image-table">
@@ -31,12 +64,13 @@
                     {{ product.status }}
                 </td>
                 <td class="d-md-block d-none">£{{ product.price }}</td>
-                <td class="d-md-block d-none">{{ product.status }}</td>
+                <td class="d-md-block d-none">{{ product.status|capfirst }}</td>
             </tr>
             {% endwith %}
             {% endfor %}
         </tbody>
     </table>
+
 </div>
 
 

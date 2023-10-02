@@ -12,3 +12,8 @@ class LookupFilter:
 @register.filter(name='lookup')
 def lookup(value, arg):
     return LookupFilter(value)(arg)
+
+@register.filter(name='equalto')
+def equalto(value, arg):
+    """Compares if value is equal to arg."""
+    return value == arg

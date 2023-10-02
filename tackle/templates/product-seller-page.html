@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% block content %}
+<form method="POST" id="productForm" enctype="multipart/form-data">
+    {% csrf_token %}
+    <section class="py-5">
+        <div class="container px-5">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="number" step="0.01" name="price" id="price" class="form-control"
+                            placeholder="Price" value="{{ product.price }}" required>
+                        <label for="price">Price in £<span class="star">*</span></label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="number" step="0.01" name="shipping" id="shipping" class="form-control"
+                            placeholder="Shipping" value="{{ product.shipping }}" required>
+                        <label for="shipping">Shipping in £<span class="star">*</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="brand" id="brand" class="form-control" placeholder="Brand"
+                            value="{{ product.brand.name }}" required>
+                        <label for="brand">Brand<span class="star">*</span></label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="category" id="category" class="form-control" placeholder="Category"
+                            value="{{ product.category.name }}" required>
+                        <label for="category">Category<span class="star">*</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" name="name" id="name" class="form-control" placeholder="Item Name"
+                    value="{{ product.name }}" required>
+                <label for="name">Item Name<span class="star">*</span></label>
+            </div>
+
+            <div class="row">
+                <p class="text-center mb-1">Add any additional information here about the product. ie. Test curve, size,
+                    breaking strain, colour, model</p>
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="more-info-1" id="more-info-1" class="form-control"
+                            placeholder="More Info 1" value="{{ product.variation1 }}">
+                        <label for="more-info-1">More Info 1</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="more-info-2" id="more-info-2" class="form-control"
+                            placeholder="More Info 2" value="{{ product.variation2 }}">
+                        <label for="more-info-2">More Info 2</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-floating mb-3">
+                <textarea name="description" id="description" class="form-control" style="height: 150px;"
+                    placeholder="Description">{{ product.description }}</textarea>
+                <label for="description">Description</label>
+            </div>
+
+            <div class="mb-4">
+                <p class="mb-1">Existing Images:</p>
+                {% for image in product.images.all %}
+                <div class="image-wrapper">
+                    <img src="{{ image.image.url }}" alt="Existing Product Image" width="100" height="100">
+                    <label>
+                        <input type="checkbox" name="delete_images" value="{{ image.id }}"> Delete
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="mb-4">
+                <p class="mb-1">Add New Images:</p>
+                <input type="file" name="images" id="images" multiple>
+            </div>
+
+            <button type="submit" class="btn btn-primary float-end product-button">Save Changes</button>
+</form>
+
+</div>
+</section>
+
+{% endblock %}
