@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -168,8 +169,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 
-MAILJET_API_KEY = 'b4c51316efb7def7288ed1ecf3396718'
-MAILJET_SECRET_KEY = 'adf3932781050304a81f52bcd90f2ce2'
+load_dotenv() 
+MAILJET_API_KEY = os.getenv('MAILJET_API_KEY')
+MAILJET_SECRET_KEY = os.getenv('MAILJET_SECRET_KEY')
+
 
 
 LOGIN_URL = '/auth/login/'
