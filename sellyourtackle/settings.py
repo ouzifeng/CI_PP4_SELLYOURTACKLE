@@ -16,7 +16,7 @@ SECRET_KEY = "django-insecure-2uy*&peq@9$t2#b_$=x9_sg_*gx(-!wxg#qy4h08$64^ak!))+
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'www.sellyourtackle.co.uk', 'sellyourtackle.co.uk']
-CSRF_TRUSTED_ORIGINS = ['sellyourtackle.co.uk', 'www.sellyourtackle.co.uk']
+CSRF_TRUSTED_ORIGINS = ['https://sellyourtackle.co.uk', 'https://www.sellyourtackle.co.uk']
 CSRF_COOKIE_DOMAIN = ".sellyourtackle.co.uk"
 
 # Application definition
