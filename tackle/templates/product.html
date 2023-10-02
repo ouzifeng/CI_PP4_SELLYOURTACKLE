@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% block content %}
+
+<div class="row">
+    <!-- Images Carousel -->
+    <div class="col-md-6">
+        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for image in images %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ image.image.url }}" class="d-block w-100" alt="Product Image">
+                </div>
+                {% endfor %}
+            </div>
+            <!-- Below the Carousel -->
+            <div class="row mt-3">
+                {% for image in images %}
+                <div class="col-3">
+                    <img src="{{ image.image.url }}" class="img-thumbnail" alt="Product Thumbnail">
+                </div>
+                {% endfor %}
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Details -->
+    <div class="col-md-6">
+        <h1>{{ product.name }}</h1>
+        <h2>£{{ product.price }}</h2>
+        <h2>Shipping cost: £{{ product.shipping }}</h2>
+        <h3>Condition: {{ product.condition }}</h3>
+        <button class="btn btn-primary">Add to Cart</button>
+    </div>
+</div>
+
+{% endblock %}

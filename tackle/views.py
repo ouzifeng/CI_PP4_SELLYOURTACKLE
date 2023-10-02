@@ -123,44 +123,39 @@ class EditProduct(View):
     def post(self, request, product_id):
         product = get_object_or_404(Product, id=product_id, user=request.user)
     
-        # Update product name
         product.name = request.POST.get('name')
-        
-        # Update price
         product.price = request.POST.get('price')
-        
-        # Update shipping
         product.shipping = request.POST.get('shipping')
-        
-        # Update brand - assuming you're setting it by name
         brand_name = request.POST.get('brand')
         brand_instance = Brand.objects.get(name=brand_name)
         product.brand = brand_instance
-        
-        # Update category - assuming you're setting it by name
         category_name = request.POST.get('category')
         category_instance = Category.objects.get(name=category_name)
         product.category = category_instance
-        
-        # Update additional info
         product.variation1 = request.POST.get('more-info-1')
         product.variation2 = request.POST.get('more-info-2')
-        
-        # Update description
         product.description = request.POST.get('description')
         
-        # Save the product instance
         product.save()
     
-        # Handle image deletion
         images_to_delete = request.POST.getlist('delete_images')
         for image_id in images_to_delete:
             image = ProductImage.objects.get(id=image_id)
             image.delete()
 
-        # Handle new image uploads
         for uploaded_file in request.FILES.getlist('images'):
             ProductImage.objects.create(product=product, image=uploaded_file)        
 
         return redirect('selling')
 
+class ProductPage(View):
+    template_name = 'product.html'
+    
+    def get(self, request, slug, *args, **kwargs):
+        product = get_object_or_404(Product, slug=slug)
+        images = product.images.all()
+        context = {
+            'product': product,
+            'images': images
+        }
+        return render(request, self.template_name, context)
