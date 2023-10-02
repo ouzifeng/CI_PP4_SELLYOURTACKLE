@@ -4,5 +4,5 @@ __pycache__/
 *.pyo
 *.egg-info/
 *.db
-.start_env.ps1
+start_env.ps1
 .env
