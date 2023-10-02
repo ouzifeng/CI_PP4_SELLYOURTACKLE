@@ -17,7 +17,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'www.sellyourtackle.co.uk', 'sellyourtackle.co.uk']
 CSRF_TRUSTED_ORIGINS = ['sellyourtackle.co.uk', 'www.sellyourtackle.co.uk']
-
+CSRF_COOKIE_DOMAIN = ".sellyourtackle.co.uk"
 
 # Application definition
 
