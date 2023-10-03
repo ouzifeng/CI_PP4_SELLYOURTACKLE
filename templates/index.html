@@ -16,8 +16,8 @@
                         to sell your fishing
                         tackle</p>
                     <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
-                        <a class="btn btn-light btn-lg px-4 me-sm-3" href="/form"><b>Sell Your Tackle</b><i
-                                class="fa-solid fa-arrow-right fa-beat" style="margin-left:40px"></i></a>
+                        <a class="btn btn-light btn-lg px-4 me-sm-3" href="{% url 'list-product' %}"><b>Sell Your
+                                Tackle</b><i class="fa-solid fa-arrow-right fa-beat" style="margin-left:40px"></i></a>
                     </div>
                 </div>
             </div>
@@ -26,5 +26,51 @@
         </div>
     </div>
 </header>
+
+
+
+
+<div class="row mt-4">
+    <h2>Recent Products</h2>
+    {% for product in products %}
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div id="product-card-img-container">
+                {% for product_image in product.images.all %}
+                {% if forloop.first %}
+                <img src="{{ product_image.image.url }}" alt="{{ product.name }} image" class="img-fluid"
+                    id="product-card-img">
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div class="card-body p-4 card-border">
+                <div class="h5 card-title mb-3 text-center">{{ product.name }}</div>
+                <div class="row">
+                    <div class="col-4">
+                        <label for="productBrand" style="font-size: 12px"><i>Price:</i></label>
+                        <p class="card-text mb-0" id="productBrand">{{ product.price }}</p>
+                    </div>
+                    <div class="col-4">
+                        <label for="productCategory" style="font-size: 12px"><i>Shipping:</i></label>
+                        <p class="card-text mb-0" id="productCategory">{{ product.shipping }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer p-4 pt-0 bg-transparent border-top-0 card-border">
+                <div class="d-flex align-items-center">
+                    <div class="text-muted w-200">
+                        <a href="{% url 'product' product.slug %}" class="btn btn-success">
+                            View Product</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+
 
 {% endblock %}

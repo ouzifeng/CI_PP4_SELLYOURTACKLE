@@ -20,15 +20,21 @@
             {% with image_url=product_images|lookup:product.id %}
             <tr onclick="window.location.href='{% url 'edit_product' product.id %}';">
                 <td>
+                    {% if product.visibility == 'live' %}
+                    <i class="bi bi-dot text-success large-icon"></i>
+                    {% else %}
+                    <i class="bi bi-dot text-secondary large-icon"></i>
+                    {% endif %}
                     {% if image_url %}
                     <img src="{{ image_url }}" alt="{{ product.name }}" class="product-image-table">
                     {% endif %}
                 </td>
+
                 <td>{{ product.name }}</td>
                 <td>{{ product.condition }}</td>
                 <td>£{{ product.price }}</td>
                 <td>£{{ product.shipping }}</td>
-                <td>{{ product.status|capfirst }}</td>
+                <td>{{ product.financial_status|capfirst }}</td>
             </tr>
             {% endwith %}
             {% endfor %}
@@ -51,29 +57,35 @@
             {% with image_url=product_images|lookup:product.id %}
             <tr onclick="window.location.href='{% url 'edit_product' product.id %}';">
                 <td>
-                    {% if image_url %}
-                    <img src="{{ image_url }}" alt="{{ product.name }}" class="product-image-table">
-                    {% endif %}
+                    <div class="d-flex align-items-center">
+                        {% if product.visibility == 'live' %}
+                        <i class="bi bi-dot text-success large-icon"></i>
+                        {% else %}
+                        <i class="bi bi-dot text-secondary large-icon"></i>
+                        {% endif %}
+                        {% if image_url %}
+                        <img src="{{ image_url }}" alt="{{ product.name }}" class="product-image-table ml-2">
+                        {% endif %}
+                    </div>
                 </td>
                 <td>
                     <span class="product-title-mobile">{{ product.name }}</span>
                 </td>
                 <td class="d-none d-md-table-cell">{{ product.condition }}</td>
-                <td class="d-md-none">£{{ product.price }}
+                <td class="d-md-none">
+                    £{{ product.price }}
                     <br>
-                    {{ product.status }}
+                    {{ product.financial_status|capfirst }} <!-- Updated this line -->
                 </td>
                 <td class="d-md-block d-none">£{{ product.price }}</td>
-                <td class="d-md-block d-none">{{ product.status|capfirst }}</td>
+                <td class="d-md-block d-none">{{ product.financial_status|capfirst }}</td>
             </tr>
             {% endwith %}
             {% endfor %}
         </tbody>
     </table>
 
+
 </div>
-
-
-
 
 {% endblock %}

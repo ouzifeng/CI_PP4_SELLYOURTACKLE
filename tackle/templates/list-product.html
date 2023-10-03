@@ -8,9 +8,6 @@
         <!-- Contact form -->
         <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
             <div class="text-center mb-3">
-                <div class="feature bg-primary bg-gradient text-white rounded-3 mb-3">
-                    <i class="bi bi-hand-thumbs-up"></i>
-                </div>
                 {% if error_message %}
                 <div class="alert alert-danger">{{ error_message }}</div>
                 {% endif %}
@@ -64,7 +61,7 @@
                     <div class="tab">
                         <p class="text-center">The more <strong>accurate</strong> and more
                             <strong>descriptive</strong> you are, the more likely
-                            you will receive a <strong>higher</strong> offer
+                            you will <strong>sell</strong> quicker
                         </p>
                         <form method="POST" id="productForm" enctype="multipart/form-data">
                             {% csrf_token %}

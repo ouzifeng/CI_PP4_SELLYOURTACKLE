@@ -31,9 +31,14 @@ class Condition(models.TextChoices):
     def __str__(self):
         return f"{self.label} {self.additional_info}"
 
-class ProductStatus(models.TextChoices):
+class FinancialStatus(models.TextChoices):
     UNSOLD = 'unsold', 'Unsold'
     SOLD = 'sold', 'Sold'
+
+class ProductVisibility(models.TextChoices):
+    DRAFT = 'draft', 'Draft'
+    LIVE = 'live', 'Live'
+
 
 class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
@@ -48,10 +53,15 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     shipping = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    status = models.CharField(
+    financial_status = models.CharField(
         max_length=10,
-        choices=ProductStatus.choices,
-        default=ProductStatus.UNSOLD
+        choices=FinancialStatus.choices,
+        default=FinancialStatus.UNSOLD
+    )
+    visibility = models.CharField(
+        max_length=5,
+        choices=ProductVisibility.choices,
+        default=ProductVisibility.DRAFT
     )
 
     def __str__(self):

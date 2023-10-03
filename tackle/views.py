@@ -4,9 +4,18 @@ from django.http import JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Brand, Category, Product, ProductImage
+from .models import Brand, Category, Product, ProductImage, ProductVisibility
 from slugify import slugify
 from decimal import Decimal, InvalidOperation
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView
+from django.views.generic import TemplateView
+
+@login_required
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id, user=request.user)
+    product.delete()
+    return redirect(reverse('selling'))
 
 
 @method_decorator(login_required, name='dispatch')
@@ -73,7 +82,8 @@ class ListProduct(View):
             description=description,
             price=price,
             shipping=shipping,
-            user=request.user
+            user=request.user,
+            visibility=ProductVisibility.LIVE
         )
         product.save()
 
@@ -105,8 +115,14 @@ class SearchCategories(View):
         return JsonResponse([], safe=False)
 
 
-def home(request):
-    return render(request, 'index.html')
+class HomeView(TemplateView):
+    template_name = 'index.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = Product.objects.filter(visibility=ProductVisibility.LIVE)
+        return context
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -122,7 +138,13 @@ class EditProduct(View):
 
     def post(self, request, product_id):
         product = get_object_or_404(Product, id=product_id, user=request.user)
+        
     
+        # Check if the "delete_product" button was clicked
+        if 'delete_product' in request.POST:
+            product.delete()
+            return redirect('selling')
+        
         product.name = request.POST.get('name')
         product.price = request.POST.get('price')
         product.shipping = request.POST.get('shipping')
@@ -135,6 +157,7 @@ class EditProduct(View):
         product.variation1 = request.POST.get('more-info-1')
         product.variation2 = request.POST.get('more-info-2')
         product.description = request.POST.get('description')
+        product.visibility = request.POST.get('visibility')
         
         product.save()
     
@@ -159,3 +182,13 @@ class ProductPage(View):
             'images': images
         }
         return render(request, self.template_name, context)
+    
+    
+@method_decorator(login_required, name='dispatch')
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'product_confirm_delete.html'
+    success_url = reverse_lazy('selling')
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user)    
