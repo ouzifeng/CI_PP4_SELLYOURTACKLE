@@ -15,3 +15,10 @@ $(document).ready(function() {
         }
     });
 });
+
+$(document).ready(function() {
+    $('.card-clickable').on('click', function() {
+        window.location.href = $(this).data('url');
+    });
+});
+
