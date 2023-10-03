@@ -123,6 +123,10 @@ li .btn {
 }
 
 
+.img-thumbnail {
+  border: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :root {
     scroll-behavior: smooth;
@@ -192,6 +196,11 @@ li .btn {
   font-weight: bold;
 }
 
+.product-page-data {
+  margin-top: 40px;
+}
+
+
 /* Mobile Styles */
 @media only screen and (max-width: 480px) {
   .search-bar {
@@ -209,6 +218,11 @@ li .btn {
   .container-main {
     margin: 0 20px;
   }
+
+  .product-page-data {
+    margin-top: 10px;
+  }
+
 
 }
 
