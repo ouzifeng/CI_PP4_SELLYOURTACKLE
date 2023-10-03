@@ -139,6 +139,38 @@ li .btn {
     margin: auto;
 }
 
+#product-card-img-container {
+    display: flex;
+    justify-content: center;  
+    align-items: center;      
+    height: 230px;            
+    overflow: hidden;         
+}
+
+#product-card-img {
+    max-height: 100%;     
+    max-width: 100%;      
+}
+
+.card-border {
+  background-color: #f2f2f2;
+}
+
+.card-footer {
+  background-color: #fac28b !important;
+  cursor: pointer; 
+  text-decoration: none;
+  color: inherit;
+  height: 20px;
+}
+
+.card-footer:hover {
+    color: whitesmoke
+}    
+
+.fa-arrow-right {
+  margin-left: 10px;
+}
 
 /* Mobile Styles */
 @media only screen and (max-width: 480px) {

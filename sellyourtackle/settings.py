@@ -85,10 +85,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = '/path_after_successful_login/'
-LOGIN_URL = 'https://www.sellyourtackle.co.uk/auth/login/'
-
-
 
 TEMPLATES = [
     {
