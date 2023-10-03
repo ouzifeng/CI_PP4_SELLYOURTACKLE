@@ -10,6 +10,9 @@ from decimal import Decimal, InvalidOperation
 from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
 from django.views.generic import TemplateView
+from PIL import Image
+
+
 
 @login_required
 def delete_product(request, product_id):
@@ -88,8 +91,16 @@ class ListProduct(View):
         product.save()
 
         # Handle images
-        for image in request.FILES.getlist('images'):
-            product_image = ProductImage(product=product, image=image)
+        for uploaded_file in request.FILES.getlist('images'):
+            processed_image = process_image(uploaded_file)
+            # Convert the processed image back to a Django InMemoryUploadedFile to save to the model
+            from io import BytesIO
+            from django.core.files.uploadedfile import InMemoryUploadedFile
+            temp_file = BytesIO()
+            processed_image.save(temp_file, format='JPEG')
+            uploaded_file = InMemoryUploadedFile(temp_file, None, uploaded_file.name, 'image/jpeg', temp_file.tell(), None)
+            
+            product_image = ProductImage(product=product, image=uploaded_file)
             product_image.save()
 
         # If successful:
@@ -192,3 +203,22 @@ class ProductDeleteView(DeleteView):
 
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user)    
+    
+def process_image(image, desired_size=(440, 300)):
+    """
+    Process an uploaded image using Pillow to fit a desired size.
+    """
+    img = Image.open(image)
+
+    ratio = min(desired_size[0]/img.width, desired_size[1]/img.height)
+    new_size = tuple([int(x*ratio) for x in img.size])
+
+    img = img.resize(new_size, Image.LANCZOS)
+
+    new_img = Image.new("RGB", desired_size, "white")
+    
+    y_offset = (desired_size[1] - img.height) // 2
+    x_offset = (desired_size[0] - img.width) // 2
+    new_img.paste(img, (x_offset, y_offset))
+
+    return new_img    

@@ -4,7 +4,7 @@
 
 <div class="row">
     <!-- Images Carousel -->
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 {% for image in images %}
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Product Details -->
-    <div class="col-md-6">
+    <div class="col-md-8">
         <h1>{{ product.name }}</h1>
         <h2>£{{ product.price }}</h2>
         <h2>Shipping cost: £{{ product.shipping }}</h2>
