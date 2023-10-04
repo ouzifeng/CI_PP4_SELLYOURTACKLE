@@ -65,14 +65,13 @@
                     </li>
                     <a href="{% url 'cart' %}" class="position-relative">
                         <i class="fa-solid fa-cart-shopping fa-lg"></i>
-                        <span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">
+                        {% if total_items_in_cart > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             {{ total_items_in_cart }}
                             <span class="visually-hidden">items in cart</span>
                         </span>
+                        {% endif %}
                     </a>
-
-
-
                     {% if user.is_authenticated %}
                     <li class=" nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
