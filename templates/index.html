@@ -33,7 +33,7 @@
 <div class="row mt-4">
     <h2>Recent Products</h2>
     {% for product in products %}
-    <div class="col-md-3 mb-4">
+    <div class=" col-6 col-md-3 mb-4">
         <div class="card d-flex flex-column card-clickable" data-url=" {% url 'product' product.slug %}">
             <div id="product-card-img-container">
                 {% for product_image in product.images.all %}
@@ -43,15 +43,16 @@
                 {% endif %}
                 {% endfor %}
             </div>
-            <div class="card-body p-4 card-border flex-grow-1">
-                <div class="h5 card-title mb-3 text-center">{{ product.name }}</div>
+            <div class="card-body card-border flex-grow-1">
+                <div class="h5 card-title mb-3 truncate">{{ product.name|truncatechars:100 }}</div>
+                <hr>
                 <div class="row">
                     <div class="col-6 d-flex align-items-start flex-column">
                         <p class="card-text mb-0 card-price">£{{ product.price }}</p>
                     </div>
                     <div class="col-6 d-flex flex-column align-items-end">
                         <p class="card-text mb-0">+ £{{ product.shipping }}</p>
-                        <label class="card-shipping"><i>Shipping:</i></label>
+                        <label class="card-shipping">Shipping</label>
                     </div>
 
                 </div>

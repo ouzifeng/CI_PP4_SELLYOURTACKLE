@@ -192,7 +192,7 @@ li .btn {
 }
 
 .card-price {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
 }
 
@@ -200,6 +200,16 @@ li .btn {
   margin-top: 40px;
 }
 
+.truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3em; 
+    height: 4.1em;
+    text-overflow: ellipsis;
+}
+   
 
 /* Mobile Styles */
 @media only screen and (max-width: 480px) {
@@ -223,8 +233,45 @@ li .btn {
     margin-top: 10px;
   }
 
+  #product-card-img-container {
+      display: flex;
+      justify-content: center;  
+      align-items: center;      
+      height: 170px;            
+      overflow: hidden;         
+  } 
+  
+  .card-body {
+    padding: 5px !important;
+  }
+
+  .card-title {
+      padding-top: 5px;
+      font-size: 15px;
+  }
+
+  .card-price {
+    font-size: 17px !important;
+    padding-left: 5px !important;
+  }
+
+  .card-text {
+    font-size: 10px;
+    padding-right: 5px !important;
+  }
+
+  .card-shipping {
+    font-size: 10px;
+  }
+
+  .card-footer {
+    font-size: 12px;
+  }  
+
 
 }
+
+
 
 /* Tablet Styles */
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
