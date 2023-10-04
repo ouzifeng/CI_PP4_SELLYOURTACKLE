@@ -64,6 +64,9 @@ class Product(models.Model):
         default=ProductVisibility.DRAFT
     )
 
+    def is_in_stock(self):
+        return self.financial_status == FinancialStatus.UNSOLD
+
     def __str__(self):
         return f"Product id: {str(self.id)}, name: {self.name}, brand: {self.brand.name}, category: {self.category.name}, condition: {self.condition}"
 

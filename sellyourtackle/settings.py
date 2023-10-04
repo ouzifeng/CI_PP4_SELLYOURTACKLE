@@ -95,6 +95,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'tackle.context_processors.cart_processor',
             ],
         },
         'DIRS': [os.path.join(BASE_DIR, 'templates')],

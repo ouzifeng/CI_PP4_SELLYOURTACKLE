@@ -12,7 +12,7 @@ from django.views.generic.edit import DeleteView
 from django.views.generic import TemplateView, RedirectView, View
 from PIL import Image
 from django.conf import settings
-
+from django.contrib import messages
 
 @login_required
 def delete_product(request, product_id):
@@ -293,26 +293,51 @@ class Cart:
         """
         del self.session[settings.CART_SESSION_ID]
         self.save()
+        
+    def contains(self, product):
+        """Check if the cart contains a particular product."""
+        product_id = str(product.id)
+        return product_id in self.cart
+
+    def add(self, product, price):
+        """
+        Add a product to the cart or update its quantity.
+        """
+        product_id = str(product.id)
+        if product_id not in self.cart:
+            self.cart[product_id] = {'price': str(price), 'quantity': 1}
+            self.save()        
 
 
 class AddToCartView(View):
     def post(self, request, product_id):
-        cart = Cart(request)  # Pass the whole request object
+        cart = Cart(request) 
         product = get_object_or_404(Product, id=product_id)
+
+        if not product.is_in_stock():
+            messages.warning(request, f"{product.name} is already sold!")
+            return redirect('product', slug=product.slug)
+
+        if cart.contains(product):
+            messages.warning(request, f"{product.name} is already in your cart!")
+            return redirect('product', slug=product.slug)
+
         cart.add(product, price=product.price)
+        messages.success(request, f"{product.name} has been added to your cart!")
         return redirect('cart')
+
 
 class CartView(TemplateView):
     template_name = 'cart.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['cart'] = Cart(self.request)  # Pass the whole request object
+        context['cart'] = Cart(self.request)  
         return context
 
 class RemoveFromCartView(View):
     def post(self, request, product_id):
-        cart = Cart(request)  # Pass the whole request object
+        cart = Cart(request)  
         product = get_object_or_404(Product, id=product_id)
 
         cart.remove(product)

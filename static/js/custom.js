@@ -22,3 +22,9 @@ $(document).ready(function() {
     });
 });
 
+$(document).ready(function(){
+    // Set a timeout for all messages with class 'alert' (bootstrap's class)
+    $(".alert").delay(3000).slideUp(300, function(){
+        $(this).alert('close');
+    });
+});

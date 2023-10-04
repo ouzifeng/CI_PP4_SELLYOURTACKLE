@@ -224,6 +224,11 @@ li .btn {
   vertical-align: -webkit-baseline-middle;
   color: rgba(0, 0, 0, 0.55);
   margin: 0 10px;
+  text-decoration: none;
+}
+
+.translate-middle {
+  transform: translate(-90%,-20%)!important;
 }
   
 /* Mobile Styles */
