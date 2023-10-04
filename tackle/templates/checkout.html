@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Checkout</h2>
+{% if cart %}
+<!-- You can add a form here to capture user details, shipping information, etc. -->
+<p>Total Amount: {{ cart.get_total_price }}</p>
+<button>Place Order</button>
+{% else %}
+<p>Your cart is empty. Please add items to the cart first.</p>
+{% endif %}
+{% endblock %}

@@ -40,7 +40,13 @@
         <h2 class="float-right">£{{ product.price }}</h2>
         <h5>Shipping cost: £{{ product.shipping }}</h5>
         <h5>Condition: {{ product.condition }}</h5>
-        <button class="btn btn-primary">Add to Cart</button>
+
+        <form method="post" action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Add to Cart</button>
+        </form>
+
+
     </div>
 </div>
 <div class="row">

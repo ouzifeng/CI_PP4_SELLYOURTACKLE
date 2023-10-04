@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import ListProduct, EditProduct, ProductPage, HomeView
+from .views import ListProduct, EditProduct, ProductPage, HomeView, AddToCartView, CartView, CheckoutView, RemoveFromCartView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -12,5 +12,9 @@ urlpatterns = [
     path('edit-product/<int:product_id>/', EditProduct.as_view(), name='edit_product'),
     path('product/<slug:slug>', ProductPage.as_view(), name='product'),
     path('delete-product/<int:product_id>/', views.delete_product, name='delete_product'),
+    path('cart/', CartView.as_view(), name='cart'),
+    path('add_to_cart/<int:product_id>/', AddToCartView.as_view(), name='add_to_cart'),
+    path('remove_from_cart/<int:product_id>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
+    path('checkout/', CheckoutView.as_view(), name='checkout'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

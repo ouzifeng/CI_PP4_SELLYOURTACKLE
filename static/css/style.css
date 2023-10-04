@@ -184,7 +184,17 @@ li .btn {
 .card-clickable:hover {
     transform: translateY(-5px); 
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-}    
+}
+
+.header-button {
+    cursor: pointer;
+    transition: all 0.3s ease; 
+}
+
+.header-button:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
 
 .card-shipping {
   font-size: 10px;
@@ -208,6 +218,12 @@ li .btn {
     line-height: 1.3em; 
     height: 4.1em;
     text-overflow: ellipsis;
+}
+
+.fa-cart-shopping {
+  vertical-align: -webkit-baseline-middle;
+  color: rgba(0, 0, 0, 0.55);
+  margin: 0 10px;
 }
   
 /* Mobile Styles */
@@ -266,6 +282,14 @@ li .btn {
   .card-footer {
     font-size: 12px;
   }  
+
+  .header-image {
+    display: none;
+  }
+
+  .header-button {
+    font-size: 16px;
+  }
 
 }
 

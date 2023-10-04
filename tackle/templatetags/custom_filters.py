@@ -17,3 +17,7 @@ def lookup(value, arg):
 def equalto(value, arg):
     """Compares if value is equal to arg."""
     return value == arg
+
+@register.filter
+def multiply(value, arg):
+    return value * arg

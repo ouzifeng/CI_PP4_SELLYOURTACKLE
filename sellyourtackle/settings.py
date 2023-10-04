@@ -37,8 +37,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',  
-    'allauth.socialaccount.providers.facebook', 
-    'allauth.socialaccount.providers.apple',
 ]
 
 MIDDLEWARE = [
@@ -180,6 +178,10 @@ load_dotenv()
 MAILJET_API_KEY = os.getenv('MAILJET_API_KEY')
 MAILJET_SECRET_KEY = os.getenv('MAILJET_SECRET_KEY')
 
+# Cart Info
+CART_SESSION_ID = 'cart'
+SESSION_COOKIE_AGE = 86400
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
 LOGIN_URL = '/auth/login/'

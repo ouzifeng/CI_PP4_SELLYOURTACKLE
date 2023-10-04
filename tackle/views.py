@@ -9,9 +9,9 @@ from slugify import slugify
 from decimal import Decimal, InvalidOperation
 from django.urls import reverse_lazy
 from django.views.generic.edit import DeleteView
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView, View
 from PIL import Image
-
+from django.conf import settings
 
 
 @login_required
@@ -222,3 +222,115 @@ def process_image(image, desired_size=(440, 300)):
     new_img.paste(img, (x_offset, y_offset))
 
     return new_img    
+
+class Cart:
+    def __init__(self, request):
+        """
+        Initialize the cart.
+        """
+        self.session = request.session
+        cart = self.session.get(settings.CART_SESSION_ID)
+        if not cart:
+            # Save an empty cart in the session
+            cart = self.session[settings.CART_SESSION_ID] = {}
+        self.cart = cart
+
+    def add(self, product, price):
+        """
+        Add a product to the cart or update its quantity.
+        """
+        product_id = str(product.id)
+        if product_id not in self.cart:
+            self.cart[product_id] = {'price': str(price), 'quantity': 1}
+        else:
+            self.cart[product_id]['quantity'] += 1
+        self.save()
+
+    def save(self):
+        """
+        Mark the session as "modified" to ensure it's saved.
+        """
+        self.session.modified = True
+
+    def remove(self, product):
+        """
+        Remove a product from the cart.
+        """
+        product_id = str(product.id)
+        if product_id in self.cart:
+            del self.cart[product_id]
+            self.save()
+
+    def __iter__(self):
+        """
+        Iterate over the items in the cart and get the products from the database.
+        """
+        product_ids = self.cart.keys()
+        # Get the product objects and add them to the cart
+        products = Product.objects.filter(id__in=product_ids)
+        for product in products:
+            self.cart[str(product.id)]['product'] = product
+            self.cart[str(product.id)]['product_id'] = product.id  # Add this line
+
+        for item in self.cart.values():
+            item['price'] = Decimal(item['price'])
+            item['total_price'] = item['price'] * item['quantity']
+            yield item
+
+
+    def __len__(self):
+        """
+        Count all items in the cart.
+        """
+        return sum(item['quantity'] for item in self.cart.values())
+
+    def get_total_price(self):
+        return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
+
+    def clear(self):
+        """
+        Remove the cart from session.
+        """
+        del self.session[settings.CART_SESSION_ID]
+        self.save()
+
+
+class AddToCartView(View):
+    def post(self, request, product_id):
+        cart = Cart(request)  # Pass the whole request object
+        product = get_object_or_404(Product, id=product_id)
+        cart.add(product, price=product.price)
+        return redirect('cart')
+
+class CartView(TemplateView):
+    template_name = 'cart.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = Cart(self.request)  # Pass the whole request object
+        return context
+
+class RemoveFromCartView(View):
+    def post(self, request, product_id):
+        cart = Cart(request)  # Pass the whole request object
+        product = get_object_or_404(Product, id=product_id)
+
+        cart.remove(product)
+
+        return redirect('cart')
+
+class CheckoutView(TemplateView):
+    template_name = 'checkout.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = Cart(self.request)  # Pass the whole request object
+        return context
+    
+    def post(self, request):
+        cart = Cart(request)  # Pass the whole request object
+        cart.clear()
+
+        return redirect('checkout_success')
+
+    
