@@ -4,23 +4,23 @@
 <form method="POST" id="productForm" enctype="multipart/form-data">
     {% csrf_token %}
     <section class="py-5">
-        <h2>Edit Your Product</h2>
+        <h2 class="mb-3">Edit Your Product</h2>
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-2">
                 <div class="form-floating mb-3">
                     <input type="number" step="0.01" name="price" id="price" class="form-control" placeholder="Price"
                         value="{{ product.price }}" required>
                     <label for="price">Price in £<span class="star">*</span></label>
                 </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-2">
                 <div class="form-floating mb-3">
                     <input type="number" step="0.01" name="shipping" id="shipping" class="form-control"
                         placeholder="Shipping" value="{{ product.shipping }}" required>
                     <label for="shipping">Shipping in £<span class="star">*</span></label>
                 </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-2">
                 <div class="form-floating mb-3">
                     <select name="visibility" id="visibility" class="form-control" required>
                         {% if product.visibility == "live" %}
@@ -39,19 +39,14 @@
                     <label for="visibility">Visibility</label>
                 </div>
             </div>
-
-
-
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <div class="form-floating mb-3">
                     <input type="text" name="brand" id="brand" class="form-control" placeholder="Brand"
                         value="{{ product.brand.name }}" required>
                     <label for="brand">Brand<span class="star">*</span></label>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <div class="form-floating mb-3">
                     <input type="text" name="category" id="category" class="form-control" placeholder="Category"
                         value="{{ product.category.name }}" required>
