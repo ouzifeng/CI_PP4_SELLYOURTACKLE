@@ -209,8 +209,7 @@ li .btn {
     height: 4.1em;
     text-overflow: ellipsis;
 }
-   
-
+  
 /* Mobile Styles */
 @media only screen and (max-width: 480px) {
   .search-bar {
@@ -267,7 +266,6 @@ li .btn {
   .card-footer {
     font-size: 12px;
   }  
-
 
 }
 
