@@ -35,6 +35,7 @@ def stripe_webhook(request):
 
     return JsonResponse({'status': 'success'})
 
+@csrf_exempt
 def handle_payment(request):
     data = json.loads(request.body)
     payment_method_id = data['payment_method_id']
@@ -54,9 +55,26 @@ def handle_payment(request):
 
         # Assuming you've also passed customer details in the request
         customer_data = data['customer']
-        
+
+        # Determine the user based on authentication and email existence
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            user, created = CustomUser.objects.get_or_create(
+                email=customer_data['email'],
+                defaults={
+                    'first_name': customer_data['first_name'],
+                    'last_name': customer_data['last_name'],
+                    'is_active': False
+                }
+            )
+            if created:
+                # Optionally, you can send an email notification here for account creation
+                pass
+
         # Create an order instance
         order = Order(
+            user=user,
             first_name = customer_data['first_name'],
             last_name = customer_data['last_name'],
             email = customer_data['email'],
@@ -79,7 +97,7 @@ def handle_payment(request):
         )
         order.save()
 
-        # Save order items. Assuming you have an OrderItem model and product_id in cart items
+  # Save order items. Assuming you have an OrderItem model and product_id in cart items
         for item in cart:
             OrderItem.objects.create(
                 order=order,
