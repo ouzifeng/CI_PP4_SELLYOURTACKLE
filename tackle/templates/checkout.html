@@ -3,10 +3,192 @@
 {% block content %}
 <h2>Checkout</h2>
 {% if cart %}
-<!-- You can add a form here to capture user details, shipping information, etc. -->
-<p>Total Amount: {{ cart.get_total_price }}</p>
-<button>Place Order</button>
+<div class="container">
+    <form method="post" id="payment-form">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="first_name" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="last_name" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="phone_number" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="phone_number" name="phone_number">
+        </div>
+
+        <h4>Billing Address</h4>
+
+        <div class="mb-3">
+            <label for="billing_email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="billing_email" name="billing_email">
+        </div>
+
+        <div class="mb-3">
+            <label for="billing_phone_number" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="billing_phone_number" name="billing_phone_number">
+        </div>
+
+        <div class="mb-3">
+            <label for="billing_address_line1" class="form-label">Address Line 1</label>
+            <input type="text" class="form-control" id="billing_address_line1" name="billing_address_line1" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="billing_address_line2" class="form-label">Address Line 2 (Optional)</label>
+            <input type="text" class="form-control" id="billing_address_line2" name="billing_address_line2">
+        </div>
+
+        <div class="mb-3">
+            <label for="billing_city" class="form-label">City</label>
+            <input type="text" class="form-control" id="billing_city" name="billing_city" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="billing_state" class="form-label">State</label>
+            <input type="text" class="form-control" id="billing_state" name="billing_state" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="billing_postal_code" class="form-label">Postal Code</label>
+            <input type="text" class="form-control" id="billing_postal_code" name="billing_postal_code" required>
+        </div>
+
+        <h4>Shipping Address</h4>
+
+        <div class="mb-3">
+            <label for="shipping_first_name" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="shipping_first_name" name="shipping_first_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="shipping_last_name" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="shipping_last_name" name="shipping_last_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="shipping_address_line1" class="form-label">Address Line 1</label>
+            <input type="text" class="form-control" id="shipping_address_line1" name="shipping_address_line1" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="shipping_address_line2" class="form-label">Address Line 2 (Optional)</label>
+            <input type="text" class="form-control" id="shipping_address_line2" name="shipping_address_line2">
+        </div>
+
+        <div class="mb-3">
+            <label for="shipping_city" class="form-label">City</label>
+            <input type="text" class="form-control" id="shipping_city" name="shipping_city" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="shipping_state" class="form-label">State</label>
+            <input type="text" class="form-control" id="shipping_state" name="shipping_state" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="shipping_postal_code" class="form-label">Postal Code</label>
+            <input type="text" class="form-control" id="shipping_postal_code" name="shipping_postal_code" required>
+        </div>
+
+
+        <!-- Additional Shipping Fields ... -->
+
+        <p>Total Amount: {{ cart.get_total_price }}</p>
+        <div id="card-element">
+            <!-- A Stripe Element will be inserted here. -->
+        </div>
+        <button id="google-pay-button" style="display: none;">Google Pay</button>
+        <button id="apple-pay-button" style="display: none;">Apple Pay</button>
+
+
+        <button type="submit" class="btn btn-primary">Place Order</button>
+    </form>
+</div>
 {% else %}
 <p>Your cart is empty. Please add items to the cart first.</p>
 {% endif %}
+
+<script>
+    // Step 1: Initialize Stripe with your publishable key
+    var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y'); // Replace with your key
+
+    // Step 2: Create an instance of Elements
+    var elements = stripe.elements();
+
+    // Step 3: Create the card element
+    var card = elements.create('card');
+
+    // Step 4: Mount the element to the div
+    card.mount('#card-element');
+
+    // Step 5: Handle form submission
+    var form = document.getElementById('payment-form');
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        stripe.createPaymentMethod('card', card).then(function (result) {
+            if (result.error) {
+                // Show error in your UI. You might want to add an error message div and display this.
+                console.error(result.error.message);
+            } else {
+                // Add the payment method to the form as a hidden field
+                var hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'payment_method');
+                hiddenInput.setAttribute('value', result.paymentMethod.id);
+                form.appendChild(hiddenInput);
+
+                // Submit the form
+                form.submit();
+            }
+        });
+    });    
+</script>
+
+<script>
+    var totalAmount = {{ cart.get_total_price| floatformat: 2 | unlocalize }} * 100;  // Convert to pence
+
+    var paymentRequest = stripe.paymentRequest({
+        country: 'GB',
+        currency: 'gbp',
+        total: {
+            label: 'Total Amount',
+            amount: Math.round(totalAmount),  // Ensure it's an integer
+        },
+        requestPayerName: true,
+        requestPayerEmail: true,
+    });
+
+    var googlePayBtn = document.getElementById('google-pay-button');
+    var applePayBtn = document.getElementById('apple-pay-button');
+
+    paymentRequest.canMakePayment().then(function (result) {
+        if (result && result.applePay) {
+            applePayBtn.style.display = 'block';
+        } else if (result && result.googlePay) {
+            googlePayBtn.style.display = 'block';
+        }
+    });
+
+    googlePayBtn.addEventListener('click', function () {
+        paymentRequest.show();
+    });
+
+    applePayBtn.addEventListener('click', function () {
+        paymentRequest.show();
+    });
+</script>
+
 {% endblock %}

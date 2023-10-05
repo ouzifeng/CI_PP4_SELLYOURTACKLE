@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',  
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -186,3 +186,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
 LOGIN_URL = '/auth/login/'
+
+# Stripe Keys
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')

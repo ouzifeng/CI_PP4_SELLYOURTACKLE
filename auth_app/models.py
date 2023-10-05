@@ -2,7 +2,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.crypto import get_random_string
- 
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -58,12 +61,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
+    username = models.CharField(max_length=150, unique=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
+
 
     objects = CustomUserManager()
 
@@ -72,20 +77,30 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+class Address(models.Model):
+    TYPE_CHOICES = (
+        ('billing', 'Billing'),
+        ('shipping', 'Shipping'),
+    )
 
-class MangoPay(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    address_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     
-    # Mangopay-related fields
-    mangopay_user_id = models.CharField(max_length=255, blank=True, null=True)
-    mangopay_user_type = models.CharField(max_length=20, choices=[('NATURAL', 'Natural'), ('LEGAL', 'Legal')], blank=True, null=True)
-    mangopay_wallet_id = models.CharField(max_length=255, blank=True, null=True)
-    kyc_status = models.CharField(max_length=50, blank=True, null=True)
-    bank_account_id = models.CharField(max_length=255, blank=True, null=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField(blank=True, null=True)  
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    address_line1 = models.CharField(max_length=255)
+    address_line2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=10)
     
-    # For legal users
-    legal_rep_first_name = models.CharField(max_length=255, blank=True, null=True)
-    legal_rep_last_name = models.CharField(max_length=255, blank=True, null=True)
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.address_type}" 
+
+
 
 class EmailConfirmationToken(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
