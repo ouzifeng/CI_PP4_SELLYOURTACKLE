@@ -5,6 +5,7 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from decimal import Decimal
 
 
 class CustomUserManager(BaseUserManager):
@@ -108,3 +109,45 @@ class EmailConfirmationToken(models.Model):
 
     def generate_token(self):
         return get_random_string(50)
+    
+class Order(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('processed', 'Processed'),
+        ('shipped', 'Shipped'),
+        ('delivered', 'Delivered'),
+        ('refunded', 'Refunded'),
+    )
+
+    PAYMENT_CHOICES = (
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+    )
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    product_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    payment_status = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='pending')
+    payment_intent_id = models.CharField(max_length=255, blank=True, null=True)  # ID from Stripe
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    shipping_address = models.ForeignKey(Address, related_name='shipping_orders', on_delete=models.SET_NULL, null=True, blank=True)
+    billing_address = models.ForeignKey(Address, related_name='billing_orders', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    def __str__(self):
+        return f"Order {self.id} - {self.user.email}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey('tackle.Product', on_delete=models.PROTECT)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def get_total_item_price(self):
+        return self.price * self.quantity
+
+    def __str__(self):
+        return f"{self.product.name} (x{self.quantity})"    

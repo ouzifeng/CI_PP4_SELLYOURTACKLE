@@ -13,6 +13,9 @@ from django.views.generic import TemplateView, RedirectView, View
 from PIL import Image
 from django.conf import settings
 from django.contrib import messages
+from .forms import CheckoutForm
+from auth_app.models import Order, OrderItem, Address
+
 
 @login_required
 def delete_product(request, product_id):
@@ -344,20 +347,46 @@ class RemoveFromCartView(View):
 
         return redirect('cart')
 
-class CheckoutView(TemplateView):
+class CheckoutView(View):
     template_name = 'checkout.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        cart = Cart(self.request) 
-        context['cart'] = cart
-        context['total_amount_cents'] = int(cart.get_total_price() * 100)
-        return context
-
-    def post(self, request):
+    def get(self, request, *args, **kwargs):
+        form = CheckoutForm()
         cart = Cart(request)
-        cart.clear()
-        return redirect('home')
+        return render(request, self.template_name, {'form': form, 'cart': cart})
+
+    def post(self, request, *args, **kwargs):
+        cart = Cart(request)
+        form = CheckoutForm(request.POST)
+        
+        if form.is_valid():
+            # Create Order instance
+            order = Order.objects.create(
+                user=request.user,
+                total_cost=cart.get_total_price()
+            )
+            
+            # Create OrderItem instances for each item in the cart
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product_id=item['product_id'],  # Using product_id directly from cart
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
+                
+            # TODO: Process payment with Stripe here...
+
+            if payment_was_successful:  # Placeholder for Stripe payment result
+                cart.clear()
+                messages.success(request, "Thank you for your purchase!")
+                return redirect('home')  # Redirect to home or a success page
+            else:
+                messages.error(request, "There was an issue with your payment. Please try again.")
+        else:
+            messages.error(request, "There was an error with the form. Please check your details and try again.")
+
+        return render(request, self.template_name, {'form': form, 'cart': cart})
 
 class CheckoutSuccessView(TemplateView):
     def post(self, request):

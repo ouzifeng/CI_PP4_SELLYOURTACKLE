@@ -6,114 +6,15 @@
 <div class="container">
     <form method="post" id="payment-form">
         {% csrf_token %}
+        {% load crispy_forms_tags %}
 
-        <div class="mb-3">
-            <label for="first_name" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="first_name" name="first_name" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="last_name" name="last_name" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="phone_number" class="form-label">Phone Number</label>
-            <input type="tel" class="form-control" id="phone_number" name="phone_number">
-        </div>
-
-        <h4>Billing Address</h4>
-
-        <div class="mb-3">
-            <label for="billing_email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="billing_email" name="billing_email">
-        </div>
-
-        <div class="mb-3">
-            <label for="billing_phone_number" class="form-label">Phone Number</label>
-            <input type="tel" class="form-control" id="billing_phone_number" name="billing_phone_number">
-        </div>
-
-        <div class="mb-3">
-            <label for="billing_address_line1" class="form-label">Address Line 1</label>
-            <input type="text" class="form-control" id="billing_address_line1" name="billing_address_line1" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="billing_address_line2" class="form-label">Address Line 2 (Optional)</label>
-            <input type="text" class="form-control" id="billing_address_line2" name="billing_address_line2">
-        </div>
-
-        <div class="mb-3">
-            <label for="billing_city" class="form-label">City</label>
-            <input type="text" class="form-control" id="billing_city" name="billing_city" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="billing_state" class="form-label">State</label>
-            <input type="text" class="form-control" id="billing_state" name="billing_state" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="billing_postal_code" class="form-label">Postal Code</label>
-            <input type="text" class="form-control" id="billing_postal_code" name="billing_postal_code" required>
-        </div>
-
-        <h4>Shipping Address</h4>
-
-        <div class="mb-3">
-            <label for="shipping_first_name" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="shipping_first_name" name="shipping_first_name" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="shipping_last_name" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="shipping_last_name" name="shipping_last_name" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="shipping_address_line1" class="form-label">Address Line 1</label>
-            <input type="text" class="form-control" id="shipping_address_line1" name="shipping_address_line1" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="shipping_address_line2" class="form-label">Address Line 2 (Optional)</label>
-            <input type="text" class="form-control" id="shipping_address_line2" name="shipping_address_line2">
-        </div>
-
-        <div class="mb-3">
-            <label for="shipping_city" class="form-label">City</label>
-            <input type="text" class="form-control" id="shipping_city" name="shipping_city" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="shipping_state" class="form-label">State</label>
-            <input type="text" class="form-control" id="shipping_state" name="shipping_state" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="shipping_postal_code" class="form-label">Postal Code</label>
-            <input type="text" class="form-control" id="shipping_postal_code" name="shipping_postal_code" required>
-        </div>
-
-
-        <!-- Additional Shipping Fields ... -->
-
-        <p>Total Amount: {{ cart.get_total_price }}</p>
+        {{ form|crispy }}
         <div id="card-element">
             <!-- A Stripe Element will be inserted here. -->
         </div>
-        <button id="google-pay-button" style="display: none;">Google Pay</button>
-        <button id="apple-pay-button" style="display: none;">Apple Pay</button>
-
-
-        <button type="submit" class="btn btn-primary">Place Order</button>
+        <!-- ... rest of the template ... -->
     </form>
+
 </div>
 {% else %}
 <p>Your cart is empty. Please add items to the cart first.</p>
@@ -188,6 +89,55 @@
     applePayBtn.addEventListener('click', function () {
         paymentRequest.show();
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var stripe = Stripe('YOUR_STRIPE_PUBLIC_KEY');  // Replace with your public key
+        var elements = stripe.elements();
+        var card = elements.create('card');
+        card.mount('#card-element');
+
+        var form = document.getElementById('payment-form');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Disable the submit button to prevent multiple clicks
+            form.querySelector('button[type="submit"]').disabled = true;
+
+            stripe.createPaymentMethod('card', card).then(function (result) {
+                if (result.error) {
+                    console.error(result.error.message);
+                    // Enable the submit button
+                    form.querySelector('button[type="submit"]').disabled = false;
+                } else {
+                    // Fetch CSRF token from the DOM
+                    var csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+                    fetch('/handle_payment/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({
+                            payment_method_id: result.paymentMethod.id
+                            // Add any other necessary form data here
+                        })
+                    }).then(function (response) {
+                        response.json().then(function (data) {
+                            if (data.error) {
+                                console.error(data.error);
+                                // Enable the submit button
+                                form.querySelector('button[type="submit"]').disabled = false;
+                            } else {
+                                window.location.href = '/checkout_success/';
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    });    
 </script>
 
 {% endblock %}
