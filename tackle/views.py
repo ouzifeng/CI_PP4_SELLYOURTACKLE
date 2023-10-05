@@ -349,13 +349,15 @@ class CheckoutView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['cart'] = Cart(self.request)  # Pass the whole request object
+        cart = Cart(self.request) 
+        context['cart'] = cart
+        context['total_amount_cents'] = int(cart.get_total_price() * 100)
         return context
-    
-    def post(self, request):
-        cart = Cart(request)  # Pass the whole request object
-        cart.clear()
 
+    def post(self, request):
+        cart = Cart(request)
+        cart.clear()
         return redirect('checkout_success')
+
 
     

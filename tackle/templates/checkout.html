@@ -158,8 +158,7 @@
 </script>
 
 <script>
-    var totalAmount = {{ cart.get_total_price| floatformat: 2 | unlocalize }} * 100;  // Convert to pence
-
+    var totalAmount = {{ total_amount_cents }};
     var paymentRequest = stripe.paymentRequest({
         country: 'GB',
         currency: 'gbp',
