@@ -357,7 +357,8 @@ class CheckoutView(TemplateView):
     def post(self, request):
         cart = Cart(request)
         cart.clear()
-        return redirect('checkout_success')
+        return redirect('home')
 
 
-    
+class CheckoutSuccessView(TemplateView):
+    template_name = 'home'    
