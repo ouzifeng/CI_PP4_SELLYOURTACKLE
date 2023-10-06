@@ -14,7 +14,7 @@ from PIL import Image
 from django.conf import settings
 from django.contrib import messages
 from .forms import CheckoutForm
-from auth_app.models import Order, OrderItem, Address
+from auth_app.models import Order, OrderItem, Address, CustomUser, CustomUserManager
 
 
 @login_required
@@ -360,10 +360,26 @@ class CheckoutView(View):
         form = CheckoutForm(request.POST)
         
         if form.is_valid():
-            # Create Order instance
+            # Determine the user based on the provided email
+            email = form.cleaned_data['email']  # Assuming your form has an 'email' field
+
+            if request.user.is_authenticated:
+                user = request.user
+            else:
+                user, created = CustomUser.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'first_name': form.cleaned_data['first_name'],  # Use form data here
+                        'last_name': form.cleaned_data['last_name'],
+                        'is_active': False,
+                        'password': CustomUser.objects.make_random_password()
+                    }
+                )
+            
+            # Now use this user instance when creating the order
             order = Order.objects.create(
-                user=request.user,
-                total_cost=cart.get_total_price()
+                user=user,
+                total_amount=cart.get_total_price()
             )
             
             # Create OrderItem instances for each item in the cart
@@ -376,6 +392,7 @@ class CheckoutView(View):
                 )
                 
             # TODO: Process payment with Stripe here...
+            payment_was_successful = True
 
             if payment_was_successful:  # Placeholder for Stripe payment result
                 cart.clear()
