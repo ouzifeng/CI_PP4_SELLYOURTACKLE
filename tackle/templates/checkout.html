@@ -3,24 +3,122 @@
 {% block content %}
 <h2>Checkout</h2>
 {% if cart %}
-<div class="container">
-    <form method="post" id="payment-form">
-        {% csrf_token %}
-        {% load crispy_forms_tags %}
+<!-- Personal Details -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="container">
+            <form method="post" id="payment-form" novalidate>
+                {% csrf_token %}
+                {% load widget_tweaks %}
+                <!-- Personal Details -->
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name|add_class:"form-control" }}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name|add_class:"form-control" }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    {{ form.email|add_class:"form-control" }}
+                </div>
+                <div class="form-group">
+                    {{ form.phone_number.label_tag }}
+                    {{ form.phone_number|add_class:"form-control" }}
+                </div>
 
-        {{ form|crispy }}
-        <div id="card-element">
-            <!-- A Stripe Element will be inserted here. -->
+                <!-- Billing Address -->
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        {{ form.billing_address_line1.label_tag }}
+                        {{ form.billing_address_line1|add_class:"form-control" }}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        {{ form.billing_address_line2.label_tag }}
+                        {{ form.billing_address_line2|add_class:"form-control" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        {{ form.billing_city.label_tag }}
+                        {{ form.billing_city|add_class:"form-control" }}
+                    </div>
+                    <div class="col-md-6 form-group">
+                        {{ form.billing_state.label_tag }}
+                        {{ form.billing_state|add_class:"form-control" }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.billing_postal_code.label_tag }}
+                    {{ form.billing_postal_code|add_class:"form-control" }}
+                </div>
+
+                <!-- Use different shipping address checkbox -->
+                <div class="form-check">
+                    {{ form.use_different_shipping_address }}
+                    {{ form.use_different_shipping_address.label_tag }}
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="shipping-field">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            {{ form.shipping_first_name.label_tag }}
+                            {{ form.shipping_first_name|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 form-group">
+                            {{ form.shipping_last_name.label_tag }}
+                            {{ form.shipping_last_name|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            {{ form.shipping_address_line1.label_tag }}
+                            {{ form.shipping_address_line1|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 form-group">
+                            {{ form.shipping_address_line2.label_tag }}
+                            {{ form.shipping_address_line2|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            {{ form.shipping_city.label_tag }}
+                            {{ form.shipping_city|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 form-group">
+                            {{ form.shipping_state.label_tag }}
+                            {{ form.shipping_state|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.shipping_postal_code.label_tag }}
+                        {{ form.shipping_postal_code|add_class:"form-control" }}
+                    </div>
+                </div>
+
+                <!-- Stripe Payment Element -->
+                <div id="card-element">
+                    <!-- A Stripe Element will be inserted here. -->
+                </div>
+                <div id="payment-request-button"></div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary mt-3">Place Order</button>
+            </form>
         </div>
-        <!-- ... rest of the template ... -->
-        <button type="submit" class="btn btn-primary">Place Order</button>
-
-    </form>
-
+    </div>
+    <div class="col-md-6"></div>
 </div>
+
 {% else %}
 <p>Your cart is empty. Please add items to the cart first.</p>
 {% endif %}
+
+
 
 <script>
     // Step 1: Initialize Stripe with your publishable key
@@ -67,7 +165,7 @@
         currency: 'gbp',
         total: {
             label: 'Total Amount',
-            amount: Math.round(totalAmount),  // Ensure it's an integer
+            amount: Math.round(totalAmount),
         },
         requestPayerName: true,
         requestPayerEmail: true,
@@ -93,7 +191,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-        var stripe = Stripe('YOUR_STRIPE_PUBLIC_KEY');  // Replace with your public key
+        var stripe = Stripe('YOUR_STRIPE_PUBLIC_KEY');
         var elements = stripe.elements();
         var card = elements.create('card');
         card.mount('#card-element');
@@ -140,6 +238,54 @@
             });
         });
     });    
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const useDifferentShippingAddressCheckbox = document.querySelector('#id_use_different_shipping_address');
+        const shippingFields = document.querySelectorAll('.shipping-field');
+        const shippingInputs = document.querySelectorAll('.shipping-field input');
+
+        function toggleShippingFields() {
+            shippingFields.forEach(field => {
+                if (useDifferentShippingAddressCheckbox.checked) {
+                    field.style.display = 'block';
+                } else {
+                    field.style.display = 'none';
+                }
+            });
+
+            // Set or unset the required attribute based on checkbox state
+            shippingInputs.forEach(input => {
+                if (useDifferentShippingAddressCheckbox.checked) {
+                    input.required = true;
+                } else {
+                    input.required = false;
+                }
+            });
+        }
+
+        useDifferentShippingAddressCheckbox.addEventListener('change', toggleShippingFields);
+        toggleShippingFields();
+    });
+
+</script>
+
+<script>
+    document.getElementById('payment-form').addEventListener('submit', function (e) {
+        var useDifferentShippingAddress = document.getElementById('id_use_different_shipping_address').checked;
+
+        if (!useDifferentShippingAddress) {
+            document.getElementById('id_shipping_first_name').value = document.getElementById('id_first_name').value;
+            document.getElementById('id_shipping_last_name').value = document.getElementById('id_last_name').value;
+            document.getElementById('id_shipping_address_line1').value = document.getElementById('id_billing_address_line1').value;
+            document.getElementById('id_shipping_address_line2').value = document.getElementById('id_billing_address_line2').value;
+            document.getElementById('id_shipping_city').value = document.getElementById('id_billing_city').value;
+            document.getElementById('id_shipping_state').value = document.getElementById('id_billing_state').value;
+            document.getElementById('id_shipping_postal_code').value = document.getElementById('id_billing_postal_code').value;
+        }
+    });
+
 </script>
 
 {% endblock %}

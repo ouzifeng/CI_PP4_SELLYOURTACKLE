@@ -270,15 +270,20 @@ class Cart:
         """
         product_ids = self.cart.keys()
         # Get the product objects and add them to the cart
-        products = Product.objects.filter(id__in=product_ids)
+        products = Product.objects.filter(id__in=product_ids).prefetch_related('images')
         for product in products:
             self.cart[str(product.id)]['product'] = product
-            self.cart[str(product.id)]['product_id'] = product.id  # Add this line
+            self.cart[str(product.id)]['product_id'] = product.id
+            self.cart[str(product.id)]['thumbnail'] = product.images.first()
+            self.cart[str(product.id)]['shipping_cost'] = product.shipping
 
         for item in self.cart.values():
             item['price'] = Decimal(item['price'])
-            item['total_price'] = item['price'] * item['quantity']
+            item['shipping_cost'] = Decimal(item.get('shipping_cost', 0))
+            item['total_price'] = (item['price'] * item['quantity']) + item['shipping_cost']
+            item['thumbnail'] = (item['thumbnail'])
             yield item
+
 
 
     def __len__(self):
@@ -361,7 +366,7 @@ class CheckoutView(View):
         
         if form.is_valid():
             # Determine the user based on the provided email
-            email = form.cleaned_data['email']  # Assuming your form has an 'email' field
+            email = form.cleaned_data['email'] 
 
             if request.user.is_authenticated:
                 user = request.user
@@ -382,14 +387,63 @@ class CheckoutView(View):
                 total_amount=cart.get_total_price()
             )
             
-            # Create OrderItem instances for each item in the cart
-            for item in cart:
-                OrderItem.objects.create(
-                    order=order,
-                    product_id=item['product_id'],  # Using product_id directly from cart
-                    price=item['price'],
-                    quantity=item['quantity']
-                )
+        # Save billing address
+        billing_address = Address.objects.create(
+            user=user,
+            address_type='billing',
+            first_name=form.cleaned_data['first_name'],
+            last_name=form.cleaned_data['last_name'],
+            email=form.cleaned_data['email'],
+            phone_number=form.cleaned_data['phone_number'],
+            address_line1=form.cleaned_data['billing_address_line1'],
+            address_line2=form.cleaned_data.get('billing_address_line2', ''),
+            city=form.cleaned_data['billing_city'],
+            state=form.cleaned_data['billing_state'],
+            postal_code=form.cleaned_data['billing_postal_code']
+        )
+        order.billing_address = billing_address
+        order.save()
+        
+        # Check if a different shipping address was provided
+        if form.cleaned_data['use_different_shipping_address']:
+            shipping_address = Address.objects.create(
+                user=user,
+                address_type='shipping',
+                first_name=form.cleaned_data['shipping_first_name'],
+                last_name=form.cleaned_data['shipping_last_name'],
+                address_line1=form.cleaned_data['shipping_address_line1'],
+                address_line2=form.cleaned_data.get('shipping_address_line2', ''),
+                city=form.cleaned_data['shipping_city'],
+                state=form.cleaned_data['shipping_state'],
+                postal_code=form.cleaned_data['shipping_postal_code']
+            )
+            order.shipping_address = shipping_address
+            order.save()
+        else:
+            # If the shipping fields are left blank or the checkbox is not checked, 
+            # use the billing address values for the shipping address
+            shipping_address = Address.objects.create(
+                user=user,
+                address_type='shipping',
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                address_line1=form.cleaned_data['billing_address_line1'],
+                address_line2=form.cleaned_data.get('billing_address_line2', ''),
+                city=form.cleaned_data['billing_city'],
+                state=form.cleaned_data['billing_state'],
+                postal_code=form.cleaned_data['billing_postal_code']
+            )
+            order.shipping_address = shipping_address
+            order.save()
+
+        # Create OrderItem instances for each item in the cart
+        for item in cart:
+            OrderItem.objects.create(
+                order=order,
+                product_id=item['product_id'],  # Using product_id directly from cart
+                price=item['price'],
+                quantity=item['quantity']
+            )
                 
             # TODO: Process payment with Stripe here...
             payment_was_successful = True
