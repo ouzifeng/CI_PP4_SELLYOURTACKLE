@@ -93,8 +93,8 @@ def handle_payment(request):
             payment_method_types=['card', 'paypal'],
             line_items=line_items,
             mode='payment',
-            success_url='www.sellyourtackle.co.uk/',  
-            cancel_url='www.sellyourtackle.co.uk/', 
+            success_url='https://www.sellyourtackle.co.uk/',  
+            cancel_url='https://www.sellyourtackle.co.uk/', 
             shipping_address_collection={
             'allowed_countries': ['GB'],
             }
