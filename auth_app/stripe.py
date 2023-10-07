@@ -5,6 +5,8 @@ import stripe
 from .models import Order
 from django.conf import settings
 from auth_app.models import CustomUser, Order, OrderItem
+from tackle.views import Cart
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -19,78 +21,87 @@ def stripe_webhook(request):
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
     except ValueError:
-        # Invalid payload
         return JsonResponse({'status': 'invalid payload'}, status=400)
     except stripe.error.SignatureVerificationError:
-        # Invalid signature
         return JsonResponse({'status': 'invalid signature'}, status=400)
 
     # Handle the event
     if event.type == 'payment_intent.succeeded':
         payment_intent = event.data.object
-        # Handle post-payment logic here (e.g., update database, send email)
+        # Locate the order using the payment_intent ID
+        order = Order.objects.get(payment_intent_id=payment_intent.id)
+        order.payment_status = 'completed'
+        order.status = 'paid'  # or another status you'd like
+        order.save()
+        # Optionally, send a confirmation email to the user here
+
     elif event.type == 'payment_intent.payment_failed':
         payment_intent = event.data.object
-        # Handle payment failures here (e.g., notify the user, retry payment)
+        order = Order.objects.get(payment_intent_id=payment_intent.id)
+        order.payment_status = 'failed'
+        order.save()
+        # Notify the user about the failed payment here
 
     return JsonResponse({'status': 'success'})
+
 
 @csrf_exempt
 def handle_payment(request):
     data = json.loads(request.body)
-    payment_method_id = data['payment_method_id']
+    
+    # Extract cart details
+    cart = Cart(request)
+    total_amount = int(cart.get_total_price() * 100)  
+    
+    # Prepare line items for Stripe Checkout using price_data
+    line_items = []
+    for item in cart:
+        product = item['product']
+
+        # Product line item
+        product_line_item = {
+            'price_data': {
+                'currency': 'gbp',
+                'product_data': {
+                    'name': product.name,
+                    # 'images': [item['thumbnail'].image.url] if item['thumbnail'] else [],
+                },
+                'unit_amount': int(item['price'] * 100),  # Convert to cents
+            },
+            'quantity': item['quantity'],
+        }
+        line_items.append(product_line_item)
+
+        # Shipping line item for the product
+        shipping_line_item = {
+            'price_data': {
+                'currency': 'gbp',
+                'product_data': {
+                    'name': f"Shipping",
+                },
+                'unit_amount': int(item['shipping_cost'] * 100), 
+            },
+            'quantity': item['quantity'],
+        }
+        line_items.append(shipping_line_item)
+
+
 
     try:
-        cart = Cart(request)
-        total_amount = int(cart.get_total_price() * 100)  # Convert to cents
-
-        # Confirm the payment
-        payment_intent = stripe.PaymentIntent.create(
-            amount=total_amount,
-            currency='gbp',
-            payment_method=payment_method_id,
-            confirmation_method='manual',
-            confirm=True
+        # Create a Stripe Checkout session
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card', 'paypal'],
+            line_items=line_items,
+            mode='payment',
+            success_url='http://127.0.0.1:8000/',  
+            cancel_url='http://127.0.0.1:8000/',    
+            shipping_address_collection={
+            'allowed_countries': ['GB'],
+            }
         )
 
-        # Determine the user based on authentication and email existence
-        if request.user.is_authenticated:
-            user = request.user
-        else:
-            email = data['customer']['email']
-            user, created = CustomUser.objects.get_or_create(
-                email=email,
-                defaults={
-                    'first_name': data['customer']['first_name'],
-                    'last_name': data['customer']['last_name'],
-                    'is_active': False,
-                    'password': CustomUser.objects.make_random_password()
-                }
-            )
-
-        # Create an order instance
-        order = Order(
-            user=user,
-            product_cost=cart.get_total_price(),
-            total_amount=cart.get_total_price(),
-            payment_status='completed',
-            stripe_payment_intent_id=payment_intent.id
-        )
-        order.save()
-
-        # Save order items
-        for item in cart:
-            OrderItem.objects.create(
-                order=order,
-                product_id=item['product_id'],
-                price=item['price'],
-                quantity=item['quantity']
-            )
-
-        # Clear the cart after successful order placement
-        cart.clear()
-
-        return JsonResponse({'success': True})
+        # Return the session ID to the frontend
+        return JsonResponse({'session_id': session.id})
 
     except stripe.error.StripeError as e:
         return JsonResponse({'error': str(e)})

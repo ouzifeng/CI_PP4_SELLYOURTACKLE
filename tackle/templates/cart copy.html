@@ -45,45 +45,26 @@
     </table>
 </div>
 
-<a href="#" id="stripe-checkout-btn">Proceed to Stripe Checkout</a>
+<a href="{% url 'checkout' %}">Proceed to Checkout</a>
 {% else %}
 <p>Your cart is empty.</p>
 {% endif %}
 
-<script>;
 
-    document.getElementById('stripe-checkout-btn').addEventListener('click', function (e) {
-        e.preventDefault();  // Prevent default action
 
-        var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y')
-        // Make AJAX call to server to create Stripe session
-        fetch('/auth/handle_payment/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // Include CSRF token for Django
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                // You can send any additional data you might need
-            })
-        }).then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            // Use Stripe.js to redirect to the Stripe Checkout page with the session ID
-            stripe.redirectToCheckout({
-                sessionId: data.session_id
-            }).then(function (result) {
-                console.error(result.error.message);
-            });
-        }).catch(function (err) {
-            console.error('Error when trying to create Stripe session:', err);
-        });
+<script>
+    // Assuming you've already initialized Stripe:
+    var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
+
+    // When you get the session_id from your backend:
+    stripe.redirectToCheckout({
+        sessionId: session_id  // This is the session_id received from the backend
+    }).then(function (result) {
+        // If `redirectToCheckout` fails due to a browser or network
+        // error, display the localized error message to your customer
+        console.error(result.error.message);
     });
 
-
-
 </script>
-
 
 {% endblock %}

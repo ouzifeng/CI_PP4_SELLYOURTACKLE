@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import SignupView, CustomLoginView, ConfirmEmailView, LogoutView, ConfirmEmailPageView, MyAccount, Buying, Selling
-from .stripe import stripe_webhook
+from .stripe import stripe_webhook, handle_payment
 
 urlpatterns = [
     path('signup/', SignupView.as_view(), name='signup'),
@@ -13,5 +13,6 @@ urlpatterns = [
     path('buying/', Buying.as_view(), name='buying'),
     path('selling/', Selling.as_view(), name='selling'),
     path('stripe_webhook/', stripe_webhook, name='stripe_webhook'),    
-] 
+    path('handle_payment/', handle_payment, name='handle_payment'),
+]
 

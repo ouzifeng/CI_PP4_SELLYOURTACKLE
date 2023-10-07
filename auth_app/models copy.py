@@ -113,7 +113,7 @@ class EmailConfirmationToken(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
-        ('paid', 'Paid'),
+        ('processed', 'Processed'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('refunded', 'Refunded'),

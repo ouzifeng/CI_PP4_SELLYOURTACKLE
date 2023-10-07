@@ -359,6 +359,47 @@ class CheckoutView(View):
         form = CheckoutForm()
         cart = Cart(request)
         return render(request, self.template_name, {'form': form, 'cart': cart})
+    
+    def get(self, request, *args, **kwargs):
+        initial_data = {}
+        if request.user.is_authenticated:
+            # Fetch the most recent order for the user
+            recent_order = Order.objects.filter(user=request.user).order_by('-created_at').first()
+
+            if recent_order:
+                # Get the billing address from the recent order
+                recent_billing_address = recent_order.billing_address
+                if recent_billing_address:
+                    initial_data.update({
+                        'first_name': recent_billing_address.first_name,
+                        'last_name': recent_billing_address.last_name,
+                        'email': recent_billing_address.email,
+                        'phone_number': recent_billing_address.phone_number,
+                        'billing_address_line1': recent_billing_address.address_line1,
+                        'billing_address_line2': recent_billing_address.address_line2,
+                        'billing_city': recent_billing_address.city,
+                        'billing_state': recent_billing_address.state,
+                        'billing_postal_code': recent_billing_address.postal_code,
+                    })
+
+                # Get the shipping address from the recent order
+                recent_shipping_address = recent_order.shipping_address
+                if recent_shipping_address:
+                    initial_data.update({
+                        'shipping_first_name': recent_shipping_address.first_name,
+                        'shipping_last_name': recent_shipping_address.last_name,
+                        'shipping_address_line1': recent_shipping_address.address_line1,
+                        'shipping_address_line2': recent_shipping_address.address_line2,
+                        'shipping_city': recent_shipping_address.city,
+                        'shipping_state': recent_shipping_address.state,
+                        'shipping_postal_code': recent_shipping_address.postal_code,
+                    })
+
+        form = CheckoutForm(initial=initial_data)
+        cart = Cart(request)
+        return render(request, self.template_name, {'form': form, 'cart': cart})
+
+
 
     def post(self, request, *args, **kwargs):
         cart = Cart(request)
