@@ -16,7 +16,7 @@ from django.contrib import messages
 from .forms import CheckoutForm
 from auth_app.models import Order, OrderItem, Address, CustomUser, CustomUserManager
 import stripe
-
+from django.db import transaction
 
 @login_required
 def delete_product(request, product_id):
@@ -362,49 +362,59 @@ class CheckoutView(View):
         return render(request, self.template_name, {'form': form, 'cart': cart})
 
     def post(self, request, *args, **kwargs):
-        cart = Cart(request)
-        form = CheckoutForm(request.POST)
-        
-        if form.is_valid():
-            # Determine the user based on the provided email
-            email = form.cleaned_data['email']
-            if request.user.is_authenticated:
-                user = request.user
+            cart = Cart(request)
+            form = CheckoutForm(request.POST)
+
+            if form.is_valid():
+                # Determine the user based on the provided email
+                email = form.cleaned_data['email']
+                if request.user.is_authenticated:
+                    user = request.user
+                else:
+                    user, created = CustomUser.objects.get_or_create(
+                        email=email,
+                        defaults={
+                            'first_name': form.cleaned_data['first_name'],
+                            'last_name': form.cleaned_data['last_name'],
+                            'is_active': False,
+                            'password': CustomUser.objects.make_random_password()
+                        }
+                    )
+
+                try:
+                    with transaction.atomic():
+                        # Create the order with a "pending" status
+                        order = Order.objects.create(
+                            user=user,
+                            product_cost=cart.get_total_product_cost(),
+                            shipping_cost=cart.get_total_shipping_cost(),
+                            total_amount=cart.get_total_price(),
+                            status='pending',
+                            payment_status='pending'
+                        )
+                        print(f"Order created with ID: {order.id}")
+
+                        # Create OrderItem instances for each item in the cart
+                        for item in cart:
+                            OrderItem.objects.create(
+                                order=order,
+                                product=item['product'],
+                                price=item['price'],
+                                quantity=item['quantity']
+                            )
+                        print("Order items created")
+
+                except Exception as e:
+                    print(f"Error occurred: {e}")
+                    messages.error(request, f"An internal error occurred. Please try again. Error: {e}")
+                    return render(request, self.template_name, {'form': form, 'cart': cart})
+
+                # Redirect to Stripe checkout
+                return HttpResponseRedirect(reverse('handle_payment', kwargs={'order_id': order.id}))
+
             else:
-                user, created = CustomUser.objects.get_or_create(
-                    email=email,
-                    defaults={
-                        'first_name': form.cleaned_data['first_name'],
-                        'last_name': form.cleaned_data['last_name'],
-                        'is_active': False,
-                        'password': CustomUser.objects.make_random_password()
-                    }
-                )
-
-            # Create the order with a "pending" status
-            order = Order.objects.create(
-                user=user,
-                product_cost=cart.get_total_product_cost(),
-                shipping_cost=cart.get_total_shipping_cost(),
-                total_amount=cart.get_total_price(),
-                status='pending',
-                payment_status='pending'
-            )
-
-            # Create OrderItem instances for each item in the cart
-            for item in cart:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item['product'],
-                    price=item['price'],
-                    quantity=item['quantity']
-                )
-
-            # Redirect to Stripe checkout
-            return HttpResponseRedirect(reverse('handle_payment', kwargs={'order_id': order.id}))
-        else:
-            messages.error(request, "There was an error with the form. Please check your details and try again.")
-            return render(request, self.template_name, {'form': form, 'cart': cart})
+                messages.error(request, "There was an error with the form. Please check your details and try again.")
+                return render(request, self.template_name, {'form': form, 'cart': cart})
 
 
 class CheckoutSuccessView(TemplateView):
