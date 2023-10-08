@@ -13,6 +13,6 @@ urlpatterns = [
     path('buying/', Buying.as_view(), name='buying'),
     path('selling/', Selling.as_view(), name='selling'),
     path('stripe_webhook/', stripe_webhook, name='stripe_webhook'),    
-    path('handle_payment/', handle_payment, name='handle_payment'),
+    path('handle_payment/<int:order_id>/', handle_payment, name='handle_payment'),
 ]
 
