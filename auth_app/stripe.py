@@ -31,9 +31,8 @@ def stripe_webhook(request):
         # Locate the order using the payment_intent ID
         order = Order.objects.get(payment_intent_id=payment_intent.id)
         order.payment_status = 'completed'
-        order.status = 'paid'  # or another status you'd like
+        order.status = 'paid'  
         order.save()
-        # Optionally, send a confirmation email to the user here
 
     elif event.type == 'payment_intent.payment_failed':
         payment_intent = event.data.object
@@ -46,12 +45,12 @@ def stripe_webhook(request):
 
 
 @csrf_exempt
-def handle_payment(request):
-    data = json.loads(request.body)
+def handle_payment(request, order_id):
+    # Retrieve the order
+    order = Order.objects.get(pk=order_id)
     
     # Extract cart details
     cart = Cart(request)
-    total_amount = int(cart.get_total_price() * 100)  
     
     # Prepare line items for Stripe Checkout using price_data
     line_items = []
@@ -64,7 +63,6 @@ def handle_payment(request):
                 'currency': 'gbp',
                 'product_data': {
                     'name': product.name,
-                    # 'images': [item['thumbnail'].image.url] if item['thumbnail'] else [],
                 },
                 'unit_amount': int(item['price'] * 100),  # Convert to cents
             },
@@ -85,8 +83,6 @@ def handle_payment(request):
         }
         line_items.append(shipping_line_item)
 
-
-
     try:
         # Create a Stripe Checkout session
         session = stripe.checkout.Session.create(
@@ -95,8 +91,9 @@ def handle_payment(request):
             mode='payment',
             success_url='https://www.sellyourtackle.co.uk/',  
             cancel_url='https://www.sellyourtackle.co.uk/', 
+            client_reference_id=order_id,  # Associate this session with the order
             shipping_address_collection={
-            'allowed_countries': ['GB'],
+                'allowed_countries': ['GB'],
             }
         )
 

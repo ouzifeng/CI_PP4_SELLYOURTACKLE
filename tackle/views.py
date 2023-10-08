@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Brand, Category, Product, ProductImage, ProductVisibility
+from .models import Brand, Category, Product, ProductImage, ProductVisibility, Cart, CustomUser, Order, OrderItem, Address
 from slugify import slugify
 from decimal import Decimal, InvalidOperation
 from django.urls import reverse_lazy
@@ -15,6 +15,7 @@ from django.conf import settings
 from django.contrib import messages
 from .forms import CheckoutForm
 from auth_app.models import Order, OrderItem, Address, CustomUser, CustomUserManager
+import stripe
 
 
 @login_required
@@ -359,47 +360,6 @@ class CheckoutView(View):
         form = CheckoutForm()
         cart = Cart(request)
         return render(request, self.template_name, {'form': form, 'cart': cart})
-    
-    def get(self, request, *args, **kwargs):
-        initial_data = {}
-        if request.user.is_authenticated:
-            # Fetch the most recent order for the user
-            recent_order = Order.objects.filter(user=request.user).order_by('-created_at').first()
-
-            if recent_order:
-                # Get the billing address from the recent order
-                recent_billing_address = recent_order.billing_address
-                if recent_billing_address:
-                    initial_data.update({
-                        'first_name': recent_billing_address.first_name,
-                        'last_name': recent_billing_address.last_name,
-                        'email': recent_billing_address.email,
-                        'phone_number': recent_billing_address.phone_number,
-                        'billing_address_line1': recent_billing_address.address_line1,
-                        'billing_address_line2': recent_billing_address.address_line2,
-                        'billing_city': recent_billing_address.city,
-                        'billing_state': recent_billing_address.state,
-                        'billing_postal_code': recent_billing_address.postal_code,
-                    })
-
-                # Get the shipping address from the recent order
-                recent_shipping_address = recent_order.shipping_address
-                if recent_shipping_address:
-                    initial_data.update({
-                        'shipping_first_name': recent_shipping_address.first_name,
-                        'shipping_last_name': recent_shipping_address.last_name,
-                        'shipping_address_line1': recent_shipping_address.address_line1,
-                        'shipping_address_line2': recent_shipping_address.address_line2,
-                        'shipping_city': recent_shipping_address.city,
-                        'shipping_state': recent_shipping_address.state,
-                        'shipping_postal_code': recent_shipping_address.postal_code,
-                    })
-
-        form = CheckoutForm(initial=initial_data)
-        cart = Cart(request)
-        return render(request, self.template_name, {'form': form, 'cart': cart})
-
-
 
     def post(self, request, *args, **kwargs):
         cart = Cart(request)
@@ -407,98 +367,45 @@ class CheckoutView(View):
         
         if form.is_valid():
             # Determine the user based on the provided email
-            email = form.cleaned_data['email'] 
-
+            email = form.cleaned_data['email']
             if request.user.is_authenticated:
                 user = request.user
             else:
                 user, created = CustomUser.objects.get_or_create(
                     email=email,
                     defaults={
-                        'first_name': form.cleaned_data['first_name'],  # Use form data here
+                        'first_name': form.cleaned_data['first_name'],
                         'last_name': form.cleaned_data['last_name'],
                         'is_active': False,
                         'password': CustomUser.objects.make_random_password()
                     }
                 )
-            
-            # Now use this user instance when creating the order
+
+            # Create the order with a "pending" status
             order = Order.objects.create(
                 user=user,
-                total_amount=cart.get_total_price()
+                product_cost=cart.get_total_product_cost(),
+                shipping_cost=cart.get_total_shipping_cost(),
+                total_amount=cart.get_total_price(),
+                status='pending',
+                payment_status='pending'
             )
-            
-        # Save billing address
-        billing_address = Address.objects.create(
-            user=user,
-            address_type='billing',
-            first_name=form.cleaned_data['first_name'],
-            last_name=form.cleaned_data['last_name'],
-            email=form.cleaned_data['email'],
-            phone_number=form.cleaned_data['phone_number'],
-            address_line1=form.cleaned_data['billing_address_line1'],
-            address_line2=form.cleaned_data.get('billing_address_line2', ''),
-            city=form.cleaned_data['billing_city'],
-            state=form.cleaned_data['billing_state'],
-            postal_code=form.cleaned_data['billing_postal_code']
-        )
-        order.billing_address = billing_address
-        order.save()
-        
-        # Check if a different shipping address was provided
-        if form.cleaned_data['use_different_shipping_address']:
-            shipping_address = Address.objects.create(
-                user=user,
-                address_type='shipping',
-                first_name=form.cleaned_data['shipping_first_name'],
-                last_name=form.cleaned_data['shipping_last_name'],
-                address_line1=form.cleaned_data['shipping_address_line1'],
-                address_line2=form.cleaned_data.get('shipping_address_line2', ''),
-                city=form.cleaned_data['shipping_city'],
-                state=form.cleaned_data['shipping_state'],
-                postal_code=form.cleaned_data['shipping_postal_code']
-            )
-            order.shipping_address = shipping_address
-            order.save()
-        else:
-            # If the shipping fields are left blank or the checkbox is not checked, 
-            # use the billing address values for the shipping address
-            shipping_address = Address.objects.create(
-                user=user,
-                address_type='shipping',
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-                address_line1=form.cleaned_data['billing_address_line1'],
-                address_line2=form.cleaned_data.get('billing_address_line2', ''),
-                city=form.cleaned_data['billing_city'],
-                state=form.cleaned_data['billing_state'],
-                postal_code=form.cleaned_data['billing_postal_code']
-            )
-            order.shipping_address = shipping_address
-            order.save()
 
-        # Create OrderItem instances for each item in the cart
-        for item in cart:
-            OrderItem.objects.create(
-                order=order,
-                product_id=item['product_id'],  # Using product_id directly from cart
-                price=item['price'],
-                quantity=item['quantity']
-            )
-                
-            # TODO: Process payment with Stripe here...
-            payment_was_successful = True
+            # Create OrderItem instances for each item in the cart
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
 
-            if payment_was_successful:  # Placeholder for Stripe payment result
-                cart.clear()
-                messages.success(request, "Thank you for your purchase!")
-                return redirect('home')  # Redirect to home or a success page
-            else:
-                messages.error(request, "There was an issue with your payment. Please try again.")
+            # Redirect to Stripe checkout
+            return HttpResponseRedirect(reverse('handle_payment', kwargs={'order_id': order.id}))
         else:
             messages.error(request, "There was an error with the form. Please check your details and try again.")
+            return render(request, self.template_name, {'form': form, 'cart': cart})
 
-        return render(request, self.template_name, {'form': form, 'cart': cart})
 
 class CheckoutSuccessView(TemplateView):
     def post(self, request):
