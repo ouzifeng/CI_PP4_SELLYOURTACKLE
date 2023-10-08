@@ -4,7 +4,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Brand, Category, Product, ProductImage, ProductVisibility, Cart, CustomUser, Order, OrderItem, Address
+from .models import Brand, Category, Product, ProductImage, ProductVisibility
 from slugify import slugify
 from decimal import Decimal, InvalidOperation
 from django.urls import reverse_lazy
