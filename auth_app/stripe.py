@@ -99,17 +99,17 @@ def handle_payment(request, order_id):
     try:
         # Create a Stripe Checkout session
         session = stripe.checkout.Session.create(
+            payment_intent=payment_intent.id,  
             payment_method_types=['card', 'paypal'],
             line_items=line_items,
             mode='payment',
             success_url='https://www.sellyourtackle.co.uk/',  
             cancel_url='https://www.sellyourtackle.co.uk/', 
-            client_reference_id=order_id,  # Associate this session with the order
+            client_reference_id=order_id,  
             shipping_address_collection={
                 'allowed_countries': ['GB'],
             }
         )
-
         # Return the session ID to the frontend
         return JsonResponse({'session_id': session.id})
 
