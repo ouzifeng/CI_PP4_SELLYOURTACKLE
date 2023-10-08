@@ -353,68 +353,37 @@ class RemoveFromCartView(View):
 
         return redirect('cart')
 
-class CheckoutView(View):
-    template_name = 'checkout.html'
-
-    def get(self, request, *args, **kwargs):
-        form = CheckoutForm()
-        cart = Cart(request)
-        return render(request, self.template_name, {'form': form, 'cart': cart})
-
+class CreateOrderView(View):
     def post(self, request, *args, **kwargs):
-            cart = Cart(request)
-            form = CheckoutForm(request.POST)
+        cart = Cart(request)
+        
+        total_price = cart.get_total_price()
+        total_shipping_cost = sum(Decimal(item.get('shipping_cost', 0)) for item in cart)
+        total_product_cost = total_price - total_shipping_cost
 
-            if form.is_valid():
-                # Determine the user based on the provided email
-                email = form.cleaned_data['email']
-                if request.user.is_authenticated:
-                    user = request.user
-                else:
-                    user, created = CustomUser.objects.get_or_create(
-                        email=email,
-                        defaults={
-                            'first_name': form.cleaned_data['first_name'],
-                            'last_name': form.cleaned_data['last_name'],
-                            'is_active': False,
-                            'password': CustomUser.objects.make_random_password()
-                        }
-                    )
+        # If user is authenticated, set the user, otherwise leave it as None
+        current_user = request.user if request.user.is_authenticated else None
+        
+        # Create order and order items in a transaction
+        with transaction.atomic():
+            order = Order.objects.create(
+                product_cost=total_product_cost,
+                shipping_cost=total_shipping_cost,
+                total_amount=total_price,  # Assuming this represents the overall total including shipping
+                status='pending',
+                payment_status='pending'
+            )
+            
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
 
-                try:
-                    with transaction.atomic():
-                        # Create the order with a "pending" status
-                        order = Order.objects.create(
-                            user=user,
-                            product_cost=cart.get_total_product_cost(),
-                            shipping_cost=cart.get_total_shipping_cost(),
-                            total_amount=cart.get_total_price(),
-                            status='pending',
-                            payment_status='pending'
-                        )
-                        print(f"Order created with ID: {order.id}")
-
-                        # Create OrderItem instances for each item in the cart
-                        for item in cart:
-                            OrderItem.objects.create(
-                                order=order,
-                                product=item['product'],
-                                price=item['price'],
-                                quantity=item['quantity']
-                            )
-                        print("Order items created")
-
-                except Exception as e:
-                    print(f"Error occurred: {e}")
-                    messages.error(request, f"An internal error occurred. Please try again. Error: {e}")
-                    return render(request, self.template_name, {'form': form, 'cart': cart})
-
-                # Redirect to Stripe checkout
-                return HttpResponseRedirect(reverse('handle_payment', kwargs={'order_id': order.id}))
-
-            else:
-                messages.error(request, "There was an error with the form. Please check your details and try again.")
-                return render(request, self.template_name, {'form': form, 'cart': cart})
+        # Return the newly created order ID as JSON
+        return JsonResponse({"order_id": order.id})
 
 
 class CheckoutSuccessView(TemplateView):

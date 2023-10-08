@@ -50,41 +50,47 @@
 <p>Your cart is empty.</p>
 {% endif %}
 
-<script>;
-
+<script>
     document.getElementById('stripe-checkout-btn').addEventListener('click', function (e) {
         e.preventDefault();  // Prevent default action
 
-        var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y')
-        var orderId = "{{ order.id }}";
-        // Make AJAX call to server to create Stripe session
-        fetch(`/auth/handle_payment/${orderId}/`, {
+        // First, make AJAX call to create the order
+        fetch(`/create_order/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // Include CSRF token for Django
                 'X-CSRFToken': '{{ csrf_token }}'
             },
-            body: JSON.stringify({
-                // You can send any additional data you might need
-            })
-        }).then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            // Use Stripe.js to redirect to the Stripe Checkout page with the session ID
-            stripe.redirectToCheckout({
-                sessionId: data.session_id
-            }).then(function (result) {
-                console.error(result.error.message);
+        }).then(response => response.json()).then(data => {
+            // Extract the order ID from the response
+            var orderId = data.order_id;
+            console.log("Order ID:", orderId);
+
+            // Now, make the AJAX call to create Stripe session
+            var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
+
+            fetch(`/auth/handle_payment/${orderId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+            }).then(response => response.json()).then(data => {
+                // Use Stripe.js to redirect to the Stripe Checkout page with the session ID
+                stripe.redirectToCheckout({
+                    sessionId: data.session_id
+                }).then(function (result) {
+                    console.error(result.error.message);
+                });
+            }).catch(error => {
+                console.error('Error when trying to create Stripe session:', error);
             });
-        }).catch(function (err) {
-            console.error('Error when trying to create Stripe session:', err);
+        }).catch(error => {
+            console.error('Error when trying to create order:', error);
         });
     });
-
-
-
 </script>
+
 
 
 {% endblock %}

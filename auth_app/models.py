@@ -125,7 +125,7 @@ class Order(models.Model):
         ('failed', 'Failed'),
     )
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     product_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
