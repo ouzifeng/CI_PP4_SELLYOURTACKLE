@@ -56,8 +56,9 @@
         e.preventDefault();  // Prevent default action
 
         var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y')
+        var orderId = "{{ order.id }}";
         // Make AJAX call to server to create Stripe session
-        fetch('/auth/handle_payment/', {
+        fetch(`/auth/handle_payment/${orderId}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
