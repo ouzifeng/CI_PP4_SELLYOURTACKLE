@@ -52,6 +52,19 @@ def handle_payment(request, order_id):
     # Extract cart details
     cart = Cart(request)
     
+    # Calculate the total amount for the payment intent
+    total_amount = int(order.total_amount * 100)  # Convert to cents
+    
+    # Create a payment intent
+    payment_intent = stripe.PaymentIntent.create(
+        amount=total_amount,
+        currency='gbp',
+    )
+    
+    # Save the payment_intent_id to your order
+    order.payment_intent_id = payment_intent.id
+    order.save()
+    
     # Prepare line items for Stripe Checkout using price_data
     line_items = []
     for item in cart:
@@ -75,7 +88,7 @@ def handle_payment(request, order_id):
             'price_data': {
                 'currency': 'gbp',
                 'product_data': {
-                    'name': f"Shipping",
+                    'name': f"Shipping for {product.name}",
                 },
                 'unit_amount': int(item['shipping_cost'] * 100), 
             },
@@ -84,7 +97,7 @@ def handle_payment(request, order_id):
         line_items.append(shipping_line_item)
 
     try:
-        # Create a Stripe Checkout session
+        # Create a Stripe Checkout session with the payment intent
         session = stripe.checkout.Session.create(
             payment_method_types=['card', 'paypal'],
             line_items=line_items,
@@ -92,6 +105,7 @@ def handle_payment(request, order_id):
             success_url='https://www.sellyourtackle.co.uk/',  
             cancel_url='https://www.sellyourtackle.co.uk/', 
             client_reference_id=order_id,  # Associate this session with the order
+            payment_intent=payment_intent.id,
             shipping_address_collection={
                 'allowed_countries': ['GB'],
             }
