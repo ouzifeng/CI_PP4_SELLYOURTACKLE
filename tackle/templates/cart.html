@@ -76,6 +76,7 @@
                     'X-CSRFToken': '{{ csrf_token }}'
                 },
             }).then(response => response.json()).then(data => {
+                console.log("Stripe session data:", data);
                 // Use Stripe.js to redirect to the Stripe Checkout page with the session ID
                 stripe.redirectToCheckout({
                     sessionId: data.session_id

@@ -97,7 +97,7 @@ def handle_payment(request, order_id):
         line_items.append(shipping_line_item)
 
     try:
-        # Create a Stripe Checkout session with the payment intent
+        # Create a Stripe Checkout session
         session = stripe.checkout.Session.create(
             payment_method_types=['card', 'paypal'],
             line_items=line_items,
@@ -105,7 +105,6 @@ def handle_payment(request, order_id):
             success_url='https://www.sellyourtackle.co.uk/',  
             cancel_url='https://www.sellyourtackle.co.uk/', 
             client_reference_id=order_id,  # Associate this session with the order
-            payment_intent=payment_intent.id,
             shipping_address_collection={
                 'allowed_countries': ['GB'],
             }
@@ -113,6 +112,7 @@ def handle_payment(request, order_id):
 
         # Return the session ID to the frontend
         return JsonResponse({'session_id': session.id})
+
 
     except stripe.error.StripeError as e:
         return JsonResponse({'error': str(e)})
