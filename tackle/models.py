@@ -93,4 +93,13 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return str(self.id)
+    
+
+class WebhookLog(models.Model):
+    received_at = models.DateTimeField(auto_now_add=True)
+    payload = models.TextField()
+    header = models.CharField(max_length=255)
+    status = models.CharField(max_length=255, default='received')
+    event_type = models.CharField(max_length=255, null=True, blank=True)
+    
 

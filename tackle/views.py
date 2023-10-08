@@ -4,7 +4,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import Brand, Category, Product, ProductImage, ProductVisibility
+from .models import Brand, Category, Product, ProductImage, ProductVisibility, WebhookLog
 from slugify import slugify
 from decimal import Decimal, InvalidOperation
 from django.urls import reverse_lazy
@@ -357,9 +357,9 @@ class CreateOrderView(View):
     def post(self, request, *args, **kwargs):
         cart = Cart(request)
         
-        total_price = cart.get_total_price()
         total_shipping_cost = sum(Decimal(item.get('shipping_cost', 0)) for item in cart)
-        total_product_cost = total_price - total_shipping_cost
+        total_product_cost = cart.get_total_price() - total_shipping_cost
+        total_price = total_product_cost + total_shipping_cost
 
         # If user is authenticated, set the user, otherwise leave it as None
         current_user = request.user if request.user.is_authenticated else None
