@@ -103,8 +103,17 @@ def stripe_webhook(request):
             print(f"Client reference ID from related session: {client_reference_id}")
 
             # Extract email and name from the related session
-            email = payment_intent["billing_details"]["email"]
-            full_name = payment_intent["shipping"]["name"]
+            if "last_payment_error" in payment_intent and \
+            "payment_method" in payment_intent["last_payment_error"] and \
+            "billing_details" in payment_intent["last_payment_error"]["payment_method"]:
+                email = payment_intent["last_payment_error"]["payment_method"]["billing_details"]["email"]
+            else:
+                email = None
+
+            if "shipping" in payment_intent:
+                full_name = payment_intent["shipping"]["name"]
+            else:
+                full_name = None
             first_name, *middle_names, last_name = full_name.split()
             first_name = " ".join([first_name] + middle_names)
             print(f"Email from related session: {email}")
