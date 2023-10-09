@@ -27,23 +27,13 @@ def stripe_webhook(request):
     if event.type == 'checkout.session.completed':
         session = event.data.object
         client_reference_id = session.client_reference_id
-
-        # Extract email and name from the payload
         email = session.customer_details.email
         full_name = session.customer_details.name
         first_name, *middle_names, last_name = full_name.split()
         first_name = " ".join([first_name] + middle_names)
 
-        print("Webhook triggered for checkout.session.completed")
-        print(f"Email from payload: {email}")
-        print(f"Client reference ID: {client_reference_id}")
-
         try:
             with transaction.atomic():
-                print("Inside transaction block")
-
-                # Get or create user
-                print("Attempting to get or create user")
                 user, created = CustomUser.objects.get_or_create(
                     email=email,
                     defaults={
@@ -53,56 +43,68 @@ def stripe_webhook(request):
                         'is_staff': False
                     }
                 )
-
-                if created:
-                    print(f"User with email {email} created")
-                else:
-                    print(f"User with email {email} already exists")
-
-                # Fetch the order
-                print("Attempting to fetch order")
                 order = Order.objects.get(id=client_reference_id)
-                print(f"Fetched order with ID {client_reference_id}")
-
-                # Attach the user to the order
-                print("Associating user with the order")
                 order.user = user
-
-                # Update the order with the PaymentIntent ID
-                print("Updating order's payment details")
                 order.payment_intent_id = session.payment_intent
                 order.payment_status = 'completed'
                 order.status = 'paid'
-                print("Saving order")
+
+                # Extract shipping address and create/update Address object
+                shipping_details = session.get('shipping_details')
+                if shipping_details:
+                    shipping_address, _ = Address.objects.get_or_create(
+                        user=user,
+                        address_type='shipping',
+                        defaults={
+                            'first_name': first_name,
+                            'last_name': last_name,
+                            'address_line1': shipping_details['address']['line1'],
+                            'address_line2': shipping_details['address']['line2'],
+                            'city': shipping_details['address']['city'],
+                            'state': shipping_details['address']['state'],
+                            'postal_code': shipping_details['address']['postal_code'],
+                            'phone_number': shipping_details['phone'] if 'phone' in shipping_details else None
+                        }
+                    )
+                    order.shipping_address = shipping_address
+
+                # Extract billing address and create/update Address object
+                billing_details = session.get('customer_details')
+                if billing_details and billing_details.get('address'):
+                    billing_address, _ = Address.objects.get_or_create(
+                        user=user,
+                        address_type='billing',
+                        defaults={
+                            'first_name': first_name,
+                            'last_name': last_name,
+                            'address_line1': billing_details['address']['line1'],
+                            'address_line2': billing_details['address']['line2'],
+                            'city': billing_details['address']['city'],
+                            'state': billing_details['address']['state'],
+                            'postal_code': billing_details['address']['postal_code'],
+                            'phone_number': billing_details['phone'] if 'phone' in billing_details else None
+                        }
+                    )
+                    order.billing_address = billing_address
+
                 order.save()
 
-            print(f"Order {client_reference_id} associated with user {email}")
-
         except CustomUser.DoesNotExist:
-            print(f"No user found with email: {email}")
             return JsonResponse({'status': 'error'}, status=400)
         except Order.DoesNotExist:
-            print(f"Order with ID {client_reference_id} does not exist")
             return JsonResponse({'status': 'error'}, status=400)
         except Exception as e:
-            print(f"Unexpected error occurred: {str(e)}")
             return JsonResponse({'status': 'error'}, status=500)
 
 
     elif event.type == 'payment_intent.payment_failed':
         payment_intent = event.data.object
-        print("Webhook triggered for payment_intent.payment_failed")
-        print(f"Payment intent ID: {payment_intent.id}")
 
         try:
-            # Fetch the related session using the payment intent
-            print("Fetching related session for the payment intent")
             related_sessions = stripe.checkout.Session.list(payment_intent=payment_intent.id)
             related_session = related_sessions.data[0] if related_sessions.data else None
             client_reference_id = related_session.client_reference_id
-            print(f"Client reference ID from related session: {client_reference_id}")
 
-            # Extract email and name from the related session
             if "last_payment_error" in payment_intent and \
             "payment_method" in payment_intent["last_payment_error"] and \
             "billing_details" in payment_intent["last_payment_error"]["payment_method"]:
@@ -116,11 +118,8 @@ def stripe_webhook(request):
                 full_name = None
             first_name, *middle_names, last_name = full_name.split()
             first_name = " ".join([first_name] + middle_names)
-            print(f"Email from related session: {email}")
 
             with transaction.atomic():
-                # Get or create user
-                print("Attempting to get or create user")
                 user, created = CustomUser.objects.get_or_create(
                     email=email,
                     defaults={
@@ -130,39 +129,22 @@ def stripe_webhook(request):
                         'is_staff': False
                     }
                 )
-
-                if created:
-                    print(f"User with email {email} created")
-                else:
-                    print(f"User with email {email} already exists")
-
-                # Fetch the order and update its status
-                print("Attempting to fetch order")
                 order = Order.objects.get(id=client_reference_id)
-                print(f"Fetched order with ID {client_reference_id}")
-
-                # Attach the user to the order
-                print("Associating user with the order")
                 order.user = user
-
                 order.payment_intent_id = payment_intent.id
                 order.payment_status = 'failed'
                 order.status = 'failed'
-                print("Updating order's payment status to 'failed'")
                 order.save()
 
         except CustomUser.DoesNotExist:
-            print(f"No user found with email: {email}")
             return JsonResponse({'status': 'error'}, status=400)
         except Order.DoesNotExist:
-            print(f"Order with ID {client_reference_id} does not exist")
             return JsonResponse({'status': 'error'}, status=400)
         except Exception as e:
-            print(f"Unexpected error occurred: {str(e)}")
             return JsonResponse({'status': 'error'}, status=500)
 
-
     return JsonResponse({'status': 'success'})
+
 
 
 
@@ -213,6 +195,9 @@ def handle_payment(request, order_id):
         session = stripe.checkout.Session.create(
             payment_method_types=['card', 'paypal'],
             line_items=line_items,
+            phone_number_collection={
+                'enabled': True,
+            },
             mode='payment',
             success_url='https://www.sellyourtackle.co.uk/',  
             cancel_url='https://www.sellyourtackle.co.uk/', 
