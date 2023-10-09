@@ -24,66 +24,23 @@ def stripe_webhook(request):
     except stripe.error.SignatureVerificationError:
         return JsonResponse({'status': 'invalid signature'}, status=400)
 
+    # Handle the event
     if event.type == 'checkout.session.completed':
         session = event.data.object
         client_reference_id = session.client_reference_id
         
-        # Extract email and name from payload
-        email = session['customer_details']['email']
-        full_name = session['customer_details']['name']
-        first_name, *middle_names, last_name = full_name.split()
-        first_name = " ".join([first_name] + middle_names)
-        
-        # Get or create user
-        user, created = CustomUser.objects.get_or_create(
-            email=email,
-            defaults={
-                'first_name': first_name,
-                'last_name': last_name,
-                'is_active': False,
-                'is_staff': False
-            }
-        )
-        
-        # Extract and store addresses
-        billing_address = Address.objects.create(
-            user=user,
-            address_type='billing',
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            address_line1=session['customer_details']['address']['line1'],
-            address_line2=session['customer_details']['address'].get('line2', ""),
-            city=session['customer_details']['address']['city'],
-            postal_code=session['customer_details']['address']['postal_code'],
-        )
-        
-        shipping_address = Address.objects.create(
-            user=user,
-            address_type='shipping',
-            first_name=session['shipping_details']['name'].split()[0],  
-            last_name=session['shipping_details']['name'].split()[-1],  
-            address_line1=session['shipping_details']['address']['line1'],
-            address_line2=session['shipping_details']['address'].get('line2', ""),
-            city=session['shipping_details']['address']['city'],
-            postal_code=session['shipping_details']['address']['postal_code'],
-        )
-        
-        # Update order
         try:
             order = Order.objects.get(id=client_reference_id)
-            order.user = user
-            order.billing_address = billing_address
-            order.shipping_address = shipping_address
-            order.payment_intent_id = session['payment_intent']
+
+            # Update the order with the PaymentIntent ID
+            order.payment_intent_id = session.payment_intent
             order.payment_status = 'completed'
             order.status = 'paid'  
             order.save()
 
         except Order.DoesNotExist:
-            # Handle this as you see fit. 
-            pass
-        
+            return JsonResponse({'status': 'error'}, status=400)
+
     elif event.type == 'payment_intent.payment_failed':
         payment_intent = event.data.object
         related_session = stripe.checkout.Session.list(payment_intent=payment_intent.id)[0]
@@ -98,6 +55,7 @@ def stripe_webhook(request):
             return JsonResponse({'status': 'error'}, status=400)
 
     return JsonResponse({'status': 'success'})
+
 
 
 @csrf_exempt
