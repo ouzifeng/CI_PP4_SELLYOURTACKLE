@@ -15,33 +15,65 @@ def stripe_webhook(request):
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event = None
 
+    print("Received a webhook request")
+
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
     except ValueError:
+        print("Error: Invalid payload")
         return JsonResponse({'status': 'invalid payload'}, status=400)
     except stripe.error.SignatureVerificationError:
+        print("Error: Invalid signature")
         return JsonResponse({'status': 'invalid signature'}, status=400)
 
-    # Handle the event
+    # Handle the 'checkout.session.completed' event
     if event.type == 'checkout.session.completed':
+        print("Handling checkout.session.completed event")
+
         session = event.data.object
         client_reference_id = session.client_reference_id
-        
+
+        email = session['customer_details']['email']
+        print(f"User email from the payload: {email}")
+        full_name = session['customer_details']['name']
+        first_name, *middle_names, last_name = full_name.split()
+        first_name = " ".join([first_name] + middle_names)
+
+        user, created = CustomUser.objects.get_or_create(
+            email=email,
+            defaults={
+                'first_name': first_name,
+                'last_name': last_name,
+                'is_active': False,
+                'is_staff': False
+            }
+        )
+
+        if created:
+            print(f"Created a new user with email: {email}")
+        else:
+            print(f"Found an existing user with email: {email}")
+
         try:
             order = Order.objects.get(id=client_reference_id)
 
-            # Update the order with the PaymentIntent ID
-            order.payment_intent_id = session.payment_intent
+            order.user = user
+            order.payment_intent_id = session['payment_intent']
             order.payment_status = 'completed'
             order.status = 'paid'  
             order.save()
 
+            print(f"Updated order with ID: {client_reference_id}")
+
         except Order.DoesNotExist:
+            print(f"Error: Order with ID {client_reference_id} does not exist")
             return JsonResponse({'status': 'error'}, status=400)
 
     elif event.type == 'payment_intent.payment_failed':
+        print("Handling payment_intent.payment_failed event")
+
         payment_intent = event.data.object
         related_session = stripe.checkout.Session.list(payment_intent=payment_intent.id)[0]
         client_reference_id = related_session.client_reference_id
@@ -51,10 +83,14 @@ def stripe_webhook(request):
             order.payment_status = 'failed'
             order.save()
 
+            print(f"Updated payment status to 'failed' for order with ID: {client_reference_id}")
+
         except Order.DoesNotExist:
+            print(f"Error: Order with ID {client_reference_id} does not exist")
             return JsonResponse({'status': 'error'}, status=400)
 
     return JsonResponse({'status': 'success'})
+
 
 
 
