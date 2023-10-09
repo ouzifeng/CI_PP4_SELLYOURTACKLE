@@ -358,7 +358,7 @@ class CreateOrderView(View):
         cart = Cart(request)
         
         total_shipping_cost = sum(Decimal(item.get('shipping_cost', 0)) for item in cart)
-        total_product_cost = cart.get_total_price() - total_shipping_cost
+        total_product_cost = cart.get_total_price()
         total_price = total_product_cost + total_shipping_cost
 
         # If user is authenticated, set the user, otherwise leave it as None
