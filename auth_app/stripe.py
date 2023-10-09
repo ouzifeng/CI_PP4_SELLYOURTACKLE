@@ -5,7 +5,7 @@ from django.conf import settings
 from auth_app.models import CustomUser, Order, OrderItem
 from tackle.views import Cart
 import stripe
-
+from django.db import transaction
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -15,71 +15,81 @@ def stripe_webhook(request):
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event = None
 
-    print("Received a webhook request")
-
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
     except ValueError:
-        print("Error: Invalid payload")
         return JsonResponse({'status': 'invalid payload'}, status=400)
     except stripe.error.SignatureVerificationError:
-        print("Error: Invalid signature")
         return JsonResponse({'status': 'invalid signature'}, status=400)
 
-    # Handle the 'checkout.session.completed' event
     if event.type == 'checkout.session.completed':
-        print("Handling checkout.session.completed event")
-
         session = event.data.object
         client_reference_id = session.client_reference_id
 
-        email = session['customer_details']['email']
-        print(f"User email from the payload: {email}")
-        full_name = session['customer_details']['name']
+        # Extract email and name from the payload
+        email = session.customer_details.email
+        full_name = session.customer_details.name
         first_name, *middle_names, last_name = full_name.split()
         first_name = " ".join([first_name] + middle_names)
 
-        # Get or create user
-        email_prefix = email.split('@')[0]
-        all_usernames = list(CustomUser.objects.values_list('username', flat=True))
-        username = CustomUser.objects.generate_unique_username(email_prefix, all_usernames)
-
-        user, created = CustomUser.objects.get_or_create(
-            email=email,
-            defaults={
-                'username': username,  # Use the generated unique username
-                'first_name': first_name,
-                'last_name': last_name,
-                'is_active': False,
-                'is_staff': False
-            }
-        )
-        
-        if created:
-            print(f"Created a new user with email: {email}")
-        else:
-            print(f"Found an existing user with email: {email}")
+        print("Webhook triggered for checkout.session.completed")
+        print(f"Email from payload: {email}")
+        print(f"Client reference ID: {client_reference_id}")
 
         try:
-            order = Order.objects.get(id=client_reference_id)
+            with transaction.atomic():
+                print("Inside transaction block")
 
-            order.user = user
-            order.payment_intent_id = session['payment_intent']
-            order.payment_status = 'completed'
-            order.status = 'paid'  
-            order.save()
+                # Get or create user
+                print("Attempting to get or create user")
+                user, created = CustomUser.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'is_active': False,
+                        'is_staff': False
+                    }
+                )
 
-            print(f"Updated order with ID: {client_reference_id}")
+                if created:
+                    print(f"User with email {email} created")
+                else:
+                    print(f"User with email {email} already exists")
 
-        except Order.DoesNotExist:
-            print(f"Error: Order with ID {client_reference_id} does not exist")
+                # Fetch the order
+                print("Attempting to fetch order")
+                order = Order.objects.get(id=client_reference_id)
+                print(f"Fetched order with ID {client_reference_id}")
+
+                # Attach the user to the order
+                print("Associating user with the order")
+                order.user = user
+
+                # Update the order with the PaymentIntent ID
+                print("Updating order's payment details")
+                order.payment_intent_id = session.payment_intent
+                order.payment_status = 'completed'
+                order.status = 'paid'
+                print("Saving order")
+                order.save()
+
+            print(f"Order {client_reference_id} associated with user {email}")
+
+        except CustomUser.DoesNotExist:
+            print(f"No user found with email: {email}")
             return JsonResponse({'status': 'error'}, status=400)
+        except Order.DoesNotExist:
+            print(f"Order with ID {client_reference_id} does not exist")
+            return JsonResponse({'status': 'error'}, status=400)
+        except Exception as e:
+            print(f"Unexpected error occurred: {str(e)}")
+            return JsonResponse({'status': 'error'}, status=500)
+
 
     elif event.type == 'payment_intent.payment_failed':
-        print("Handling payment_intent.payment_failed event")
-
         payment_intent = event.data.object
         related_session = stripe.checkout.Session.list(payment_intent=payment_intent.id)[0]
         client_reference_id = related_session.client_reference_id
@@ -89,14 +99,10 @@ def stripe_webhook(request):
             order.payment_status = 'failed'
             order.save()
 
-            print(f"Updated payment status to 'failed' for order with ID: {client_reference_id}")
-
         except Order.DoesNotExist:
-            print(f"Error: Order with ID {client_reference_id} does not exist")
             return JsonResponse({'status': 'error'}, status=400)
 
     return JsonResponse({'status': 'success'})
-
 
 
 
