@@ -41,16 +41,22 @@ def stripe_webhook(request):
         first_name, *middle_names, last_name = full_name.split()
         first_name = " ".join([first_name] + middle_names)
 
+        # Get or create user
+        email_prefix = email.split('@')[0]
+        all_usernames = list(CustomUser.objects.values_list('username', flat=True))
+        username = CustomUser.objects.generate_unique_username(email_prefix, all_usernames)
+
         user, created = CustomUser.objects.get_or_create(
             email=email,
             defaults={
+                'username': username,  # Use the generated unique username
                 'first_name': first_name,
                 'last_name': last_name,
                 'is_active': False,
                 'is_staff': False
             }
         )
-
+        
         if created:
             print(f"Created a new user with email: {email}")
         else:
