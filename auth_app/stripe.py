@@ -145,10 +145,11 @@ def stripe_webhook(request):
                 print("Associating user with the order")
                 order.user = user
 
+                order.payment_intent_id = payment_intent.id
                 order.payment_status = 'failed'
+                order.status = 'failed'
                 print("Updating order's payment status to 'failed'")
                 order.save()
-                print("Order saved successfully")
 
         except CustomUser.DoesNotExist:
             print(f"No user found with email: {email}")
