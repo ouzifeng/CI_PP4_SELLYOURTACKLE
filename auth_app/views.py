@@ -7,7 +7,7 @@ from .models import EmailConfirmationToken, CustomUser
 from django.http import HttpResponse
 from uuid import uuid4
 from django.views import View
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from tackle.models import Product, ProductImage
@@ -51,6 +51,17 @@ class LogoutView(RedirectView):
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
+    
+@method_decorator(login_required, name='dispatch')  
+class WalletView(TemplateView):
+    template_name = 'wallet.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context['balance'] = user.balance
+        return context
+
     
 class ConfirmEmailPageView(View):
     template_name = 'confirm-email.html'

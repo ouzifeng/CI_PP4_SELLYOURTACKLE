@@ -69,6 +69,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
 
 
     objects = CustomUserManager()
@@ -145,9 +146,14 @@ class OrderItem(models.Model):
     product = models.ForeignKey('tackle.Product', on_delete=models.PROTECT)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    seller = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, related_name="sold_items", null=True)
 
     def get_total_item_price(self):
         return self.price * self.quantity
 
     def __str__(self):
-        return f"{self.product.name} (x{self.quantity})"    
+        return f"{self.product.name} (x{self.quantity})"  
+    
+    def get_total_item_price_with_shipping(self):
+        return (self.price * self.quantity) + self.shipping_cost  

@@ -306,6 +306,13 @@ class Cart:
     
     def get_shipping_total(self):
         return sum(Decimal(item['shipping_cost']) * item['quantity'] for item in self.cart.values())
+    
+    def get_combined_total(self):
+        """
+        Get the combined total of product prices and shipping costs.
+        """
+        return self.get_total_price() + self.get_shipping_total()
+
 
     def clear(self):
         """
@@ -374,4 +381,32 @@ class CheckoutSuccessView(View):
     def post(self, request):
         cart = Cart(request)
         return redirect('home')
+
+
+def distribute_pending_funds():
+    # Fetch all paid orders that haven't been distributed yet.
+    paid_orders = Order.objects.filter(payment_status='completed', status='paid')
+
+    for order in paid_orders:
+        for order_item in order.items.all():
+            seller = order_item.seller
+            amount_due = order_item.get_total_item_price_with_shipping()
+
+            # Use the Stripe API to transfer funds
+            try:
+                transfer = stripe.Transfer.create(
+                    amount=int(amount_due * 100),  # Convert to cents
+                    currency='gbp',
+                    destination=seller.stripe_account_id,
+                    transfer_group=str(order.id)
+                )
+                # Optionally, mark this order or order item as distributed in your database.
+                # order.distributed = True
+                # order.save()
+
+            except stripe.error.StripeError as e:
+                # Handle any Stripe errors (e.g., insufficient funds, account not fully set up, etc.)
+                print(str(e))
+                # Optionally, log the error or send a notification.
+
 

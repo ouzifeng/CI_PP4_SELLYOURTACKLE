@@ -43,7 +43,7 @@ def stripe_webhook(request):
         webhook_log.payment_intent_id = payment_intent.id
         try:
             order = Order.objects.get(payment_intent_id=payment_intent.id)
-            order.payment_status = 'paid'
+            order.payment_status = 'completed'
             order.status = 'paid'
             order.save()
 
@@ -182,11 +182,12 @@ def handle_payment(request):
 
             # Save order items
             for item in cart:
-                OrderItem.objects.create(
+                order_item = OrderItem.objects.create(
                     order=order,
                     product_id=item['product_id'],
                     price=item['price'],
-                    quantity=item['quantity']
+                    quantity=item['quantity'],
+                    seller=item['product'].user  
                 )
 
             # Clear the cart after successful order placement
