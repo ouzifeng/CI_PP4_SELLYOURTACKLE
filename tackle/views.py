@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -245,10 +245,18 @@ class Cart:
         """
         product_id = str(product.id)
         if product_id not in self.cart:
-            self.cart[product_id] = {'price': str(price), 'quantity': 1}
+            self.cart[product_id] = {
+                'price': str(price),
+                'quantity': 1,
+                'product_id': product.id,
+                'thumbnail_id': product.images.first().id if product.images.first() else None,
+                'shipping_cost': str(product.shipping)
+            }
         else:
             self.cart[product_id]['quantity'] += 1
         self.save()
+
+
 
     def save(self):
         """
@@ -295,6 +303,9 @@ class Cart:
 
     def get_total_price(self):
         return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
+    
+    def get_shipping_total(self):
+        return sum(Decimal(item['shipping_cost']) * item['quantity'] for item in self.cart.values())
 
     def clear(self):
         """
@@ -307,15 +318,7 @@ class Cart:
         """Check if the cart contains a particular product."""
         product_id = str(product.id)
         return product_id in self.cart
-
-    def add(self, product, price):
-        """
-        Add a product to the cart or update its quantity.
-        """
-        product_id = str(product.id)
-        if product_id not in self.cart:
-            self.cart[product_id] = {'price': str(price), 'quantity': 1}
-            self.save()        
+     
 
 
 class AddToCartView(View):
@@ -353,41 +356,22 @@ class RemoveFromCartView(View):
 
         return redirect('cart')
 
-class CreateOrderView(View):
+class CheckoutView(TemplateView):
+    template_name = 'checkout.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = Cart(self.request)
+        context['form'] = CheckoutForm() 
+        return context
+
     def post(self, request, *args, **kwargs):
-        cart = Cart(request)
-        
-        total_shipping_cost = sum(Decimal(item.get('shipping_cost', 0)) for item in cart)
-        total_product_cost = cart.get_total_price()
-        total_price = total_product_cost + total_shipping_cost
+        return HttpResponse("index.html")
+    
+    
 
-        # If user is authenticated, set the user, otherwise leave it as None
-        current_user = request.user if request.user.is_authenticated else None
-        
-        # Create order and order items in a transaction
-        with transaction.atomic():
-            order = Order.objects.create(
-                product_cost=total_product_cost,
-                shipping_cost=total_shipping_cost,
-                total_amount=total_price,  # Assuming this represents the overall total including shipping
-                status='pending',
-                payment_status='pending'
-            )
-            
-            for item in cart:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item['product'],
-                    price=item['price'],
-                    quantity=item['quantity']
-                )
-
-        # Return the newly created order ID as JSON
-        return JsonResponse({"order_id": order.id})
-
-
-class CheckoutSuccessView(TemplateView):
+class CheckoutSuccessView(View):
     def post(self, request):
         cart = Cart(request)
-        cart.clear()
-        return redirect('checkout_success') 
+        return redirect('home')
+

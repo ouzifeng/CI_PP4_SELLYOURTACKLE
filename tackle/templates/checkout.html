@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-md-6">
         <div class="container">
-            <form method="post" id="payment-form" novalidate>
+            <form method="post" id="payment-form" action="/auth/handle_payment/" novalidate>
                 {% csrf_token %}
                 {% load widget_tweaks %}
                 <!-- Personal Details -->
@@ -113,179 +113,140 @@
             </form>
         </div>
     </div>
-    <div class="col-md-6"></div>
-</div>
+    <div class="col-md-6">
 
-{% else %}
-<p>Your cart is empty. Please add items to the cart first.</p>
-{% endif %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Thumbnail</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Shipping</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                    <tr>
+                        <td>
+                            {% if item.thumbnail %}
+                            <img src="{{ item.thumbnail.image.url }}" alt="{{ item.product.name }}" width="60"
+                                height="60">
+                            {% else %}
+                            No Image
+                            {% endif %}
+
+                        </td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.shipping_cost }}</td>
+                        <td>X{{ item.quantity }}</td>
+                        <td>{{ item.total_price }}</td>
+                        <td>
+                            <form method="post" action="{% url 'remove_from_cart' item.product_id %}">
+                                {% csrf_token %}
+                                <input type="submit" value="Remove">
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% else %}
+    <p>Your cart is empty. Please add items to the cart first.</p>
+    {% endif %}
 
 
 
-<script>
-    // Step 1: Initialize Stripe with your publishable key
-    var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y'); // Replace with your key
+    <script>
+        // Step 1: Initialize Stripe with your publishable key
+        var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y'); // Replace with your key
 
-    // Step 2: Create an instance of Elements
-    var elements = stripe.elements();
-
-    // Step 3: Create the card element
-    var card = elements.create('card');
-
-    // Step 4: Mount the element to the div
-    card.mount('#card-element');
-
-    // Step 5: Handle form submission
-    var form = document.getElementById('payment-form');
-
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        stripe.createPaymentMethod('card', card).then(function (result) {
-            if (result.error) {
-                // Show error in your UI. You might want to add an error message div and display this.
-                console.error(result.error.message);
-            } else {
-                // Add the payment method to the form as a hidden field
-                var hiddenInput = document.createElement('input');
-                hiddenInput.setAttribute('type', 'hidden');
-                hiddenInput.setAttribute('name', 'payment_method');
-                hiddenInput.setAttribute('value', result.paymentMethod.id);
-                form.appendChild(hiddenInput);
-
-                // Submit the form
-                form.submit();
-            }
-        });
-    });    
-</script>
-
-<script>
-    var totalAmount = {{ total_amount_cents }};
-    var paymentRequest = stripe.paymentRequest({
-        country: 'GB',
-        currency: 'gbp',
-        total: {
-            label: 'Total Amount',
-            amount: Math.round(totalAmount),
-        },
-        requestPayerName: true,
-        requestPayerEmail: true,
-    });
-
-    var googlePayBtn = document.getElementById('google-pay-button');
-    var applePayBtn = document.getElementById('apple-pay-button');
-
-    paymentRequest.canMakePayment().then(function (result) {
-        if (result && result.applePay) {
-            applePayBtn.style.display = 'block';
-        } else if (result && result.googlePay) {
-            googlePayBtn.style.display = 'block';
-        }
-    });
-
-    googlePayBtn.addEventListener('click', function () {
-        paymentRequest.show();
-    });
-
-    applePayBtn.addEventListener('click', function () {
-        paymentRequest.show();
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
+        // Step 2: Create an instance of Elements
         var elements = stripe.elements();
+
+        // Step 3: Create the card element
         var card = elements.create('card');
+
+        // Step 4: Mount the element to the div
         card.mount('#card-element');
 
+        // Step 5: Handle form submission
         var form = document.getElementById('payment-form');
 
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            // Disable the submit button to prevent multiple clicks
-            form.querySelector('button[type="submit"]').disabled = true;
-
             stripe.createPaymentMethod('card', card).then(function (result) {
                 if (result.error) {
+                    // Show error in your UI. You might want to add an error message div and display this.
                     console.error(result.error.message);
-                    // Enable the submit button
-                    form.querySelector('button[type="submit"]').disabled = false;
                 } else {
-                    // Fetch CSRF token from the DOM
-                    var csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+                    // Add the payment method to the form as a hidden field
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.setAttribute('type', 'hidden');
+                    hiddenInput.setAttribute('name', 'payment_method');
+                    hiddenInput.setAttribute('value', result.paymentMethod.id);
+                    form.appendChild(hiddenInput);
 
-                    fetch('/handle_payment/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrfToken
-                        },
-                        body: JSON.stringify({
-                            payment_method_id: result.paymentMethod.id
-                            // Add any other necessary form data here
-                        })
-                    }).then(function (response) {
-                        response.json().then(function (data) {
-                            if (data.error) {
-                                console.error(data.error);
-                                // Enable the submit button
-                                form.querySelector('button[type="submit"]').disabled = false;
-                            } else {
-                                window.location.href = '/checkout_success/';
-                            }
-                        });
-                    });
+                    // Submit the form
+                    form.submit();
                 }
             });
         });
-    });    
-</script>
+    </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const useDifferentShippingAddressCheckbox = document.querySelector('#id_use_different_shipping_address');
-        const shippingFields = document.querySelectorAll('.shipping-field');
-        const shippingInputs = document.querySelectorAll('.shipping-field input');
 
-        function toggleShippingFields() {
-            shippingFields.forEach(field => {
-                if (useDifferentShippingAddressCheckbox.checked) {
-                    field.style.display = 'block';
-                } else {
-                    field.style.display = 'none';
-                }
-            });
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const useDifferentShippingAddressCheckbox = document.querySelector('#id_use_different_shipping_address');
+            const shippingFields = document.querySelectorAll('.shipping-field');
+            const shippingInputs = document.querySelectorAll('.shipping-field input');
 
-            // Set or unset the required attribute based on checkbox state
-            shippingInputs.forEach(input => {
-                if (useDifferentShippingAddressCheckbox.checked || input.id === 'id_shipping_address_line2') {
-                    input.required = true;
-                } else {
-                    input.required = false;
-                }
-            });
-        }
+            function toggleShippingFields() {
+                shippingFields.forEach(field => {
+                    if (useDifferentShippingAddressCheckbox.checked) {
+                        field.style.display = 'block';
+                    } else {
+                        field.style.display = 'none';
+                    }
+                });
 
-        useDifferentShippingAddressCheckbox.addEventListener('change', toggleShippingFields);
-        toggleShippingFields();  // Call once to set the initial state
-
-        // Copy billing values to shipping when form is submitted
-        document.getElementById('payment-form').addEventListener('submit', function (e) {
-            if (!useDifferentShippingAddressCheckbox.checked) {
-                document.getElementById('id_shipping_first_name').value = document.getElementById('id_first_name').value;
-                document.getElementById('id_shipping_last_name').value = document.getElementById('id_last_name').value;
-                document.getElementById('id_shipping_address_line1').value = document.getElementById('id_billing_address_line1').value;
-                document.getElementById('id_shipping_address_line2').value = document.getElementById('id_billing_address_line2').value || "";  // Default to empty string if no value
-                document.getElementById('id_shipping_city').value = document.getElementById('id_billing_city').value;
-                document.getElementById('id_shipping_state').value = document.getElementById('id_billing_state').value;
-                document.getElementById('id_shipping_postal_code').value = document.getElementById('id_billing_postal_code').value;
+                // Set or unset the required attribute based on checkbox state
+                shippingInputs.forEach(input => {
+                    if (useDifferentShippingAddressCheckbox.checked || input.id === 'id_shipping_address_line2') {
+                        input.required = true;
+                    } else {
+                        input.required = false;
+                    }
+                });
             }
+
+            useDifferentShippingAddressCheckbox.addEventListener('change', toggleShippingFields);
+            toggleShippingFields();  // Call once to set the initial state
+
+            // Copy billing values to shipping when form is submitted
+            document.getElementById('payment-form').addEventListener('submit', function (e) {
+                if (!useDifferentShippingAddressCheckbox.checked) {
+                    document.getElementById('id_shipping_first_name').value = document.getElementById('id_first_name').value;
+                    document.getElementById('id_shipping_last_name').value = document.getElementById('id_last_name').value;
+                    document.getElementById('id_shipping_address_line1').value = document.getElementById('id_billing_address_line1').value;
+                    document.getElementById('id_shipping_address_line2').value = document.getElementById('id_billing_address_line2').value || "";  // Default to empty string if no value
+                    document.getElementById('id_shipping_city').value = document.getElementById('id_billing_city').value;
+                    document.getElementById('id_shipping_state').value = document.getElementById('id_billing_state').value;
+                    document.getElementById('id_shipping_postal_code').value = document.getElementById('id_billing_postal_code').value;
+                }
+            });
         });
-    });
 
 
-</script>
+    </script>
 
 
-{% endblock %}
+    {% endblock %}
