@@ -8,6 +8,7 @@ from django.conf import settings
 from auth_app.models import CustomUser, Order, OrderItem, Address
 from tackle.views import Cart
 from django.db import transaction
+from django.shortcuts import redirect
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -141,6 +142,7 @@ def handle_payment(request):
                 payment_status='pending',
                 payment_intent_id=payment_intent.id
             )
+            
             order.save()
 
             # Save billing address
@@ -189,13 +191,45 @@ def handle_payment(request):
                     quantity=item['quantity'],
                     seller=item['product'].user  
                 )
+                
+                        # Transfer the appropriate amount to the seller
+                stripe.Transfer.create(
+                    amount=int(order_item.get_total_item_price_with_shipping() * 100),  # Convert to cents
+                    currency='gbp',
+                    destination=order_item.seller.stripe_account_id
+                )
 
             # Clear the cart after successful order placement
             cart.clear()
 
             return JsonResponse({'success': True})
+        
 
     except stripe.error.StripeError as e:
         return JsonResponse({'error': str(e)})
 
+def connect_stripe(request):
+    # Generate the Stripe Connect URL
+    stripe_connect_url = stripe.OAuth.authorize_url(
+        client_id="ca_HA58ZeTTIKcmYMuhnBmDs63BNSLPEGRB",
+        scope="read_write",
+        country="GB",
+        business_type="individual",
+        redirect_uri="https://www.sellyourtackle.co.uk/auth/wallet",
+        state=request.user.id  
+    )
+    return redirect(stripe_connect_url)
 
+def stripe_redirect(request):
+    code = request.GET.get('code')
+    stripe_user_id = stripe.OAuth.token(
+        grant_type="authorization_code",
+        code=code
+    )['stripe_user_id']
+
+    # Store the `stripe_user_id` in the user's profile
+    user = CustomUser.objects.get(id=request.GET.get('state'))
+    user.stripe_account_id = stripe_user_id
+    user.save()
+
+    return redirect('some_success_url')  # Redirect to a success page or dashboard
