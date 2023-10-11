@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from django.contrib.auth.models import User
 from django.conf import settings
 from decimal import Decimal
+from auth_app.models import Order
 
 class Brand(models.Model):
     name = models.CharField(max_length=200)
@@ -96,6 +97,8 @@ class ProductImage(models.Model):
     
 
 class WebhookLog(models.Model):
+    order = models.ForeignKey(Order, null=True, blank=True, on_delete=models.SET_NULL)
+    payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
     received_at = models.DateTimeField(auto_now_add=True)
     payload = models.TextField()
     header = models.CharField(max_length=255)

@@ -3,6 +3,7 @@ from django.http import JsonResponse
 import json
 import stripe
 from .models import Order
+from tackle.models import WebhookLog
 from django.conf import settings
 from auth_app.models import CustomUser, Order, OrderItem, Address
 from tackle.views import Cart
@@ -16,43 +17,65 @@ def stripe_webhook(request):
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event = None
 
+    # Create a new webhook log instance
+    webhook_log = WebhookLog(
+        payload=payload.decode('utf-8'),  # Assuming payload is bytes
+        header=sig_header,
+        status='received',
+    )
+
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
         )
+        webhook_log.event_type = event.type
     except ValueError:
-        # Invalid payload
+        webhook_log.status = 'invalid payload'
+        webhook_log.save()
         return JsonResponse({'status': 'invalid payload'}, status=400)
     except stripe.error.SignatureVerificationError:
-        # Invalid signature
+        webhook_log.status = 'invalid signature'
+        webhook_log.save()
         return JsonResponse({'status': 'invalid signature'}, status=400)
 
-    # Handle the event
     if event.type == 'payment_intent.succeeded':
         payment_intent = event.data.object
-        # Update the order status to "paid" or equivalent in your database
+        webhook_log.payment_intent_id = payment_intent.id
         try:
             order = Order.objects.get(payment_intent_id=payment_intent.id)
             order.payment_status = 'paid'
+            order.status = 'paid'
             order.save()
+
+            webhook_log.order = order
+            webhook_log.status = 'success'
+            webhook_log.save()
             # Additional post-payment logic, like sending a confirmation email, can be added here
         except Order.DoesNotExist:
+            webhook_log.status = 'order not found'
+            webhook_log.save()
             # Handle cases where the order is not found
-            pass
 
     elif event.type == 'payment_intent.payment_failed':
         payment_intent = event.data.object
-        # Update the order status to "failed"
+        webhook_log.payment_intent_id = payment_intent.id
         try:
             order = Order.objects.get(payment_intent_id=payment_intent.id)
             order.payment_status = 'failed'
+            order.status = 'failed'
             order.save()
+
+            webhook_log.order = order
+            webhook_log.status = 'payment failed'
+            webhook_log.save()
             # Additional logic for handling payment failures, like notifying the user, can be added here
         except Order.DoesNotExist:
+            webhook_log.status = 'order not found'
+            webhook_log.save()
             # Handle cases where the order is not found
-            pass
 
     return JsonResponse({'status': 'success'})
+
 
 
 @csrf_exempt
