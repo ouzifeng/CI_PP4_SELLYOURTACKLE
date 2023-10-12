@@ -87,7 +87,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 ACCOUNT_UNIQUE_EMAIL = True
-SOCIALACCOUNT_AUTO_SIGNUP = False 
+SOCIALACCOUNT_AUTO_SIGNUP = True 
 ACCOUNT_ADAPTER = 'auth_app.adapters.CustomAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'auth_app.adapters.CustomSocialAccountAdapter'
 
