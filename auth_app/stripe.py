@@ -74,6 +74,27 @@ def stripe_webhook(request):
             webhook_log.status = 'order not found'
             webhook_log.save()
             # Handle cases where the order is not found
+            
+    elif event.type == 'account.updated':
+        account = event.data.object
+        # Get associated user from your database
+        try:
+            user = CustomUser.objects.get(stripe_account_id=account.id)
+            
+            # Check and update user information if needed
+            if not account.details_submitted:
+                # Notify the user to complete their account setup or take any other necessary actions
+                # This can be an email or a flag in your user model to remind them the next time they login.
+                # ...
+                
+                webhook_log.status = 'account updated'
+                webhook_log.save()
+
+        except CustomUser.DoesNotExist:
+            webhook_log.status = 'user not found for Stripe account'
+            webhook_log.save()
+            # Handle cases where the user is not found for the given Stripe account ID
+        
 
     return JsonResponse({'status': 'success'})
 
@@ -200,36 +221,101 @@ def handle_payment(request):
                 )
 
             # Clear the cart after successful order placement
-            cart.clear()
+            #cart.clear()
 
             return JsonResponse({'success': True})
         
-
     except stripe.error.StripeError as e:
         return JsonResponse({'error': str(e)})
 
-def connect_stripe(request):
-    # Generate the Stripe Connect URL
-    stripe_connect_url = stripe.OAuth.authorize_url(
-        client_id="ca_HA58ZeTTIKcmYMuhnBmDs63BNSLPEGRB",
-        scope="read_write",
-        country="GB",
-        business_type="individual",
-        redirect_uri="https://www.sellyourtackle.co.uk/auth/wallet",
-        state=request.user.id  
-    )
-    return redirect(stripe_connect_url)
+    except Exception as e:
+        return JsonResponse({'error': 'An unexpected error occurred: ' + str(e)})
 
-def stripe_redirect(request):
-    code = request.GET.get('code')
-    stripe_user_id = stripe.OAuth.token(
-        grant_type="authorization_code",
-        code=code
-    )['stripe_user_id']
+def create_stripe_express_account(request):
+    # Ensure the user is authenticated before proceeding
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
 
-    # Store the `stripe_user_id` in the user's profile
-    user = CustomUser.objects.get(id=request.GET.get('state'))
-    user.stripe_account_id = stripe_user_id
-    user.save()
+    # Create an Express account
+    try:
+        account = stripe.Account.create(
+          country="GB",
+          type="express",
+          business_type="individual",
+          business_profile={
+              "url": "https://www.sellyourtackle.co.uk", 
+              "product_description": "Selling fishing equipment on TackleTarts.",
+              "mcc": "5941",
+          },
+          capabilities={
+              "card_payments": {"requested": True},
+              "transfers": {"requested": True}
+          }
+        )
 
-    return redirect('some_success_url')  # Redirect to a success page or dashboard
+        # Store the account ID in the user's profile
+        request.user.stripe_account_id = account.id
+        request.user.save()
+        
+        # Create an account link for onboarding
+        account_link = stripe.AccountLink.create(
+            account=account.id,
+            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth",  # URL to redirect users who need to authenticate again
+            return_url="https://www.sellyourtackle.co.uk/auth/wallet",   # URL to redirect users after they complete the onboarding
+            type="account_onboarding"
+        )
+
+        return redirect(account_link.url)
+     
+    except stripe.error.StripeError as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+    
+    
+def create_stripe_account_link(request):
+    # Ensure the user is authenticated before proceeding
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
+
+    # Ensure the user has a Stripe account ID
+    if not request.user.stripe_account_id:
+        return JsonResponse({'status': 'error', 'message': 'Stripe account not found for user'})
+
+    try:
+        # Create an account link for onboarding
+        account_link = stripe.AccountLink.create(
+            account=request.user.stripe_account_id,
+            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth",  # URL to redirect users who need to authenticate again
+            return_url="https://www.sellyourtackle.co.uk/auth/wallet",   # URL to redirect users after they complete the onboarding
+            type="account_onboarding"
+        )
+
+        return JsonResponse({'status': 'success', 'url': account_link.url})
+
+    except stripe.error.StripeError as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+def handle_stripe_return(request):
+    # Ensure the user is authenticated before proceeding
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
+
+    # Ensure the user has a Stripe account ID
+    if not request.user.stripe_account_id:
+        return JsonResponse({'status': 'error', 'message': 'Stripe account not found for user'})
+
+    try:
+        # Retrieve the Stripe account details
+        stripe_account = stripe.Account.retrieve(request.user.stripe_account_id)
+
+        # Check if the user has completed the necessary requirements
+        if stripe_account.details_submitted:
+            # If all details are submitted, you can allow them to use Stripe features on your platform
+            return redirect('https://www.sellyourtackle.co.uk/auth/wallet')  # Redirect to a dashboard or success page
+        else:
+            # If not, you can inform them about the pending requirements or guide them to complete the setup
+            return redirect('some_setup_guide_url')  # Redirect to a page where they can see what's pending
+
+    except stripe.error.StripeError as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+    
