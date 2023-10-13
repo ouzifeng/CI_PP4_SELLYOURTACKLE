@@ -262,7 +262,11 @@ li .btn {
   } 
   
   .card-body {
-    padding: 5px !important;
+    padding: 8px !important;
+  }
+
+  .card-conditions {
+    font-size: 10px;
   }
 
   .card-title {

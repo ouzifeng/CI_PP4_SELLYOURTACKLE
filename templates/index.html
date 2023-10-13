@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% load custom_filters %}
 
 <header class="header py-3">
     <div class="container px-5">
@@ -47,6 +48,8 @@
             </div>
             <div class="card-body card-border flex-grow-1">
                 <div class="h5 card-title mb-3 truncate">{{ product.name|truncatechars:100 }}</div>
+                <p class="mb-0 card-conditions">Condition: {{ product.condition|normalise }}</p>
+                <p class="card-conditions">Sold By: {{ product.user.username }} </p>
                 <hr>
                 <div class="row">
                     <div class="col-6 d-flex align-items-start flex-column">

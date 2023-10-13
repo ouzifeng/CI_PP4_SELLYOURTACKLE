@@ -21,3 +21,7 @@ def equalto(value, arg):
 @register.filter
 def multiply(value, arg):
     return value * arg
+
+@register.filter(name='normalise')
+def normalise(value):
+    return value.capitalize()
