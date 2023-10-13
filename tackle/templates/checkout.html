@@ -101,11 +101,7 @@
                 </div>
 
                 <!-- Stripe Payment Element -->
-                <div id="card-element">
-                    <!-- A Stripe Element will be inserted here. -->
-                </div>
-                <button id="google-pay-button" style="display:none;">Google Pay</button>
-                <button id="apple-pay-button" style="display:none;">Apple Pay</button>
+                <div id="payment-element"></div>
 
 
                 <!-- Submit Button -->
@@ -191,16 +187,19 @@
 
     <script>
         // Step 1: Initialize Stripe with your publishable key
-        var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y'); // Replace with your key
+        var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
+        var clientSecret = "{{ client_secret }}";
 
-        // Step 2: Create an instance of Elements
-        var elements = stripe.elements();
+        // Step 2: Create an instance of Elements with clientSecret
+        var elements = stripe.elements({
+            clientSecret: clientSecret
+        });
 
-        // Step 3: Create the card element
-        var card = elements.create('card');
+        // Step 3: Create the payment element (no clientSecret here)
+        var paymentElement = elements.create('payment');
 
         // Step 4: Mount the element to the div
-        card.mount('#card-element');
+        paymentElement.mount('#payment-element');
 
         // Step 5: Handle form submission
         var form = document.getElementById('payment-form');
@@ -208,33 +207,30 @@
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            stripe.createPaymentMethod('card', card).then(function (result) {
+            stripe.confirmPayment(paymentElement, {
+                // Additional confirmPayment options, if needed
+            }).then(function (result) {
                 if (result.error) {
-                    // Show error in your UI. You might want to add an error message div and display this.
                     console.error(result.error.message);
                 } else {
-                    // Add the payment method to the form as a hidden field
                     var hiddenInput = document.createElement('input');
                     hiddenInput.setAttribute('type', 'hidden');
                     hiddenInput.setAttribute('name', 'payment_method');
                     hiddenInput.setAttribute('value', result.paymentMethod.id);
                     form.appendChild(hiddenInput);
 
-                    // Submit the form using AJAX
                     fetch(form.action, {
                         method: 'POST',
                         body: new FormData(form),
                         headers: {
-                            'X-CSRFToken': '{{ csrf_token }}'  // Pass CSRF token for Django's CSRF protection
+                            'X-CSRFToken': '{{ csrf_token }}'
                         }
                     })
-                        .then(response => response.json())  // Parse the JSON response
+                        .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // If the server indicates success, redirect the user
                                 window.location.href = data.redirect_url;
                             } else {
-                                // Handle errors, e.g., show an error message to the user.
                                 console.error('Order placement failed:', data.error);
                             }
                         })
@@ -245,8 +241,6 @@
             });
         });
     </script>
-
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

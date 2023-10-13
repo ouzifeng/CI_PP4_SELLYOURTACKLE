@@ -9,6 +9,9 @@ from auth_app.models import CustomUser, Order, OrderItem, Address
 from tackle.views import Cart
 from django.db import transaction
 from django.shortcuts import redirect
+from django.urls import reverse
+import time
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -119,16 +122,17 @@ def handle_payment(request):
             user = request.user
         else:
             email = request.POST['email']
-            user, created = CustomUser.objects.get_or_create(
-                email=email,
-                defaults={
-                    'password': CustomUser.objects.make_random_password(),
-                    'first_name': request.POST['first_name'],
-                    'last_name': request.POST['last_name'],
-                    'is_active': False,
-                    'is_staff': False
-                }
-            )
+            try:
+                user = CustomUser.objects.get(email=email)
+            except CustomUser.DoesNotExist:
+                user = CustomUser.objects.create_user(
+                    email=email,
+                    password=CustomUser.objects.make_random_password(),
+                    first_name=request.POST['first_name'],
+                    last_name=request.POST['last_name'],
+                    is_active=False,
+                    is_staff=False
+                )
 
         cart = Cart(request)
         total_amount = int((cart.get_total_price() + cart.get_shipping_total()) * 100)
@@ -186,7 +190,11 @@ def handle_payment(request):
             confirmation_method='manual',
             confirm=True,
             return_url="https://www.sellyourtackle.co.uk",
-            metadata={'user_email': email}
+                metadata={
+                'user_email': user.email,
+                'user_first_name': user.first_name,
+                'user_last_name': user.last_name
+            }
         )
 
         # Step 6: Associate Payment Intent ID
@@ -202,10 +210,18 @@ def handle_payment(request):
                 quantity=item['quantity'],
                 seller=item['product'].user
             )
+
+            # Use the total_amount from the Order and add user details
             stripe.Transfer.create(
-                amount=int(order_item.get_total_item_price_with_shipping() * 100),
+                amount=int(order.total_amount * 100),  # Use the order's total_amount
                 currency='gbp',
-                destination=order_item.seller.stripe_account_id
+                destination=order_item.seller.stripe_account_id,
+                transfer_date=int(time.time()) + 600,  # 10 minutes from now
+                metadata={
+                    'user_email': user.email,
+                    'user_first_name': user.first_name,
+                    'user_last_name': user.last_name
+                }
             )
 
         # Step 9: Clear Cart

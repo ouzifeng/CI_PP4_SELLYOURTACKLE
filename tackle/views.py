@@ -17,6 +17,11 @@ from .forms import CheckoutForm
 from auth_app.models import Order, OrderItem, Address, CustomUser, CustomUserManager
 import stripe
 from django.db import transaction
+from stripe.error import StripeError
+
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 @login_required
 def delete_product(request, product_id):
@@ -368,11 +373,20 @@ class CheckoutView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Create a SetupIntent
+        try:
+            setup_intent = stripe.SetupIntent.create()
+            context['client_secret'] = setup_intent['client_secret']
+        except StripeError as e:
+            context['error'] = str(e)  # Handle this error as you see fit
+        
         context['cart'] = Cart(self.request)
         context['form'] = CheckoutForm() 
         return context
 
     def post(self, request, *args, **kwargs):
+        # This will be where your handle_payment logic will reside
         return HttpResponse("index.html")
     
     

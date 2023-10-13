@@ -78,19 +78,4 @@
 
 
 
-<script>
-    // Assuming you've already initialized Stripe:
-    var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
-
-    // When you get the session_id from your backend:
-    stripe.redirectToCheckout({
-        sessionId: session_id  // This is the session_id received from the backend
-    }).then(function (result) {
-        // If `redirectToCheckout` fails due to a browser or network
-        // error, display the localized error message to your customer
-        console.error(result.error.message);
-    });
-
-</script>
-
 {% endblock %}
