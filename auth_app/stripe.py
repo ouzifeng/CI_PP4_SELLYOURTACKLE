@@ -110,14 +110,16 @@ def stripe_webhook(request):
 
 @csrf_exempt
 def handle_payment(request):
+    # Extract the payment method from POST data
+    payment_method_id = request.POST.get('payment_method')
+
     try:
-        # Step 2: Retrieve User Details
-        payment_method_id = request.POST.get('payment_method')
+        # Determine the user for the order
         if request.user.is_authenticated:
             user = request.user
         else:
             email = request.POST['email']
-            user, _ = CustomUser.objects.get_or_create(
+            user, created = CustomUser.objects.get_or_create(
                 email=email,
                 defaults={
                     'password': CustomUser.objects.make_random_password(),
@@ -217,6 +219,7 @@ def handle_payment(request):
 
     except Exception as e:
         return JsonResponse({'error': 'An unexpected error occurred: ' + str(e)})
+
 
 
 
