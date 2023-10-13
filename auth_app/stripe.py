@@ -110,32 +110,73 @@ def stripe_webhook(request):
 
 @csrf_exempt
 def handle_payment(request):
-    # Extract the payment method from POST data
-    payment_method_id = request.POST.get('payment_method')
-
     try:
-        # Determine the user for the order
+        # Step 2: Retrieve User Details
+        payment_method_id = request.POST.get('payment_method')
         if request.user.is_authenticated:
             user = request.user
         else:
             email = request.POST['email']
-            try:
-                user = CustomUser.objects.get(email=email)
-            except CustomUser.DoesNotExist:
-                user = CustomUser.objects.create_user(
-                    email=email,
-                    password=CustomUser.objects.make_random_password(),
-                    first_name=request.POST['first_name'],
-                    last_name=request.POST['last_name'],
-                    is_active=False,
-                    is_staff=False
-                )
-
+            user, _ = CustomUser.objects.get_or_create(
+                email=email,
+                defaults={
+                    'password': CustomUser.objects.make_random_password(),
+                    'first_name': request.POST['first_name'],
+                    'last_name': request.POST['last_name'],
+                    'is_active': False,
+                    'is_staff': False
+                }
+            )
 
         cart = Cart(request)
-        total_amount = int((cart.get_total_price() + cart.get_shipping_total()) * 100)  # Convert to cents
+        total_amount = int((cart.get_total_price() + cart.get_shipping_total()) * 100)
 
-        # Confirm the payment with Stripe
+        # Step 3: Create "Pending" Order
+        order = Order(
+            user=user,
+            product_cost=cart.get_total_price(),
+            shipping_cost=cart.get_shipping_total(),
+            total_amount=total_amount,
+            payment_status='pending'
+        )
+        order.save()
+
+        # Step 4: Save Addresses
+        billing_address = Address(
+            user=user,
+            address_type='billing',
+            first_name=request.POST['first_name'],
+            last_name=request.POST['last_name'],
+            email=request.POST['email'],
+            phone_number=request.POST.get('phone_number', ""),
+            address_line1=request.POST['billing_address_line1'],
+            address_line2=request.POST.get('billing_address_line2', ""),
+            city=request.POST['billing_city'],
+            state=request.POST['billing_state'],
+            postal_code=request.POST['billing_postal_code']
+        )
+        billing_address.save()
+        order.billing_address = billing_address
+
+        if request.POST.get('use_different_shipping_address'):
+            shipping_address = Address(
+                user=user,
+                address_type='shipping',
+                first_name=request.POST.get('shipping_first_name', request.POST['first_name']),
+                last_name=request.POST.get('shipping_last_name', request.POST['last_name']),
+                address_line1=request.POST['shipping_address_line1'],
+                address_line2=request.POST.get('shipping_address_line2', ""),
+                city=request.POST['shipping_city'],
+                state=request.POST['shipping_state'],
+                postal_code=request.POST['shipping_postal_code']
+            )
+            shipping_address.save()
+            order.shipping_address = shipping_address
+        else:
+            order.shipping_address = billing_address
+        order.save()
+
+        # Step 5: Initiate Payment with Stripe
         payment_intent = stripe.PaymentIntent.create(
             amount=total_amount,
             currency='gbp',
@@ -143,101 +184,41 @@ def handle_payment(request):
             confirmation_method='manual',
             confirm=True,
             return_url="https://www.sellyourtackle.co.uk",
-            metadata={
-                'user_email': email
-            },
-            shipping={  # Add shipping info if necessary
-                'name': f"{request.POST['first_name']} {request.POST['last_name']}",
-                'address': {
-                    'line1': request.POST['shipping_address_line1'],
-                    'line2': request.POST.get('shipping_address_line2', ""),
-                    'city': request.POST['shipping_city'],
-                    'state': request.POST['shipping_state'],
-                    'postal_code': request.POST['shipping_postal_code'],
-                    'country': 'GB',  # Assuming GB, adjust if needed
-                }
-            }
+            metadata={'user_email': email}
         )
 
+        # Step 6: Associate Payment Intent ID
+        order.payment_intent_id = payment_intent.id
+        order.save()
 
-
-        with transaction.atomic():
-            # Create an order instance
-            order = Order(
-                user=user,
-                product_cost=cart.get_total_price(),
-                shipping_cost=cart.get_shipping_total(),
-                total_amount=cart.get_total_price() + cart.get_shipping_total(),
-                payment_status='pending',
-                payment_intent_id=payment_intent.id
+        # Step 7: Save Order Items and Step 8: Transfer Amount to Seller
+        for item in cart:
+            order_item = OrderItem.objects.create(
+                order=order,
+                product_id=item['product_id'],
+                price=item['price'],
+                quantity=item['quantity'],
+                seller=item['product'].user
             )
-            
-            order.save()
-
-            # Save billing address
-            billing_address = Address(
-                user=user,
-                address_type='billing',
-                first_name=request.POST['first_name'],
-                last_name=request.POST['last_name'],
-                email=request.POST['email'],
-                phone_number=request.POST.get('phone_number', ""),
-                address_line1=request.POST['billing_address_line1'],
-                address_line2=request.POST.get('billing_address_line2', ""),
-                city=request.POST['billing_city'],
-                state=request.POST['billing_state'],
-                postal_code=request.POST['billing_postal_code']
+            stripe.Transfer.create(
+                amount=int(order_item.get_total_item_price_with_shipping() * 100),
+                currency='gbp',
+                destination=order_item.seller.stripe_account_id
             )
-            billing_address.save()
-            order.billing_address = billing_address
 
-            # Save shipping address
-            if request.POST.get('use_different_shipping_address'):
-                shipping_address = Address(
-                    user=user,
-                    address_type='shipping',
-                    first_name=request.POST.get('shipping_first_name', request.POST['first_name']),
-                    last_name=request.POST.get('shipping_last_name', request.POST['last_name']),
-                    address_line1=request.POST['shipping_address_line1'],
-                    address_line2=request.POST.get('shipping_address_line2', ""),
-                    city=request.POST['shipping_city'],
-                    state=request.POST['shipping_state'],
-                    postal_code=request.POST['shipping_postal_code']
-                )
-                shipping_address.save()
-                order.shipping_address = shipping_address
-            else:
-                order.shipping_address = billing_address
+        # Step 9: Clear Cart
+        # cart.clear()  # Uncomment if you want to clear the cart
 
-            order.save()
+        # Step 10: Return Success Response
+        return JsonResponse({'success': True})
 
-            # Save order items
-            for item in cart:
-                order_item = OrderItem.objects.create(
-                    order=order,
-                    product_id=item['product_id'],
-                    price=item['price'],
-                    quantity=item['quantity'],
-                    seller=item['product'].user  
-                )
-                
-                        # Transfer the appropriate amount to the seller
-                stripe.Transfer.create(
-                    amount=int(order_item.get_total_item_price_with_shipping() * 100),  # Convert to cents
-                    currency='gbp',
-                    destination=order_item.seller.stripe_account_id
-                )
-
-            # Clear the cart after successful order placement
-            #cart.clear()
-
-            return JsonResponse({'success': True})
-        
     except stripe.error.StripeError as e:
         return JsonResponse({'error': str(e)})
 
     except Exception as e:
         return JsonResponse({'error': 'An unexpected error occurred: ' + str(e)})
+
+
 
 def create_stripe_express_account(request):
     # Ensure the user is authenticated before proceeding
