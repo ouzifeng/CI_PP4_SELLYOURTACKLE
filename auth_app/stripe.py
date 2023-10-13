@@ -82,18 +82,26 @@ def stripe_webhook(request):
             user = CustomUser.objects.get(stripe_account_id=account.id)
             
             # Check and update user information if needed
-            if not account.details_submitted:
-                # Notify the user to complete their account setup or take any other necessary actions
-                # This can be an email or a flag in your user model to remind them the next time they login.
-                # ...
-                
-                webhook_log.status = 'account updated'
-                webhook_log.save()
+            if account.details_submitted:
+                user.is_stripe_verified = True
+                user.save()
+                webhook_log.status = 'account verified'
+            else:
+                # Optionally, you can reset verification if details are no longer submitted
+                # (This might be useful in scenarios where Stripe requires additional information later on.)
+                user.is_stripe_verified = False
+                user.save()
+                webhook_log.status = 'account updated but not verified'
+            
+            # If you want to notify the user, you can send an email or set a flag here.
+            # ...
 
         except CustomUser.DoesNotExist:
             webhook_log.status = 'user not found for Stripe account'
-            webhook_log.save()
-            # Handle cases where the user is not found for the given Stripe account ID
+            
+        webhook_log.save()
+        # Handle cases where the user is not found for the given Stripe account ID
+
         
 
     return JsonResponse({'status': 'success'})

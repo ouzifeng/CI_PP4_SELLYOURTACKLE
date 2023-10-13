@@ -4,9 +4,11 @@
 <h2>My Wallet</h2>
 <p>Current Balance: £{{ balance }}</p>
 
-<a href="{% url 'create_stripe_express_account' %}">Connect with Stripe</a>
-
-
+{% if request.user.stripe_account_id %}
+<button class="btn btn-success" disabled>Stripe Connected</button>
+{% else %}
+<a href="{% url 'create_stripe_express_account' %}" class="btn btn-primary">Connect with Stripe</a>
+{% endif %}
 
 </section>
 

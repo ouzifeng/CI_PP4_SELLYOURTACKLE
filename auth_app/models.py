@@ -69,6 +69,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
+    is_stripe_verified = models.BooleanField(default=False)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
 
 
