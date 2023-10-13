@@ -10,7 +10,6 @@ from tackle.views import Cart
 from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
-import time
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -216,7 +215,6 @@ def handle_payment(request):
                 amount=int(order.total_amount * 100),  # Use the order's total_amount
                 currency='gbp',
                 destination=order_item.seller.stripe_account_id,
-                transfer_date=int(time.time()) + 600,  # 10 minutes from now
                 metadata={
                     'user_email': user.email,
                     'user_first_name': user.first_name,
