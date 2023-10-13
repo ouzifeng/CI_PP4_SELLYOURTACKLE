@@ -138,7 +138,7 @@ def handle_payment(request):
             user=user,
             product_cost=cart.get_total_price(),
             shipping_cost=cart.get_shipping_total(),
-            total_amount=total_amount,
+            total_amount=(cart.get_total_price() + cart.get_shipping_total()),
             payment_status='pending'
         )
         order.save()
@@ -212,7 +212,8 @@ def handle_payment(request):
         # cart.clear()  # Uncomment if you want to clear the cart
 
         # Step 10: Return Success Response
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True, 'redirect_url': reverse('home')})
+
 
     except stripe.error.StripeError as e:
         return JsonResponse({'error': str(e)})
