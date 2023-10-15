@@ -138,6 +138,8 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     shipping_address = models.ForeignKey(Address, related_name='shipping_orders', on_delete=models.SET_NULL, null=True, blank=True)
     billing_address = models.ForeignKey(Address, related_name='billing_orders', on_delete=models.SET_NULL, null=True, blank=True)
+    tracking_number = models.CharField(max_length=255, blank=True, null=True)
+    tracking_company = models.CharField(max_length=255, blank=True, null=True)
     
     def __str__(self):
         return f"Order {self.id} - {self.user.email}"

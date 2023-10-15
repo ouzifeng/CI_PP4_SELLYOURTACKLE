@@ -3,6 +3,7 @@
 {% block content %}
 <h2 class="mb-3">Selling</h2>
 <div class="row">
+    <p>Click on the product for more details</p>
     <!-- Desktop/Laptop Table -->
     <table class="table table-hover d-none d-md-table">
         <thead>
@@ -18,7 +19,9 @@
         <tbody>
             {% for product in user_products %}
             {% with image_url=product_images|lookup:product.id %}
-            <tr onclick="window.location.href='{% url 'edit_product' product.id %}';">
+            <tr onclick="window.location.href='{% if product.financial_status == 'sold' %}{% url 'product_sold' product.id %}{% else %}
+                {% url 'edit_product' product.id %}{% endif %}';">
+
                 <td>
                     {% if product.visibility == 'live' %}
                     <i class="bi bi-dot text-success large-icon"></i>
@@ -33,7 +36,9 @@
                 <td>{{ product.condition }}</td>
                 <td>£{{ product.price }}</td>
                 <td>£{{ product.shipping }}</td>
-                <td>{{ product.financial_status|capfirst }}</td>
+                <td class="{% if product.financial_status == 'sold' %}sold-text{% endif %}">
+                    {{product.financial_status|capfirst }}</td>
+
             </tr>
             {% endwith %}
             {% endfor %}

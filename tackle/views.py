@@ -424,3 +424,55 @@ def distribute_pending_funds():
                 # Optionally, log the error or send a notification.
 
 
+class ProductSoldView(View):
+    template_name = "product-sold-page.html"
+
+    def get(self, request, *args, **kwargs):
+        product = get_object_or_404(Product, pk=kwargs['pk'])
+        
+        # Get the order item associated with the product
+        order_item = OrderItem.objects.filter(product=product).first()
+
+        # Ensure we have an order item before trying to access its order
+        if order_item:
+            order = order_item.order
+            shipping_address = order.shipping_address
+        else:
+            order = None
+            shipping_address = None
+
+        context = {
+            'product': product,
+            'order': order,
+            'shipping_address': shipping_address
+        }
+        
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        product = get_object_or_404(Product, pk=kwargs['pk'])
+        order_item = OrderItem.objects.filter(product=product).first()
+
+        if order_item:
+            order = order_item.order
+            action = request.POST.get('action')
+            
+            # Check if the action is to mark as dispatched
+            if action == 'mark_dispatched':
+                order.status = 'shipped'
+                order.save()
+                # Redirect back to the product sold page after updating
+                return redirect('product_sold', pk=product.id)
+
+            # Handle updating tracking info
+            tracking_company = request.POST.get('tracking_company')
+            tracking_number = request.POST.get('tracking_number')
+
+            if tracking_company and tracking_number:
+                order.tracking_company = tracking_company
+                order.tracking_number = tracking_number
+                order.save()
+        
+        return redirect('product_sold', pk=product.id)        
+
+        

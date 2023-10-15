@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Shipping Information</h2>
+    <hr>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h4>Shipping Address</h4>
+            <address>
+                {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
+                {{ order.shipping_address.email }}<br>
+                {{ order.shipping_address.address_line1 }}<br>
+                {% if order.shipping_address.address_line2 %}
+                {{ order.shipping_address.address_line2 }}<br>
+                {% endif %}
+                {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}<br>
+                {{ order.shipping_address.phone_number }}
+            </address>
+
+        </div>
+        <div class="col-md-6">
+            <h4>Shipping Information</h4>
+            <form method="post" action="{% url 'product_sold' product.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="shippingCompany">Shipping Company:</label>
+                    <input type="text" class="form-control" id="shippingCompany" name="tracking_company"
+                        value="{{ order.tracking_company }}">
+                    <label for="trackingNumber">Tracking Number:</label>
+                    <input type="text" class="form-control" id="trackingNumber" name="tracking_number"
+                        value="{{ order.tracking_number }}">
+                </div>
+                <button type="submit" class="btn btn-primary mt-4">Update Shipping Info</button>
+            </form>
+
+            {% if order.tracking_company and order.tracking_number %}
+            <div class="mt-4">
+                <h5>Current Shipping Information:</h5>
+                <p><strong>Shipping Company:</strong> {{ order.tracking_company }}</p>
+                <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h4>Mark as Dispatched</h4>
+            {% if order.status == 'shipped' %}
+            <button class="btn btn-success disabled">Order Dispatched</button>
+            <p class="mt-2">Dispatched on: {{ order.updated_at|date:"F j, Y" }}</p>
+            {% else %}
+            <form method="post" action="{% url 'product_sold' product.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="mark_dispatched">
+                <button type="submit" class="btn btn-success">Mark as Dispatched</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
