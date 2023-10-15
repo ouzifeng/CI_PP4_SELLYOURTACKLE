@@ -2,8 +2,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 import stripe
-from .models import Order
-from tackle.models import WebhookLog
+from .models import Order, OrderItem
+from tackle.models import WebhookLog, Product
 from django.conf import settings
 from auth_app.models import CustomUser, Order, OrderItem, Address
 from tackle.views import Cart
@@ -49,6 +49,16 @@ def stripe_webhook(request):
             order.payment_status = 'completed'
             order.status = 'paid'
             order.save()
+
+            # Update financial_status for each product associated with the order
+            print(f"finding order")  # DEBUG
+            for order_item in order.items.all():
+                print(f"Processing order item with ID: {order_item.id}")  # DEBUG
+                product = order_item.product
+                print(f"Product associated with order item: {product.id}")  # DEBUG
+                product.financial_status = 'sold'
+                product.save()
+
 
             webhook_log.order = order
             webhook_log.status = 'success'
@@ -223,7 +233,7 @@ def handle_payment(request):
             )
 
         # Step 9: Clear Cart
-        # cart.clear()  # Uncomment if you want to clear the cart
+        cart.clear()  # Uncomment if you want to clear the cart
 
         # Step 10: Return Success Response
         return JsonResponse({'success': True, 'redirect_url': reverse('home')})
