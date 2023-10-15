@@ -475,4 +475,24 @@ class ProductSoldView(View):
         
         return redirect('product_sold', pk=product.id)        
 
+class OrderPageView(View):
+    template_name = "detailed-order-page.html"
+
+    def get(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=kwargs['pk'])
+
+        # Get the product associated with the order. 
+        # This assumes each order has a single product (based on the OrderItem model).
+        order_item = OrderItem.objects.filter(order=order).first()
         
+        product = None
+        if order_item:
+            product = order_item.product
+        
+        context = {
+            'product': product,
+            'order': order,
+            'shipping_address': order.shipping_address
+        }
+
+        return render(request, self.template_name, context)        

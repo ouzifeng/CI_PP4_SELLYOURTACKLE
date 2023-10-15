@@ -1,6 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Buying</h1>
+<h1>My Orders</h1>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Order Date</th>
+            <th>Products</th>
+            <th>Total Cost</th>
+            <th>Status</th>
+            <th>Tracking</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in user_orders %}
+        <tr onclick="window.location.href='{% url 'order-page' order.id %}';" style="cursor:pointer;">
+            <td>{{ order.id }}</td>
+            <td>{{ order.created_at|date:"F d, Y" }}</td>
+            <td>
+                {% for item in order.items.all %}
+                {{ item.product.name }} (x{{ item.quantity }})<br>
+                {% endfor %}
+            </td>
+            <td>£{{ order.total_amount }}</td>
+            <td>{{ order.status|capfirst }}</td>
+            <td>{{ order.tracking_company }}: {{ order.tracking_number }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination controls -->
+<div class="pagination">
+    <span class="step-links">
+        {% if user_orders.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ user_orders.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ user_orders.number }} of {{ user_orders.paginator.num_pages }}.
+        </span>
+
+        {% if user_orders.has_next %}
+        <a href="?page={{ user_orders.next_page_number }}">next</a>
+        <a href="?page={{ user_orders.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 
 {% endblock %}

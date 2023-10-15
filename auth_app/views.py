@@ -3,7 +3,7 @@ from .forms import CustomUserSignupForm
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
 from .email import send_confirmation_email
-from .models import EmailConfirmationToken, CustomUser
+from .models import EmailConfirmationToken, CustomUser, Order, OrderItem
 from django.http import HttpResponse
 from uuid import uuid4
 from django.views import View
@@ -11,6 +11,8 @@ from django.views.generic import RedirectView, TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from tackle.models import Product, ProductImage
+from django.core.paginator import Paginator
+
 
 class SignupView(View):
 
@@ -104,7 +106,18 @@ class Buying(View):
     template_name = 'buying.html'
     
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)       
+        user_orders = Order.objects.filter(user=request.user).prefetch_related('items')
+        
+        # Set up pagination
+        paginator = Paginator(user_orders, 10)  # Show 10 orders per page
+        page = request.GET.get('page')
+        orders_on_page = paginator.get_page(page)
+
+        context = {
+            'user_orders': orders_on_page,
+        }
+        return render(request, self.template_name, context)
+   
     
 @method_decorator(login_required, name='dispatch')    
 class Selling(View):
@@ -124,5 +137,7 @@ class Selling(View):
             'product_images': product_images
         }
         return render(request, self.template_name, context)
+    
+  
     
     

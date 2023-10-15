@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Order Details</h2>
+
+<div class="order-details">
+    <h3>Product Information:</h3>
+    <ul>
+        <li>
+            {% if product.images.all %}
+            <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}" class="product-thumbnail">
+            {% endif %}
+        </li>
+        <li><strong>Name:</strong> {{ product.name }}</li>
+        <li><strong>Price:</strong> £{{ product.price }}</li>
+        <li><strong>Condition:</strong> {{ product.condition }}</li>
+    </ul>
+</div>
+
+<div class="shipping-details">
+    <h3>Shipping Information:</h3>
+    <address>
+        {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
+        {{ order.shipping_address.email }}<br>
+        {{ order.shipping_address.address_line1 }}<br>
+        {% if order.shipping_address.address_line2 %}
+        {{ order.shipping_address.line2 }}<br>
+        {% endif %}
+        {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}<br>
+    </address>
+</div>
+
+<div class="order-status">
+    <h3>Order Status:</h3>
+    <p><strong>Status:</strong> {{ order.status|capfirst }}</p>
+    <p><strong>Shipping Status:</strong>
+        {% if order.status == "shipped" %}
+        Shipped
+        {% else %}
+        Not shipped yet
+        {% endif %}
+    </p>
+    <p><strong>Order Date:</strong> {{ order.created_at }}</p>
+</div>
+
+{% if order.tracking_number %}
+<div class="tracking-info">
+    <h3>Tracking Information:</h3>
+    <p><strong>Shipping Company:</strong> {{ order.tracking_company }}</p>
+    <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+</div>
+{% endif %}
+
+{% endblock %}
