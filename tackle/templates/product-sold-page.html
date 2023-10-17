@@ -61,6 +61,22 @@
             {% endif %}
         </div>
     </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h4>Refund Order</h4>
+            {% if order.status == 'refunded' %}
+            <button class="btn btn-danger disabled">Order Refunded</button>
+            <p class="mt-2">Refunded on: {{ order.updated_at|date:"F j, Y" }}</p>
+            {% else %}
+            <form method="post" action="{% url 'product_sold' product.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="mark_refunded">
+                <button type="submit" class="btn btn-danger">Refund Order</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
 
 </div>
 

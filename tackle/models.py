@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from decimal import Decimal
 from auth_app.models import Order
+from datetime import datetime
+
 
 class Brand(models.Model):
     name = models.CharField(max_length=200)
@@ -69,7 +71,7 @@ class Product(models.Model):
         return self.financial_status == FinancialStatus.UNSOLD
 
     def __str__(self):
-        return f"Product id: {str(self.id)}, name: {self.name}, brand: {self.brand.name}, category: {self.category.name}, condition: {self.condition}"
+        return f"Product id: {self.id}, name: {self.name}, brand: {self.brand.name}, category: {self.category.name}, condition: {self.condition}"
 
     def save(self, *args, **kwargs):
         # Only generate a slug for new products
@@ -90,7 +92,7 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="product-images/")
+    image = models.ImageField(upload_to=f"product-images/{datetime.now().strftime('%Y/%m/')}")
 
     def __str__(self):
         return str(self.id)

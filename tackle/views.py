@@ -463,6 +463,19 @@ class ProductSoldView(View):
                 order.save()
                 # Redirect back to the product sold page after updating
                 return redirect('product_sold', pk=product.id)
+            
+            # Check if the action is to mark as refunded
+            elif action == 'mark_refunded':
+                # Refund the order
+                try:
+                    stripe.Refund.create(
+                        payment_intent=order.payment_intent_id
+                    )
+                    order.status = 'refunded'
+                    order.save()
+                except stripe.error.StripeError as e:
+                    messages.error(request, f"Stripe error: {str(e)}")
+                return redirect('product_sold', pk=product.id)
 
             # Handle updating tracking info
             tracking_company = request.POST.get('tracking_company')

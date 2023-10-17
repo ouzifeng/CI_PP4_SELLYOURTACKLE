@@ -1,61 +1,83 @@
+# Standard library imports
+from uuid import uuid4
+
+# Third-party imports
 from django.shortcuts import render, redirect
-from .forms import CustomUserSignupForm
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
-from .email import send_confirmation_email
-from .models import EmailConfirmationToken, CustomUser, Order, OrderItem
 from django.http import HttpResponse
-from uuid import uuid4
 from django.views import View
 from django.views.generic import RedirectView, TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from tackle.models import Product, ProductImage
 from django.core.paginator import Paginator
+
+# Local application/library specific imports
+from .forms import CustomUserSignupForm
+from .email import send_confirmation_email
+from .models import (
+    EmailConfirmationToken,
+    CustomUser,
+    Order,
+    OrderItem
+)
+from tackle.models import Product, ProductImage
 
 
 class SignupView(View):
+    """Handles user registration."""
 
     def get(self, request, *args, **kwargs):
+        """Renders the signup form."""
         form = CustomUserSignupForm()
         return render(request, 'signup.html', {'form': form})
 
     def post(self, request, *args, **kwargs):
+        """Processes the signup form submission."""
         form = CustomUserSignupForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            
-            email_prefix = user.email.split('@')[0]
-            all_usernames = list(CustomUser.objects.values_list('username', flat=True))
-            user.username = CustomUser.objects.generate_unique_username(email_prefix, all_usernames)
-            
-            user.save()
-            
-            token = uuid4()
-            EmailConfirmationToken.objects.create(user=user, token=token)
-            
-            confirmation_link = f"http://localhost:8000/auth/confirm-email/{user.id}/{token}/"
-            send_confirmation_email(user.email, confirmation_link, user.first_name)
+            user = self._create_inactive_user(form)
+            self._send_confirmation_email(user)
+            return redirect('confirm-email-link')
+        
+        return render(request, 'signup.html', {'form': form, 'errors': form.errors})
 
-            
-            return redirect('confirm-email-link') 
+    def _create_inactive_user(self, form):
+        """Creates an inactive user and returns it."""
+        user = form.save(commit=False)
+        user.is_active = False
+        email_prefix = user.email.split('@')[0]
+        all_usernames = list(CustomUser.objects.values_list('username', flat=True))
+        user.username = CustomUser.objects.generate_unique_username(email_prefix, all_usernames)
+        user.save()
+        token = uuid4()
+        EmailConfirmationToken.objects.create(user=user, token=token)
+        return user
 
-        return render(request, 'signup.html', {'form': form})
+    def _send_confirmation_email(self, user):
+        """Sends a confirmation email to the user."""
+        token = EmailConfirmationToken.objects.get(user=user).token
+        confirmation_link = f"http://localhost:8000/auth/confirm-email/{user.id}/{token}/"
+        send_confirmation_email(user.email, confirmation_link, user.first_name)
 
 
 class LogoutView(RedirectView):
+    """Handles user logout."""
     pattern_name = 'home'  
 
     def get(self, request, *args, **kwargs):
         logout(request)
         return super().get(request, *args, **kwargs)
 
+
 class CustomLoginView(LoginView):
+    """Custom login view."""
     template_name = 'login.html'
-    
-@method_decorator(login_required, name='dispatch')  
+
+
+@method_decorator(login_required, name='dispatch')
 class WalletView(TemplateView):
+    """Displays the user's wallet balance."""
     template_name = 'wallet.html'
     
     def get_context_data(self, **kwargs):
@@ -64,15 +86,17 @@ class WalletView(TemplateView):
         context['balance'] = user.balance
         return context
 
-    
+
 class ConfirmEmailPageView(View):
+    """Renders the email confirmation page."""
     template_name = 'confirm-email.html'
     
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
- 
- 
+
+
 class ConfirmEmailView(View):
+    """Handles email confirmation logic."""
 
     def get(self, request, user_id, token, *args, **kwargs):
         try:
@@ -84,60 +108,53 @@ class ConfirmEmailView(View):
         if not user.is_active:
             user.is_active = True
             user.save()
-            token_obj.delete()  # Optionally delete the token after it's used
-
-            # Log the user in
+            token_obj.delete() 
             login(request, user)
-
-            return redirect('home')  # Redirect to the homepage
+            return redirect('home')
 
         return HttpResponse("This email has already been confirmed.")
 
 
-@method_decorator(login_required, name='dispatch')    
+@method_decorator(login_required, name='dispatch')
 class MyAccount(View):
+    """Renders the user's account page."""
     template_name = 'my-account.html'
     
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)    
-    
-@method_decorator(login_required, name='dispatch')    
+        return render(request, self.template_name)
+
+
+@method_decorator(login_required, name='dispatch')
 class Buying(View):
+    """Displays the user's orders."""
     template_name = 'buying.html'
     
     def get(self, request, *args, **kwargs):
         user_orders = Order.objects.filter(user=request.user).prefetch_related('items')
-        
-        # Set up pagination
-        paginator = Paginator(user_orders, 10)  # Show 10 orders per page
+        paginator = Paginator(user_orders, 10)
         page = request.GET.get('page')
         orders_on_page = paginator.get_page(page)
+        return render(request, self.template_name, {'user_orders': orders_on_page})
 
-        context = {
-            'user_orders': orders_on_page,
-        }
-        return render(request, self.template_name, context)
-   
-    
-@method_decorator(login_required, name='dispatch')    
+
+@method_decorator(login_required, name='dispatch')
 class Selling(View):
+    """Displays the products that the user is selling."""
     template_name = 'selling.html'
     
     def get(self, request, *args, **kwargs):
         user_products = Product.objects.filter(user=request.user)
+        product_images = self._get_product_images(user_products)
+        return render(request, self.template_name, {
+            'user_products': user_products,
+            'product_images': product_images
+        })
+
+    def _get_product_images(self, products):
+        """Returns the first image for each product."""
         product_images = {}
-        
-        for product in user_products:
+        for product in products:
             first_image = ProductImage.objects.filter(product=product).first()
             if first_image:
                 product_images[product.id] = first_image.image.url
-        
-        context = {
-            'user_products': user_products,
-            'product_images': product_images
-        }
-        return render(request, self.template_name, context)
-    
-  
-    
-    
+        return product_images
