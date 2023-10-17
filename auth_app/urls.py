@@ -1,7 +1,26 @@
 from django.urls import path
-from . import views
-from .views import SignupView, CustomLoginView, ConfirmEmailView, LogoutView, ConfirmEmailPageView, MyAccount, Buying, Selling, WalletView
-from .stripe import stripe_webhook, handle_payment, create_stripe_express_account, create_stripe_account_link, handle_stripe_return
+
+# Authentication views
+from .views import (
+    SignupView, 
+    CustomLoginView, 
+    ConfirmEmailView, 
+    LogoutView, 
+    ConfirmEmailPageView, 
+    MyAccount
+)
+
+# User actions/views
+from .views import Buying, Selling, WalletView
+
+# Stripe related views
+from .stripe import (
+    stripe_webhook, 
+    handle_payment, 
+    create_stripe_express_account, 
+    create_stripe_account_link, 
+    handle_stripe_return
+)
 
 urlpatterns = [
     path('signup/', SignupView.as_view(), name='signup'),

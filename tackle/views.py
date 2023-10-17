@@ -1,23 +1,34 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from .models import Brand, Category, Product, ProductImage, ProductVisibility, WebhookLog
-from slugify import slugify
+# Python standard library imports
 from decimal import Decimal, InvalidOperation
-from django.urls import reverse_lazy
-from django.views.generic.edit import DeleteView
-from django.views.generic import TemplateView, RedirectView, View
-from PIL import Image
+
+# Django core imports
 from django.conf import settings
 from django.contrib import messages
-from .forms import CheckoutForm
-from auth_app.models import Order, OrderItem, Address, CustomUser, CustomUserManager
-import stripe
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.generic import RedirectView, TemplateView
+from django.views.generic.edit import DeleteView
+
+# Third-party imports
+import stripe
+from PIL import Image
+from slugify import slugify
 from stripe.error import StripeError
+
+# App-specific imports
+from .forms import CheckoutForm
+from .models import (
+    Brand, Category, Product, ProductImage,
+    ProductVisibility, WebhookLog
+)
+from auth_app.models import Address, CustomUser, CustomUserManager, Order, OrderItem
+
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY

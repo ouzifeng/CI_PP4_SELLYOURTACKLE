@@ -1,16 +1,21 @@
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-import json
-import stripe
-from .models import Order, OrderItem
-from tackle.models import WebhookLog, Product
+# Django imports
 from django.conf import settings
-from auth_app.models import CustomUser, Order, OrderItem, Address
-from tackle.views import Cart
 from django.db import transaction
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.db import transaction
+from django.views.decorators.csrf import csrf_exempt
+
+# Third-party imports
+import json
+import stripe
+
+# App-specific imports
+from auth_app.models import Address, CustomUser, Order, OrderItem
+from tackle.models import Product, WebhookLog
+from tackle.views import Cart
+
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 

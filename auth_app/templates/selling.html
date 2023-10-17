@@ -19,8 +19,8 @@
         <tbody>
             {% for product in user_products %}
             {% with image_url=product_images|lookup:product.id %}
-            <tr onclick="window.location.href='{% if product.financial_status == 'sold' %}{% url 'product_sold' product.id %}{% else %}
-                {% url 'edit_product' product.id %}{% endif %}';">
+            <tr onclick="window.location.href='{% if product.financial_status == 'sold' %}{% url 'product_sold' product.id %}
+            {% else %}{% url 'edit_product' product.id %}{% endif %}';">
 
                 <td>
                     {% if product.visibility == 'live' %}

@@ -1,10 +1,15 @@
+# Python standard library imports
+from datetime import datetime
+from decimal import Decimal
+
+# Django core imports
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.text import slugify
-from django.contrib.auth.models import User
-from django.conf import settings
-from decimal import Decimal
+
+# App-specific imports
 from auth_app.models import Order
-from datetime import datetime
 
 
 class Brand(models.Model):
