@@ -19,9 +19,12 @@
         <tbody>
             {% for product in user_products %}
             {% with image_url=product_images|lookup:product.id %}
-            <tr onclick="window.location.href='{% if product.financial_status == 'sold' %}{% url 'product_sold' product.id %}
-            {% else %}{% url 'edit_product' product.id %}{% endif %}';">
-
+            {% if product.financial_status == 'sold' %}
+            {% url 'product_sold' product.id as product_url %}
+            {% else %}
+            {% url 'edit_product' product.id as product_url %}
+            {% endif %}
+            <tr onclick="window.location.href='{{ product_url }}';">
                 <td>
                     {% if product.visibility == 'live' %}
                     <i class="bi bi-dot text-success large-icon"></i>
@@ -59,7 +62,12 @@
         <tbody>
             {% for product in user_products %}
             {% with image_url=product_images|lookup:product.id %}
-            <tr onclick="window.location.href='{% url 'edit_product' product.id %}';">
+            {% if product.financial_status == 'sold' %}
+            {% url 'product_sold' product.id as product_url %}
+            {% else %}
+            {% url 'edit_product' product.id as product_url %}
+            {% endif %}
+            <tr onclick="window.location.href='{{ product_url }}';">
                 <td>
                     <div class="d-flex align-items-center">
                         {% if product.visibility == 'live' %}
@@ -76,7 +84,7 @@
                     <span class="product-title-mobile">{{ product.name }}</span>
                 </td>
                 <td class="d-none d-md-table-cell">{{ product.condition }}</td>
-                <td class="d-md-none">
+                <td class="d-md-none {% if product.financial_status == 'sold' %}sold-text{% endif %}">
                     £{{ product.price }}
                     <br>
                     {{ product.financial_status|capfirst }} <!-- Updated this line -->
