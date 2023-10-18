@@ -236,6 +236,10 @@ li .btn {
     font-weight: bold;
 }
 
+.product-thumbnail {
+  max-width: 400px;
+}
+
   
 /* Mobile Styles */
 @media only screen and (max-width: 480px) {

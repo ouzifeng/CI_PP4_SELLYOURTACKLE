@@ -14,6 +14,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.edit import DeleteView
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from io import BytesIO
 
 # Third-party imports
 import stripe
@@ -198,8 +200,13 @@ class EditProduct(View):
             image.delete()
 
         for uploaded_file in request.FILES.getlist('images'):
-            ProductImage.objects.create(product=product, image=uploaded_file)        
-
+            processed_image = process_image(uploaded_file)
+            temp_file = BytesIO()
+            processed_image.save(temp_file, format='JPEG')
+            uploaded_file = InMemoryUploadedFile(temp_file, None, uploaded_file.name, 'image/jpeg', temp_file.tell(), None)
+            
+            ProductImage.objects.create(product=product, image=uploaded_file)
+     
         return redirect('selling')
 
 class ProductPage(View):
@@ -224,24 +231,39 @@ class ProductDeleteView(DeleteView):
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user)    
     
-def process_image(image, desired_size=(440, 300)):
+
+def process_image(image, target_filesize=2.5*1024*1024, max_width=894):
     """
-    Process an uploaded image using Pillow to fit a desired size.
+    Process an uploaded image using Pillow to fit the intrinsic size, compress it, and ensure max width.
     """
     img = Image.open(image)
+    print(f"Original Image Size: {img.size}, Original Image Format: {img.format}")
 
-    ratio = min(desired_size[0]/img.width, desired_size[1]/img.height)
-    new_size = tuple([int(x*ratio) for x in img.size])
+    # Check if the width exceeds the maximum width and resize if necessary
+    if img.width > max_width:
+        aspect_ratio = img.height / img.width
+        new_height = int(aspect_ratio * max_width)
+        img = img.resize((max_width, new_height), Image.LANCZOS)
+        print(f"Resized to: {img.size}")
 
-    img = img.resize(new_size, Image.LANCZOS)
-
-    new_img = Image.new("RGB", desired_size, "white")
+    # Save the image to BytesIO to check the file size
+    buffer = BytesIO()
+    quality = 100
+    img.save(buffer, format="JPEG", quality=quality)
     
-    y_offset = (desired_size[1] - img.height) // 2
-    x_offset = (desired_size[0] - img.width) // 2
-    new_img.paste(img, (x_offset, y_offset))
+    # Reduce quality to meet target file size
+    while len(buffer.getvalue()) > target_filesize and quality > 30: # Set a lower bound for quality
+        buffer = BytesIO()
+        quality -= 2  # Decrease by smaller steps
+        img.save(buffer, format="JPEG", quality=quality)
 
-    return new_img    
+    # Convert BytesIO buffer image back to PIL Image
+    compressed_image = Image.open(buffer)
+
+    return compressed_image  
+ 
+
+
 
 class Cart:
     def __init__(self, request):

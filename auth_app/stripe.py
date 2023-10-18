@@ -122,7 +122,6 @@ def stripe_webhook(request):
 
 @csrf_exempt
 def handle_payment(request):
-    print("Handling payment. POST data:", request.POST)
     # Extract the payment method from POST data
     payment_method_id = request.POST.get('payment_method')
 
@@ -237,7 +236,7 @@ def handle_payment(request):
         cart.clear()  # Uncomment if you want to clear the cart
 
         # Step 10: Return Success Response
-        return JsonResponse({'success': True, 'redirect_url': reverse('home')})
+        return JsonResponse({'success': True, 'redirect_url': reverse('buying')})
 
 
     except stripe.error.StripeError as e:

@@ -1,53 +1,78 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Order Details</h2>
-
-<div class="order-details">
-    <h3>Product Information:</h3>
-    <ul>
-        <li>
-            {% if product.images.all %}
-            <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}" class="product-thumbnail">
-            {% endif %}
-        </li>
-        <li><strong>Name:</strong> {{ product.name }}</li>
-        <li><strong>Price:</strong> £{{ product.price }}</li>
-        <li><strong>Condition:</strong> {{ product.condition }}</li>
-    </ul>
-</div>
-
-<div class="shipping-details">
-    <h3>Shipping Information:</h3>
-    <address>
-        {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
-        {{ order.shipping_address.email }}<br>
-        {{ order.shipping_address.address_line1 }}<br>
-        {% if order.shipping_address.address_line2 %}
-        {{ order.shipping_address.line2 }}<br>
+<h2 class="mb-4">Order Details</h2>
+<div class="row">
+    <div class="col-md-4">
+        {% if product.images.all %}
+        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for image in product.images.all %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ product.name }}">
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <div class="row mt-3">
+            {% for image in product.images.all %}
+            <div class="col-3 thumbnail-image">
+                <img src="{{ image.image.url }}" class="img-thumbnail" alt="Product Thumbnail">
+            </div>
+            {% endfor %}
+        </div>
         {% endif %}
-        {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}<br>
-    </address>
-</div>
 
-<div class="order-status">
-    <h3>Order Status:</h3>
-    <p><strong>Status:</strong> {{ order.status|capfirst }}</p>
-    <p><strong>Shipping Status:</strong>
-        {% if order.status == "shipped" %}
-        Shipped
-        {% else %}
-        Not shipped yet
-        {% endif %}
-    </p>
-    <p><strong>Order Date:</strong> {{ order.created_at }}</p>
-</div>
+    </div>
+    <div class="col-md-8">
+        <div class="order-details">
+            <p class="info"><strong>Name:</strong> {{ product.name }}</p>
+            <p class="info"><strong>Price:</strong> £{{ product.price }}</p>
+            <p class="info"><strong>Condition:</strong> {{ product.condition }}</p>
 
-{% if order.tracking_number %}
-<div class="tracking-info">
-    <h3>Tracking Information:</h3>
-    <p><strong>Shipping Company:</strong> {{ order.tracking_company }}</p>
-    <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+        </div>
+
+        <div class="shipping-details">
+            <h4>Shipping Information:</h4>
+            <address>
+                {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
+                {{ order.shipping_address.email }}<br>
+                {{ order.shipping_address.address_line1 }}<br>
+                {% if order.shipping_address.address_line2 %}
+                {{ order.shipping_address.line2 }}<br>
+                {% endif %}
+                {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}<br>
+            </address>
+        </div>
+
+        <div class="order-status">
+            <h4>Order Status:</h4>
+            <p><strong>Status:</strong> {{ order.status|capfirst }}</p>
+            <p><strong>Shipping Status:</strong>
+                {% if order.status == "shipped" %}
+                Shipped
+                {% else %}
+                Not shipped yet
+                {% endif %}
+            </p>
+            <p><strong>Order Date:</strong> {{ order.created_at }}</p>
+        </div>
+
+        {% if order.tracking_number %}
+        <div class="tracking-info">
+            <h3>Tracking Information:</h3>
+            <p><strong>Shipping Company:</strong> {{ order.tracking_company }}</p>
+            <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+        </div>
+    </div>
 </div>
 {% endif %}
 
