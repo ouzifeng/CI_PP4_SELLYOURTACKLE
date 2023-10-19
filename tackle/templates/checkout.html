@@ -105,7 +105,12 @@
 
 
                 <!-- Submit Button -->
-                <button type="submit" class="btn btn-outline-main mt-3">Place Order</button>
+                <button type="submit" class="btn btn-outline-main mt-3">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                        style="display:none;"></span>
+                    <span class="btn-text">Place Order</span>
+                </button>
+
             </form>
         </div>
     </div>
@@ -207,9 +212,18 @@
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
+            // Modify the button to show spinner and change text
+            const btn = form.querySelector('button[type="submit"]');
+            btn.querySelector('.spinner-border').style.display = 'inline-block';
+            btn.querySelector('.btn-text').textContent = 'Processing Order...';
+            btn.disabled = true;  // Disable the button to prevent double-clicks
+
             stripe.createPaymentMethod('card', cardElement).then(function (result) {
                 if (result.error) {
                     console.error(result.error.message);
+
+                    // Revert the button to its original state
+                    revertButtonState(btn);
                 } else {
                     // Add the payment method ID to the form as a hidden field
                     var hiddenInput = document.createElement('input');
@@ -218,7 +232,7 @@
                     hiddenInput.setAttribute('value', result.paymentMethod.id);
                     form.appendChild(hiddenInput);
 
-                    // Now submit the form to your server with the payment method ID
+                    // Submit the form to your server with the payment method ID
                     fetch(form.action, {
                         method: 'POST',
                         body: new FormData(form),
@@ -232,14 +246,22 @@
                                 window.location.href = data.redirect_url;
                             } else {
                                 console.error('Order placement failed:', data.error);
+                                revertButtonState(btn);
                             }
                         })
                         .catch(error => {
                             console.error('Error submitting the form:', error);
+                            revertButtonState(btn);
                         });
                 }
             });
         });
+
+        function revertButtonState(btn) {
+            btn.querySelector('.spinner-border').style.display = 'none';
+            btn.querySelector('.btn-text').textContent = 'Place Order';
+            btn.disabled = false;
+        }
 
     </script>
 
