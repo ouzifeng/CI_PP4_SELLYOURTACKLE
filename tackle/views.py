@@ -153,7 +153,7 @@ class HomeView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['products'] = Product.objects.filter(visibility=ProductVisibility.LIVE)
+        context['products'] = Product.objects.filter(visibility=ProductVisibility.LIVE).exclude(financial_status="sold")
         return context
 
 
