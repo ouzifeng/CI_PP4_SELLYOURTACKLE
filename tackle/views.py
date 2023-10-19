@@ -15,6 +15,7 @@ from django.views import View
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.edit import DeleteView
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db.models import Q
 from io import BytesIO
 
 # Third-party imports
@@ -563,3 +564,14 @@ class OrderConfirmation(View):
         }
 
         return render(request, self.template_name, context)
+
+class SearchView(View):
+    
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('search_text', '')
+        products = Product.objects.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query)
+        ).values('name', 'slug')[:5]  # Limit to top 5 results for dropdown
+        
+        return JsonResponse(list(products), safe=False)

@@ -54,10 +54,11 @@
             </button>
 
             <!-- Search Bar -->
-            <form class="d-flex search-bar order-lg-1 my-2 my-lg-0" method="get" action="/search/">
+            <form class="d-flex search-bar order-lg-1 my-2 my-lg-0" method="get" action="{% url 'search' %}">
                 <input class="form-control me-2" type="search" placeholder="Find your next tackle...." id="search_text"
                     name="search_text" aria-label="Search">
             </form>
+
 
 
             <!-- Navbar links -->
