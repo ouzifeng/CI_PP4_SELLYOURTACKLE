@@ -48,7 +48,7 @@ class SignupView(View):
         user.is_active = False
         email_prefix = user.email.split('@')[0]
         all_usernames = list(CustomUser.objects.values_list('username', flat=True))
-        user.username = CustomUser.objects.generate_unique_username(email_prefix, all_usernames)
+        user.username = CustomUser.objects.generate_unique_username(email_prefix)
         user.save()
         token = uuid4()
         EmailConfirmationToken.objects.create(user=user, token=token)
@@ -57,7 +57,7 @@ class SignupView(View):
     def _send_confirmation_email(self, user):
         """Sends a confirmation email to the user."""
         token = EmailConfirmationToken.objects.get(user=user).token
-        confirmation_link = f"http://localhost:8000/auth/confirm-email/{user.id}/{token}/"
+        confirmation_link = f"https://www.sellyourtackle.co.uk/auth/confirm-email/{user.id}/{token}/"
         send_confirmation_email(user.email, confirmation_link, user.first_name)
 
 
@@ -110,6 +110,7 @@ class ConfirmEmailView(View):
             user.save()
             token_obj.delete() 
             login(request, user)
+            messages.success(request, 'Your account has been activated successfully.')
             return redirect('home')
 
         return HttpResponse("This email has already been confirmed.")

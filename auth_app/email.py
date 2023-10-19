@@ -1,24 +1,28 @@
 from mailjet_rest import Client
 from django.conf import settings
+from django.core.mail import send_mail
 
 def send_confirmation_email(to_email, confirmation_link, first_name):
-    api_key = settings.MAILJET_API_KEY       
-    api_secret = settings.MAILJET_SECRET_KEY 
-    mailjet = Client(auth=(api_key, api_secret), version='v3.1')
-    
-    data = {
-        'Messages': [{
-            "From": {"Email": "hello@sellyourtackle.co.uk", "Name": "Sell Your Tackle"},
-            "To": [{"Email": to_email, "Name": first_name}],
-            "TemplateID": 11261190, 
-            "TemplateLanguage": True,
-            "Subject": "Confirm your email address",
-            "Variables": {
-                "first_name": first_name,
-                "confirmation_link": confirmation_link
-            }
-        }]
-    }
-    
-    result = mailjet.send.create(data=data)
-    print(result.status_code, result.json())
+    subject = "Confirm your email address"
+    from_email = "hello@sellyourtackle.co.uk"
+
+    # HTML content
+    html_content = f"""
+    <html>
+        <body>
+            <p>Hi {first_name},</p>
+            <p>Please confirm your Sell Your Tackle account by clicking <a href="{confirmation_link}">this link</a>.</p>
+            <p>Thanks,</p>
+            <p>Sell Your Tackle Team</p>
+        </body>
+    </html>
+    """
+
+    # Send the email
+    send_mail(
+        subject,
+        '',  # Empty string as we're sending HTML content in the html_message argument
+        from_email,
+        [to_email],
+        html_message=html_content
+    )

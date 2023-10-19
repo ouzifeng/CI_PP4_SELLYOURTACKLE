@@ -8,7 +8,7 @@
         <div class="login-container">
             <div class="text-center">
                 <p class="mb-3">Sign up</p>
-                <form method="post">
+                <form method="post" id="signupForm">
                     {% csrf_token %}
                     {% load socialaccount %}
                     <a href="{% provider_login_url 'google' %}" class="btn btn-primary mb-3"><i
@@ -22,11 +22,19 @@
             {{ form.password1|as_crispy_field }}
             {{ form.password2|as_crispy_field }}
 
-            <button class="btn btn-primary" type="submit">Sign up</button>
+            <button id="signupButton" class="btn btn-outline-main" type="submit">
+                <span id="buttonText">Sign up</span>
+                <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                    style="display:none;"></span>
+            </button>
             </form>
         </div>
     </div>
     <div class="col-md-4"></div>
 </div>
+
+
+
+
 
 {% endblock %}

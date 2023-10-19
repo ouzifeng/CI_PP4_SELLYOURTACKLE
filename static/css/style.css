@@ -89,6 +89,16 @@ li .btn {
   border-color: transparent;
 }
 
+.btn-outline-sell {
+    color: white;
+  background-color: #fac28b;
+}
+
+.btn-outline-sell:hover {
+  color: #fac28b;
+  border-color: #fac28b;
+}
+
 .btn-outline-main {
   color: white;
   font-weight: 600;
