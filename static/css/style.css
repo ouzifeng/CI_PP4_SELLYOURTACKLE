@@ -88,6 +88,19 @@ li .btn {
   border-color: transparent;
 }
 
+.btn-outline-main {
+  color: white;
+  font-weight: 600;
+  background-color: #fac28b;
+  border-color: transparent;
+  width: 250px;
+}
+
+.btn-outline-main:hover {
+  color: #fac28b;
+  border-color: #fac28b;;
+}
+
 .header {
   background-color: #fac28b;
 }
