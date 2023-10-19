@@ -240,6 +240,13 @@ li .btn {
   max-width: 400px;
 }
 
+.img-order-confirmation {
+  max-width: 100px;
+}
+
+p.info {
+  margin-bottom: 5px !important;
+}
   
 /* Mobile Styles */
 @media only screen and (max-width: 480px) {

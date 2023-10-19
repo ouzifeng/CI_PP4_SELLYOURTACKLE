@@ -236,7 +236,8 @@ def handle_payment(request):
         cart.clear()  # Uncomment if you want to clear the cart
 
         # Step 10: Return Success Response
-        return JsonResponse({'success': True, 'redirect_url': reverse('buying')})
+        return JsonResponse({'success': True, 'redirect_url': reverse('order-confirmation', args=[order.pk])})
+
 
 
     except stripe.error.StripeError as e:

@@ -542,3 +542,24 @@ class OrderPageView(View):
         }
 
         return render(request, self.template_name, context)        
+    
+
+class OrderConfirmation(View):
+    template_name = 'order-confirmation.html'
+    
+    def get(self, request, pk, *args, **kwargs):
+        order = get_object_or_404(Order, pk=pk)
+
+        # Fetch all order items associated with the order
+        order_items = OrderItem.objects.filter(order=order)
+        
+        # Extract products from the order items
+        products = [item.product for item in order_items]
+        
+        context = {
+            'products': products,  # List of products
+            'order': order,
+            'shipping_address': order.shipping_address
+        }
+
+        return render(request, self.template_name, context)

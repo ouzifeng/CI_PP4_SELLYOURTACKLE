@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+
+{% block content %}
+<h2 class="mb-4">Order Confirmation</h2>
+<p class="mb-4">Thank you for your order. The seller has been sent an email informing them of your purchase and to shop
+    the items as
+    soon as possible.</p>
+<div class="row">
+    <!-- Products Section -->
+    <div class="col-md-6">
+        {% for product in products %}
+        <div class="row mb-4 mt-4 product-section">
+            <!-- Product Image -->
+            <div class="col-6 col-md-4">
+                {% if product.images.all %}
+                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="img-order-confirmation">
+                {% endif %}
+            </div>
+            <!-- Product Details -->
+            <div class="col-6 col-md-4">
+                <div class="order-details">
+                    <p class="info"><strong>Item:</strong> {{ product.name }}</p>
+                    <p class="info"><strong>Price:</strong> £{{ product.price }}</p>
+                    <p class="info"><strong>Shipping:</strong> £{{ product.shipping }}</p>
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+    <!-- Order Information Section -->
+    <div class="col-md-6">
+        <div class="order-status mb-4">
+            <h5><strong>Total:</strong> £{{ order.total_amount }}</h5>
+        </div>
+        <div class="shipping-details mb-4">
+            <p><strong>Shipping Information:</strong></p>
+            <address>
+                {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
+                {{ order.shipping_address.address_line1 }}<br>
+                {% if order.shipping_address.address_line2 %}
+                {{ order.shipping_address.address_line2 }}<br>
+                {% endif %}
+                {{ order.shipping_address.city }}<br>
+                {{ order.shipping_address.postal_code }}<br>
+                {{ order.created_at }}
+            </address>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}
