@@ -407,7 +407,6 @@ class CheckoutView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
         # Create a SetupIntent
         try:
             setup_intent = stripe.SetupIntent.create()
@@ -416,8 +415,35 @@ class CheckoutView(TemplateView):
             context['error'] = str(e)  # Handle this error as you see fit
         
         context['cart'] = Cart(self.request)
-        context['form'] = CheckoutForm() 
+        
+        # Fetch existing billing and shipping addresses
+        user = self.request.user
+        billing_address = Address.objects.filter(user=user, address_type='billing').first()
+        shipping_address = Address.objects.filter(user=user, address_type='shipping').first()
+        
+        print(billing_address)
+        
+        data = {}  # Initialize an empty dictionary
+
+        # For billing address
+        if billing_address:
+            data.update({
+                'first_name': billing_address.first_name,
+                'last_name': billing_address.last_name,
+                'email': billing_address.email,
+                'phone_number': billing_address.phone_number,
+                'billing_address_line1': billing_address.address_line1,
+                'billing_address_line2': billing_address.address_line2,
+                'billing_city': billing_address.city,
+                'billing_state': billing_address.state,
+                'billing_postal_code': billing_address.postal_code,
+            })
+
+        # Initialize the form with the data dictionary outside of the checks
+        context['form'] = CheckoutForm(initial=data)
+
         return context
+
 
     def post(self, request, *args, **kwargs):
         # This will be where your handle_payment logic will reside
