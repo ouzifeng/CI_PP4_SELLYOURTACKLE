@@ -32,3 +32,12 @@ searchInput.addEventListener('keyup', function() {
 });
 
 
+ // Click functionality for clickable cards
+    $('.card-clickable').on('click', function() {
+        window.location.href = $(this).data('url');
+    });
+
+    // Set a timeout for all alert messages
+    $(".alert").delay(3000).slideUp(300, function(){
+        $(this).alert('close');
+    });
