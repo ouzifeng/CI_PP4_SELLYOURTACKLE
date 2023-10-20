@@ -11,6 +11,7 @@ from django.views.generic import RedirectView, TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.contrib import messages
 
 # Local application/library specific imports
 from .forms import CustomUserSignupForm
