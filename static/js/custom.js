@@ -21,7 +21,7 @@ searchInput.addEventListener('keyup', function() {
                 // If there are no results, display a message
                 resultsDropdown.innerHTML = `
                     <span class="no-results">
-                        <a href="#">Sorry, no matches for this item. Click to browse all products</a>
+                        <a href="/shop">Sorry, no matches for this item. Click to browse all products</a>
                     </span>
                 `;
             }
