@@ -79,13 +79,13 @@ li .btn {
 }
 
 .btn-outline-primary {
-  color: #fac28b;
-  border-color: #fac28b;;
+    color: white;
+  background-color: #fac28b;
+  border-color: #fac28b;
 }
 
 .btn-outline-primary:hover {
-  color: white;
-  background-color: #fac28b;
+  color: #fac28b;
   border-color: transparent;
 }
 

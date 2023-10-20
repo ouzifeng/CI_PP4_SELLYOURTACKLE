@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import ListProduct, EditProduct, ProductPage, HomeView, AddToCartView, CartView, RemoveFromCartView, CheckoutSuccessView, CheckoutView, ProductSoldView, OrderPageView, OrderConfirmation, SearchView
+from .views import ListProduct, EditProduct, ProductPage, HomeView, AddToCartView, CartView, RemoveFromCartView, CheckoutSuccessView, CheckoutView, ProductSoldView, OrderPageView, OrderConfirmation, SearchView, ShopView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -21,6 +21,7 @@ urlpatterns = [
     path('order-page/<int:pk>/', OrderPageView.as_view(), name='order-page'),
     path('order-confirmation/<int:pk>/', OrderConfirmation.as_view(), name='order-confirmation'),
     path('search/', SearchView.as_view(), name='search'),
+    path('shop/', ShopView.as_view(), name='shop'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% load custom_filters %}
+
+<div class="row mt-4">
+    <h2 class="mb-4">Shop</h2>
+    <!-- Filter Toggle Button for Mobile -->
+    <!-- Mobile Toggle Button -->
+    <button class="btn btn-outline-primary d-block d-md-none mb-3" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#filterSidebar" aria-controls="filterSidebar">
+        Toggle Filters
+    </button>
+
+    <!-- Offcanvas Sidebar for Mobile View -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="filterSidebar" aria-labelledby="filterSidebarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="filterSidebarLabel">Filters</h5>
+            <button type="button" class="btn-close btn-outline-sell" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <!-- Filter Form for Mobile -->
+            <form method="GET" action="{% url 'shop' %}">
+                <!-- Price Filter -->
+                <div class="mb-3">
+                    <label for="price" class="form-label">Max Price</label>
+                    <input type="number" class="form-control" id="price" name="price">
+                </div>
+
+                <!-- Brand Filter -->
+                <div class="mb-3">
+                    <label for="brand" class="form-label">Brand</label>
+                    <select name="brand" class="form-select">
+                        <option value="">Select Brand</option>
+                        {% for brand in available_brands %}
+                        <option value="{{ brand.id }}">{{ brand.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select name="category" class="form-select">
+                        <option value="">Select Category</option>
+                        {% for category in available_categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary mb-3">Apply Filters</button>
+                <br>
+                <a href="{% url 'shop' %}" class="btn btn-secondary">Reset Filters</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Static Filters for Desktop View -->
+    <div class="col-md-2 d-none d-md-block">
+        <h5>Filters</h5>
+        <!-- Filter Form for Desktop -->
+        <form method="GET" action="{% url 'shop' %}">
+
+            <!-- Price Filter -->
+            <div class="mb-3">
+                <label for="price" class="form-label">Max Price</label>
+                <input type="number" class="form-control" id="price" name="price">
+            </div>
+
+            <!-- Brand Filter -->
+            <div class="mb-3">
+                <label for="brand" class="form-label">Brand</label>
+                <select name="brand" class="form-select">
+                    <option value="">Select Brand</option>
+                    {% for brand in available_brands %}
+                    <option value="{{ brand.id }}">{{ brand.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select name="category" class="form-select">
+                    <option value="">Select Category</option>
+                    {% for category in available_categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary mb-3">Apply Filters</button>
+            <a href="{% url 'shop' %}" class="btn btn-secondary">Reset Filters</a>
+        </form>
+    </div>
+
+    <div class="col-md-10 row">
+        {% for product in products %}
+        <div class=" col-6 col-md-3 mb-4">
+            <div class="card d-flex flex-column card-clickable" data-url=" {% url 'product' product.slug %}">
+                <div id="product-card-img-container">
+                    {% for product_image in product.images.all %}
+                    {% if forloop.first %}
+                    <img src="{{ product_image.image.url }}" alt="{{ product.name }} image" class="img-fluid card-image"
+                        id="product-card-img">
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="card-body card-border flex-grow-1">
+                    <div class="h5 card-title mb-3 truncate">{{ product.name|truncatechars:100 }}</div>
+                    <p class="mb-0 card-conditions">Condition: {{ product.condition|normalise }}</p>
+                    <p class="card-conditions">Sold By: {{ product.user.username }} </p>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6 d-flex align-items-start flex-column">
+                            <p class="card-text mb-0 card-price">£{{ product.price }}</p>
+                        </div>
+                        <div class="col-6 d-flex flex-column align-items-end">
+                            <p class="card-text mb-0">+ £{{ product.shipping }}</p>
+                            <label class="card-shipping">Shipping</label>
+                        </div>
+
+                    </div>
+                </div>
+                <a href="{% url 'product' product.slug %}"
+                    class="card-footer p-4 pt-0 bg-transparent border-top-0 card-border d-flex align-items-center justify-content-center pt-4">
+                    View Product<i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}

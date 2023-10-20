@@ -601,3 +601,36 @@ class SearchView(View):
         ).values('name', 'slug')[:5]  # Limit to top 5 results for dropdown
         
         return JsonResponse(list(products), safe=False)
+    
+    
+class ShopView(TemplateView):
+    template_name = 'shop.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        products = Product.objects.filter(visibility=ProductVisibility.LIVE).exclude(financial_status="sold")
+        
+        # Retrieve filter criteria from GET parameters
+        max_price = self.request.GET.get('price')
+        selected_brand = self.request.GET.get('brand')
+        selected_category = self.request.GET.get('category')
+
+        # Apply filters based on the criteria
+        if max_price:
+            products = products.filter(price__lte=max_price)
+
+        if selected_brand:
+            products = products.filter(brand__name=selected_brand)
+
+        if selected_category:
+            products = products.filter(category__id=selected_category)
+
+        context['products'] = products
+        
+        # Fetch the available brands and categories from the filtered products
+        context['available_brands'] = Brand.objects.filter(id__in=products.values_list('brand', flat=True)).distinct()
+        context['available_categories'] = Category.objects.filter(id__in=products.values_list('category', flat=True)).distinct()
+
+        return context
+
