@@ -1,6 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_tags socialaccount %}
-
 {% block content %}
 
 <section class="py-5">
@@ -79,12 +79,12 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-floating mb-3">
-                                        <div id="category-warning" class="text-danger mb-2 mt-2" style="display: none;">
-                                            Please choose an option from the
-                                            search results.</div>
                                         <input type="text" name="category" id="category" class="form-control"
                                             placeholder="Category" required>
                                         <label for="category">Category<span class="star">*</span></label>
+                                        <div id="category-warning" class="text-danger mb-2 mt-2" style="display: none;">
+                                            Please choose an option from the
+                                            search results.</div>
                                     </div>
                                 </div>
                             </div>
@@ -169,4 +169,8 @@
 
 
 
+{% endblock %}
+
+{% block page_specific_scripts %}
+<script src="{% static 'js/list-product.js' %}"></script>
 {% endblock %}

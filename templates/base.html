@@ -161,6 +161,10 @@
 
     <!-- Custom Script (create this in a static directory) -->
     <script src="{% static 'js/custom.js' %}"></script>
+
+    <!-- Placeholder for page-specific scripts -->
+    {% block page_specific_scripts %}
+    {% endblock %}
 </body>
 
 </html>
