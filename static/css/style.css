@@ -180,6 +180,15 @@ li .btn {
   border-color: #fac28b;
 }
 
+.progress {
+    margin-bottom: 20px;
+}
+
+.checkout-step {
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   :root {

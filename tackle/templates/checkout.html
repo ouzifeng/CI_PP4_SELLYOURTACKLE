@@ -5,112 +5,125 @@
 {% if cart %}
 <!-- Personal Details -->
 <div class="row">
-    <div class="col-md-6">
-        <div class="container">
+    <div class="col-md-6 px-0 px-sm-3">
+        <div class="container mt-5 px-0 px-sm-3">
             <form method="post" id="payment-form" action="/auth/handle_payment/" novalidate>
                 {% csrf_token %}
                 {% load widget_tweaks %}
-                <!-- Personal Details -->
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        {{ form.first_name.label_tag }}
-                        {{ form.first_name|add_class:"form-control" }}
-                    </div>
-                    <div class="col-md-6 form-group">
-                        {{ form.last_name.label_tag }}
-                        {{ form.last_name|add_class:"form-control" }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    {{ form.email.label_tag }}
-                    {{ form.email|add_class:"form-control" }}
-                </div>
-                <div class="form-group">
-                    {{ form.phone_number.label_tag }}
-                    {{ form.phone_number|add_class:"form-control" }}
-                </div>
 
-                <!-- Billing Address -->
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        {{ form.billing_address_line1.label_tag }}
-                        {{ form.billing_address_line1|add_class:"form-control" }}
-                    </div>
-                    <div class="col-md-6 form-group">
-                        {{ form.billing_address_line2.label_tag }}
-                        {{ form.billing_address_line2|add_class:"form-control" }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        {{ form.billing_city.label_tag }}
-                        {{ form.billing_city|add_class:"form-control" }}
-                    </div>
-                    <div class="col-md-6 form-group">
-                        {{ form.billing_state.label_tag }}
-                        {{ form.billing_state|add_class:"form-control" }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    {{ form.billing_postal_code.label_tag }}
-                    {{ form.billing_postal_code|add_class:"form-control" }}
-                </div>
+                <!-- Address Details Step -->
+                <div class="checkout-step" id="addressDetails">
+                    <h4>Address Details</h4>
 
-                <!-- Use different shipping address checkbox -->
-                <div class="form-check">
-                    {{ form.use_different_shipping_address }}
-                    {{ form.use_different_shipping_address.label_tag }}
-                </div>
-
-                <!-- Shipping Address -->
-                <div class="shipping-field">
+                    <!-- Personal Details -->
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            {{ form.shipping_first_name.label_tag }}
-                            {{ form.shipping_first_name|add_class:"form-control" }}
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name|add_class:"form-control" }}
                         </div>
                         <div class="col-md-6 form-group">
-                            {{ form.shipping_last_name.label_tag }}
-                            {{ form.shipping_last_name|add_class:"form-control" }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            {{ form.shipping_address_line1.label_tag }}
-                            {{ form.shipping_address_line1|add_class:"form-control" }}
-                        </div>
-                        <div class="col-md-6 form-group">
-                            {{ form.shipping_address_line2.label_tag }}
-                            {{ form.shipping_address_line2|add_class:"form-control" }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            {{ form.shipping_city.label_tag }}
-                            {{ form.shipping_city|add_class:"form-control" }}
-                        </div>
-                        <div class="col-md-6 form-group">
-                            {{ form.shipping_state.label_tag }}
-                            {{ form.shipping_state|add_class:"form-control" }}
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name|add_class:"form-control" }}
                         </div>
                     </div>
                     <div class="form-group">
-                        {{ form.shipping_postal_code.label_tag }}
-                        {{ form.shipping_postal_code|add_class:"form-control" }}
+                        {{ form.email.label_tag }}
+                        {{ form.email|add_class:"form-control" }}
                     </div>
+                    <div class="form-group">
+                        {{ form.phone_number.label_tag }}
+                        {{ form.phone_number|add_class:"form-control" }}
+                    </div>
+
+                    <!-- Billing Address -->
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            {{ form.billing_address_line1.label_tag }}
+                            {{ form.billing_address_line1|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 form-group">
+                            {{ form.billing_address_line2.label_tag }}
+                            {{ form.billing_address_line2|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            {{ form.billing_city.label_tag }}
+                            {{ form.billing_city|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 form-group">
+                            {{ form.billing_state.label_tag }}
+                            {{ form.billing_state|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.billing_postal_code.label_tag }}
+                        {{ form.billing_postal_code|add_class:"form-control" }}
+                    </div>
+
+                    <!-- Use different shipping address checkbox -->
+                    <div class="form-check mt-4 mb-4">
+                        {{ form.use_different_shipping_address }}
+                        {{ form.use_different_shipping_address.label_tag }}
+                    </div>
+
+                    <!-- Shipping Address -->
+                    <div class="tab shipping-field">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                {{ form.shipping_first_name.label_tag }}
+                                {{ form.shipping_first_name|add_class:"form-control" }}
+                            </div>
+                            <div class="col-md-6 form-group">
+                                {{ form.shipping_last_name.label_tag }}
+                                {{ form.shipping_last_name|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                {{ form.shipping_address_line1.label_tag }}
+                                {{ form.shipping_address_line1|add_class:"form-control" }}
+                            </div>
+                            <div class="col-md-6 form-group">
+                                {{ form.shipping_address_line2.label_tag }}
+                                {{ form.shipping_address_line2|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                {{ form.shipping_city.label_tag }}
+                                {{ form.shipping_city|add_class:"form-control" }}
+                            </div>
+                            <div class="col-md-6 form-group">
+                                {{ form.shipping_state.label_tag }}
+                                {{ form.shipping_state|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form.shipping_postal_code.label_tag }}
+                            {{ form.shipping_postal_code|add_class:"form-control" }}
+                        </div>
+                    </div>
+
+                    <!-- Move to Payment Button -->
+                    <button type="button" class="btn btn-outline-main mt-3" onclick="moveToPaymentStep()">Move to
+                        Payment</button>
                 </div>
 
-                <!-- Stripe Payment Element -->
-                <div id="payment-element"></div>
+                <!-- Payment Details Step -->
+                <div class="checkout-step" id="paymentDetails" style="display: none;">
+                    <h4>Payment Details</h4>
 
+                    <!-- Stripe Payment Element -->
+                    <div id="payment-element"></div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-outline-main mt-3">
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-                        style="display:none;"></span>
-                    <span class="btn-text">Place Order</span>
-                </button>
-
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-outline-main mt-3">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                            style="display:none;"></span>
+                        <span class="btn-text">Place Order</span>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -120,11 +133,10 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>Thumbnail</th>
+                        <th></th>
                         <th>Product</th>
                         <th>Price</th>
                         <th>Shipping</th>
-                        <th>Quantity</th>
                         <th>Total</th>
                         <th>Actions</th>
                     </tr>
@@ -144,7 +156,6 @@
                         <td>{{ item.product.name }}</td>
                         <td>{{ item.price }}</td>
                         <td>{{ item.shipping_cost }}</td>
-                        <td>X{{ item.quantity }}</td>
                         <td>{{ item.total_price }}</td>
                         <td>
                             <form method="post" action="{% url 'remove_from_cart' item.product_id %}">
@@ -183,21 +194,21 @@
             </table>
         </div>
     </div>
+</div>
+{% else %}
+<p>Your cart is empty. Please add items to the cart first.</p>
+{% endif %}
 
-    {% else %}
-    <p>Your cart is empty. Please add items to the cart first.</p>
-    {% endif %}
 
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    // Step 1: Initialize Stripe with your publishable key
+    var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
+    var clientSecret = "{{ client_secret }}";
+</script>
 
-    <script src="https://js.stripe.com/v3/"></script>
-    <script>
-        // Step 1: Initialize Stripe with your publishable key
-        var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
-        var clientSecret = "{{ client_secret }}";
-    </script>
+{% endblock %}
 
-    {% endblock %}
-
-    {% block page_specific_scripts %}
-    <script src="{% static 'js/checkout.js' %}"></script>
-    {% endblock %}
+{% block page_specific_scripts %}
+<script src="{% static 'js/checkout.js' %}"></script>
+{% endblock %}

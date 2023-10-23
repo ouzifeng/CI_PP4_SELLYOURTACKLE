@@ -416,33 +416,45 @@ class CheckoutView(TemplateView):
         
         context['cart'] = Cart(self.request)
         
-        # Fetch existing billing and shipping addresses
-        user = self.request.user
-        billing_address = Address.objects.filter(user=user, address_type='billing').first()
-        shipping_address = Address.objects.filter(user=user, address_type='shipping').first()
-        
-        print(billing_address)
-        
         data = {}  # Initialize an empty dictionary
 
-        # For billing address
-        if billing_address:
+        # Check if user is authenticated
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            billing_address = Address.objects.filter(user=user, address_type='billing').first()
+            
+            # For billing address
+            if billing_address:
+                data.update({
+                    'first_name': billing_address.first_name,
+                    'last_name': billing_address.last_name,
+                    'email': billing_address.email,
+                    'phone_number': billing_address.phone_number,
+                    'billing_address_line1': billing_address.address_line1,
+                    'billing_address_line2': billing_address.address_line2,
+                    'billing_city': billing_address.city,
+                    'billing_state': billing_address.state,
+                    'billing_postal_code': billing_address.postal_code,
+                })
+        else:
+            # If user is not authenticated, just initialize the form with empty values
             data.update({
-                'first_name': billing_address.first_name,
-                'last_name': billing_address.last_name,
-                'email': billing_address.email,
-                'phone_number': billing_address.phone_number,
-                'billing_address_line1': billing_address.address_line1,
-                'billing_address_line2': billing_address.address_line2,
-                'billing_city': billing_address.city,
-                'billing_state': billing_address.state,
-                'billing_postal_code': billing_address.postal_code,
+                'first_name': "",
+                'last_name': "",
+                'email': "",
+                'phone_number': "",
+                'billing_address_line1': "",
+                'billing_address_line2': "",
+                'billing_city': "",
+                'billing_state': "",
+                'billing_postal_code': "",
             })
 
         # Initialize the form with the data dictionary outside of the checks
         context['form'] = CheckoutForm(initial=data)
 
         return context
+
 
 
     def post(self, request, *args, **kwargs):

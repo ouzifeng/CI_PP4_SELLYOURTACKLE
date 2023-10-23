@@ -67,23 +67,17 @@ function revertButtonState(btn) {
     btn.disabled = false;
 }
 
-
-
-
-
 document.addEventListener('DOMContentLoaded', function () {
     const useDifferentShippingAddressCheckbox = document.querySelector('#id_use_different_shipping_address');
-    const shippingFields = document.querySelectorAll('.shipping-field');
+    const shippingFieldContainer = document.querySelector('.shipping-field');
     const shippingInputs = document.querySelectorAll('.shipping-field input');
 
     function toggleShippingFields() {
-        shippingFields.forEach(field => {
-            if (useDifferentShippingAddressCheckbox.checked) {
-                field.style.display = 'block';
-            } else {
-                field.style.display = 'none';
-            }
-        });
+        if (useDifferentShippingAddressCheckbox.checked) {
+            shippingFieldContainer.style.display = 'block';
+        } else {
+            shippingFieldContainer.style.display = 'none';
+        }
 
         // Set or unset the required attribute based on checkbox state
         shippingInputs.forEach(input => {
@@ -111,6 +105,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+
+function moveToPaymentStep() {
+    // Hide Address Details and show Payment Details
+    document.getElementById('addressDetails').style.display = 'none';
+    document.getElementById('paymentDetails').style.display = 'block';
+
+    // Update progress bar to 100%
+    document.getElementById('checkoutProgressBar').style.width = '100%';
+}
 
 
  
