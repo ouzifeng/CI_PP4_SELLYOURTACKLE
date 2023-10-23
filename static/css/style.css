@@ -79,14 +79,15 @@ li .btn {
 }
 
 .btn-outline-primary {
-    color: white;
-  background-color: #fac28b;
+  color:#fac28b;
+  background-color: white;
   border-color: #fac28b;
 }
 
 .btn-outline-primary:hover {
-  color: #fac28b;
+  color: white;
   border-color: transparent;
+  background-color: #fac28b;
 }
 
 .btn-outline-sell {
@@ -172,6 +173,11 @@ li .btn {
 
 .search-dropdown a:hover {
     background-color: #f0f0f0;
+}
+
+.list-group-item.active {
+  background-color: #fac28b;
+  border-color: #fac28b;
 }
 
 

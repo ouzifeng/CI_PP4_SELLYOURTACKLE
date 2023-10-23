@@ -3,6 +3,7 @@ from .models import CustomUser
 from crispy_forms.helper import FormHelper
 from django.forms.widgets import EmailInput
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
 
 
 class CustomUserSignupForm(forms.ModelForm):
@@ -76,3 +77,16 @@ class CustomUserSignupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CustomUserSignupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+
+User = get_user_model()
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+            raise forms.ValidationError("This username is already taken.")
+        return username

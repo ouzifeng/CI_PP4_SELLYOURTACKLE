@@ -14,13 +14,14 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 
 # Local application/library specific imports
-from .forms import CustomUserSignupForm
+from .forms import CustomUserSignupForm, UserUpdateForm
 from .email import send_confirmation_email
 from .models import (
     EmailConfirmationToken,
     CustomUser,
     Order,
-    OrderItem
+    OrderItem,
+    Address
 )
 from tackle.models import Product, ProductImage
 
@@ -78,14 +79,39 @@ class CustomLoginView(LoginView):
 
 @method_decorator(login_required, name='dispatch')
 class WalletView(TemplateView):
-    """Displays the user's wallet balance."""
     template_name = 'wallet.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         context['balance'] = user.balance
+        context['form'] = UserUpdateForm(instance=user)
+        
+        # Fetching addresses
+        billing_address = Address.objects.filter(user=user, address_type='billing').first()
+        shipping_address = Address.objects.filter(user=user, address_type='shipping').first()
+
+        context['billing_address'] = billing_address
+        context['shipping_address'] = shipping_address
+        
         return context
+    
+        
+    def post(self, request, *args, **kwargs):
+        form = UserUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Username updated successfully!")
+            return redirect('wallet')
+        else:
+            context = self.get_context_data(**kwargs)
+            context['form'] = form
+            return render(request, self.template_name, context)
+
+
+
+
+
 
 
 class ConfirmEmailPageView(View):
