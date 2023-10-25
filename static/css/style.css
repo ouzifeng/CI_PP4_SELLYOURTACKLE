@@ -190,6 +190,10 @@ li .btn {
     margin-bottom: 20px;
 }
 
+.navbar-logo {
+    height: 45px;
+} 
+
 @media (prefers-reduced-motion: no-preference) {
   :root {
     scroll-behavior: smooth;
