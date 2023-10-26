@@ -109,10 +109,20 @@ class WalletView(TemplateView):
             return render(request, self.template_name, context)
 
 
-
-
-
-
+class AboutUsView(View):
+    """Renders the about us page."""
+    template_name = 'about.html'
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+    
+class ContactUsView(View):
+    """Renders the contact us page."""
+    template_name = 'contact.html'
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)    
+    
 
 class ConfirmEmailPageView(View):
     """Renders the email confirmation page."""

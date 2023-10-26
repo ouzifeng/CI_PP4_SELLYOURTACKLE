@@ -28,10 +28,10 @@
         <div class="container-main">
             <ul class="navbar-nav d-lg-flex flex-row">
                 <li class="nav-item mr-3">
-                    <a class="nav-link " href="/about">About</a>
+                    <a class="nav-link " href="{% url 'about-us' %}">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/contact">Contact</a>
+                    <a class="nav-link" href="{% url 'contact' %}">Contact</a>
                 </li>
             </ul>
         </div>
@@ -44,7 +44,8 @@
 
             <!-- Logo for Both Desktop and Mobile -->
             <a class="navbar-brand text-center text-lg-left" href="/">
-                <img src="static/media/sell-your-tackle-logo.png" class="navbar-logo" alt="SELL YOUR TACKLE" />
+                <img src="https://sellyourtackle.s3.eu-west-2.amazonaws.com/sell-your-tackle-logo.png"
+                    class="navbar-logo" alt="SELL YOUR TACKLE" />
             </a>
 
             <!-- Mobile Top Navbar (Cart Icon, Hamburger) -->

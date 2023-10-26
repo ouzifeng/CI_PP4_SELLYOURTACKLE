@@ -7,7 +7,9 @@ from .views import (
     ConfirmEmailView, 
     LogoutView, 
     ConfirmEmailPageView, 
-    MyAccount
+    MyAccount,
+    AboutUsView,
+    ContactUsView
 )
 
 # User actions/views
@@ -37,4 +39,6 @@ urlpatterns = [
     path('create_stripe_express_account/', create_stripe_express_account, name='create_stripe_express_account'),
     path('create_stripe_account_link/', create_stripe_account_link, name='create_stripe_account_link'),
     path('handle_stripe_return/', handle_stripe_return, name='handle_stripe_return'),
+    path('about-us/', AboutUsView.as_view(), name='about-us'),
+    path('contact/', ContactUsView.as_view(), name='contact'),
 ]
