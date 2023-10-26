@@ -127,16 +127,16 @@ class ContactUsView(View):
     def post(self, request, *args, **kwargs):
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Send an email to the admin
-            subject = "Contact form submission from " + form.cleaned_data['name']
+            # Use a verified sender email
+            from_email = 'hello@sellyourtackle.co.uk'
+            
+            # Include the user's email in the subject or message
+            subject = "Contact form submission from " + form.cleaned_data['name'] + " (" + form.cleaned_data['email_address'] + ")"
             message = form.cleaned_data['message']
-            from_email = form.cleaned_data['email_address']
-            send_mail(subject, message, from_email, ['hello@sellyourtackle.co.uk'])  
+            
+            send_mail(subject, message, from_email, ['hello@sellyourtackle.co.uk'])
 
-            # Add a success message
             messages.success(request, "Email sent successfully!")
-
-            # Redirect to a thank you page or back to the contact page with a success message
             return redirect('contact')
         return render(request, self.template_name, {'form': form})
 

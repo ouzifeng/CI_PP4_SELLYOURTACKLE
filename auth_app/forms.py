@@ -93,6 +93,6 @@ class UserUpdateForm(forms.ModelForm):
     
     
 class ContactForm(forms.Form):
-    name = forms.CharField(max_length=100)
-    email_address = forms.EmailField()
-    message = forms.CharField(widget=forms.Textarea)
+    name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email_address = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    message = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
