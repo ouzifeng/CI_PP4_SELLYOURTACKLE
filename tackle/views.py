@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import RedirectView, TemplateView
@@ -17,6 +17,7 @@ from django.views.generic.edit import DeleteView
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q
 from io import BytesIO
+from django.core.mail import EmailMessage
 
 # Third-party imports
 import stripe
@@ -25,7 +26,7 @@ from slugify import slugify
 from stripe.error import StripeError
 
 # App-specific imports
-from .forms import CheckoutForm
+from .forms import CheckoutForm, ContactSellerForm
 from .models import (
     Brand, Category, Product, ProductImage,
     ProductVisibility, WebhookLog
@@ -562,12 +563,12 @@ class ProductSoldView(View):
 
 class OrderPageView(View):
     template_name = "detailed-order-page.html"
+    form_class = ContactSellerForm
 
     def get(self, request, *args, **kwargs):
         order = get_object_or_404(Order, pk=kwargs['pk'])
 
-        # Get the product associated with the order. 
-        # This assumes each order has a single product (based on the OrderItem model).
+        # Get the product associated with the order.
         order_item = OrderItem.objects.filter(order=order).first()
         
         product = None
@@ -577,10 +578,52 @@ class OrderPageView(View):
         context = {
             'product': product,
             'order': order,
-            'shipping_address': order.shipping_address
+            'shipping_address': order.shipping_address,
+            'form': self.form_class()
         }
 
-        return render(request, self.template_name, context)        
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=kwargs['pk'])
+        order_item = OrderItem.objects.filter(order=order).first()
+        product = order_item.product if order_item else None
+
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            subject = form.cleaned_data['subject']
+            message_content = form.cleaned_data['message']
+            buyer_email = order.user.email
+            seller_email = order_item.seller.email if order_item else None
+
+            # Append the link to the seller's order management page
+            seller_order_link = request.build_absolute_uri(reverse('product_sold', args=[order_item.product.id]))
+            message_content += f"\n\nManage the order details here: {seller_order_link}"
+
+            if seller_email:
+                # Create and send the email to the seller with the buyer's details for reply
+                email = EmailMessage(
+                    subject,
+                    message_content,
+                    'hello@sellyourtackle.co.uk',
+                    [seller_email],
+                    reply_to=[buyer_email],
+                )
+                email.send()
+                messages.success(request, "Your message has been sent to the seller.")
+            else:
+                messages.error(request, "Could not send email. Seller's email not found.")
+
+            return redirect('order-page', pk=kwargs['pk'])
+
+        context = {
+            'product': product,
+            'order': order,
+            'shipping_address': order.shipping_address,
+            'form': form
+        }
+        
+        return render(request, self.template_name, context)
     
 
 class OrderConfirmation(View):

@@ -218,8 +218,7 @@ class Buying(View):
                 product = item.product
                 first_image = ProductImage.objects.filter(product=product).first()
                 if first_image:
-                    order_product_images[product.id] = first_image.image.url
-        print(order_product_images)            
+                    order_product_images[product.id] = first_image.image.url          
         return order_product_images
 
 

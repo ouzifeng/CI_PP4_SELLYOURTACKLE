@@ -29,3 +29,8 @@ class CheckoutForm(forms.Form):
         initial=False,
         label="Is shipping address different from billing address?"
     )
+
+
+class ContactSellerForm(forms.Form):
+    subject = forms.CharField(max_length=100)
+    message = forms.CharField(widget=forms.Textarea)
