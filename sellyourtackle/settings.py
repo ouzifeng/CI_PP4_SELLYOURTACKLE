@@ -198,8 +198,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'in-v3.mailjet.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = os.getenv('MAILJET_API_KEY')  # This line was missing
-EMAIL_HOST_PASSWORD = os.getenv('MAILJET_SECRET_KEY')  # This line was missing
+EMAIL_HOST_USER = os.getenv('MAILJET_API_KEY')  
+EMAIL_HOST_PASSWORD = os.getenv('MAILJET_SECRET_KEY') 
 EMAIL_USE_TLS = True
 
 

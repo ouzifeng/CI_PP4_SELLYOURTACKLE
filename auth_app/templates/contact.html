@@ -3,6 +3,23 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<h1>hello</h1>
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h2 class="mb-4">Contact Us</h2>
+            <form id="contactForm" method="post" action="{% url 'contact' %}">
+                {% csrf_token %}
+                {{ form.name.label_tag }} {{ form.name }}
+                {{ form.email_address.label_tag }} {{ form.email_address }}
+                {{ form.message.label_tag }} {{ form.message }}
+                <div class="d-grid">
+                    <button class="btn btn-outline-sell btn-lg" type="submit">Submit</button>
+                </div>
+            </form>
 
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
 {% endblock %}

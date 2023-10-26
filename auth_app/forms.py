@@ -90,3 +90,9 @@ class UserUpdateForm(forms.ModelForm):
         if User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
             raise forms.ValidationError("This username is already taken.")
         return username
+    
+    
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    email_address = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)

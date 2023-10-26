@@ -12,9 +12,10 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.core.mail import send_mail
 
 # Local application/library specific imports
-from .forms import CustomUserSignupForm, UserUpdateForm
+from .forms import CustomUserSignupForm, UserUpdateForm, ContactForm
 from .email import send_confirmation_email
 from .models import (
     EmailConfirmationToken,
@@ -117,11 +118,28 @@ class AboutUsView(View):
         return render(request, self.template_name)
     
 class ContactUsView(View):
-    """Renders the contact us page."""
     template_name = 'contact.html'
     
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)    
+        form = ContactForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Send an email to the admin
+            subject = "Contact form submission from " + form.cleaned_data['name']
+            message = form.cleaned_data['message']
+            from_email = form.cleaned_data['email_address']
+            send_mail(subject, message, from_email, ['hello@sellyourtackle.co.uk'])  
+
+            # Add a success message
+            messages.success(request, "Email sent successfully!")
+
+            # Redirect to a thank you page or back to the contact page with a success message
+            return redirect('contact')
+        return render(request, self.template_name, {'form': form})
+
     
 
 class ConfirmEmailPageView(View):
