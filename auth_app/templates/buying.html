@@ -1,36 +1,90 @@
 {% extends "base.html" %}
-
+{% load custom_filters %}
 {% block content %}
 <h1>My Orders</h1>
 
-<table class="table table-hover">
+<!-- Desktop/Laptop Table -->
+<table class="table table-hover d-none d-md-table">
     <thead>
         <tr>
-            <th>Order ID</th>
             <th>Order Date</th>
+            <th></th>
             <th>Products</th>
             <th>Total Cost</th>
-            <th>Status</th>
             <th>Tracking</th>
         </tr>
     </thead>
     <tbody>
         {% for order in user_orders %}
         <tr onclick="window.location.href='{% url 'order-page' order.id %}';" style="cursor:pointer;">
-            <td>{{ order.id }}</td>
-            <td>{{ order.created_at|date:"F d, Y" }}</td>
+            <td>{{ order.created_at|date:"M d, Y" }}</td>
+            <td>
+                {% with item=order.items.first %}
+                {% if item %}
+                <img src="{{ order_product_images|lookup:item.product.id }}" alt="{{ item.product.name }}"
+                    class="product-image-table mr-2">
+                {% endif %}
+                {% endwith %}
+            </td>
+            <td>
+                {% for item in order.items.all %}
+                {{ item.product.name }}<br>
+                {% endfor %}
+            </td>
+            <td>£{{ order.total_amount }}</td>
+            <td>
+                {% if order.tracking_company and order.tracking_number %}
+                {{ order.tracking_company }}: {{ order.tracking_number }}
+                {% else %}
+                Not Shipped
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+<!-- Mobile Table -->
+<table class="table table-hover d-md-none">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th></th> <!-- Column for product image -->
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in user_orders %}
+        <tr onclick="window.location.href='{% url 'order-page' order.id %}';" style="cursor:pointer;">
+            <td>{{ order.created_at|date:"M d, Y" }}</td>
+            <td>
+                {% with item=order.items.first %}
+                {% if item %}
+                <img src="{{ order_product_images|lookup:item.product.id }}" alt="{{ item.product.name }}"
+                    class="product-image-table mr-2">
+                {% endif %}
+                {% endwith %}
+            </td>
             <td>
                 {% for item in order.items.all %}
                 {{ item.product.name }} (x{{ item.quantity }})<br>
                 {% endfor %}
+                <strong>Total:</strong> £{{ order.total_amount }}<br>
+                <strong>Tracking:</strong>
+                {% if order.tracking_company and order.tracking_number %}
+                {{ order.tracking_company }}: {{ order.tracking_number }}
+                {% else %}
+                Not Shipped
+                {% endif %}
             </td>
-            <td>£{{ order.total_amount }}</td>
-            <td>{{ order.status|capfirst }}</td>
-            <td>{{ order.tracking_company }}: {{ order.tracking_number }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+
+
 
 <!-- Pagination controls -->
 <div class="pagination">

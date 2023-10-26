@@ -25,3 +25,8 @@ def multiply(value, arg):
 @register.filter(name='normalise')
 def normalise(value):
     return value.capitalize()
+
+
+@register.filter(name='lookup')
+def lookup(value, arg):
+    return value.get(arg)
