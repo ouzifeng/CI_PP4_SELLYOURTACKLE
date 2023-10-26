@@ -110,12 +110,26 @@ class WalletView(TemplateView):
             return render(request, self.template_name, context)
 
 
-class AboutUsView(View):
+class PrivacyView(View):
     """Renders the about us page."""
-    template_name = 'about.html'
+    template_name = 'privacy.html'
     
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
+    
+class TermsView(View):
+    """Renders the about us page."""
+    template_name = 'terms.html'
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)    
+    
+class AboutUsView(View):
+    """Renders the privacy page."""
+    template_name = 'about.html'
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)    
     
 class ContactUsView(View):
     template_name = 'contact.html'

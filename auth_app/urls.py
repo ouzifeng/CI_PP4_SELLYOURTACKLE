@@ -9,7 +9,9 @@ from .views import (
     ConfirmEmailPageView, 
     MyAccount,
     AboutUsView,
-    ContactUsView
+    ContactUsView,
+    PrivacyView,
+    TermsView
 )
 
 # User actions/views
@@ -41,4 +43,6 @@ urlpatterns = [
     path('handle_stripe_return/', handle_stripe_return, name='handle_stripe_return'),
     path('about-us/', AboutUsView.as_view(), name='about-us'),
     path('contact/', ContactUsView.as_view(), name='contact'),
+    path('privacy/', PrivacyView.as_view(), name='privacy'),
+    path('terms/', TermsView.as_view(), name='terms'),
 ]
