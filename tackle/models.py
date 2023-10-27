@@ -92,6 +92,9 @@ class Product(models.Model):
             self.slug = unique_slug
 
         super(Product, self).save(*args, **kwargs)
+        
+    def total_with_shipping(self):
+        return self.price + self.shipping 
 
 
 

@@ -67,56 +67,103 @@
 
     </div>
     <div class="col-md-8">
-        <div class="order-details">
-            <p class="info"><strong>Name:</strong> {{ product.name }}</p>
-            <p class="info"><strong>Price:</strong> £{{ product.price }}</p>
-            <p class="info"><strong>Condition:</strong> {{ product.condition }}</p>
+        <div class="row">
+            <!-- First Column (Product Details and Shipping Information) -->
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card-header">Order Details</div>
+                    <div class="card-body">
+                        <!-- Order Info -->
+                        <p><strong>Status:</strong> {{ order.status|capfirst }}</p>
+                        <p><strong>Shipping Status:</strong>
+                            {% if order.status == "shipped" %}
+                            Shipped
+                            {% else %}
+                            Not shipped yet
+                            {% endif %}
+                        </p>
+                        <p><strong>Order Date:</strong> {{ order.created_at }}</p>
+                        <hr>
 
-        </div>
+                        <!-- Products in Order -->
+                        <h5>Products in Order:</h5>
+                        <div class="d-none d-md-block">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Shipping</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order.items.all %}
+                                    <tr>
+                                        <td>{{ item.product.name }}</td>
+                                        <td>£{{ item.price }}</td>
+                                        <td>£{{ item.product.shipping }}</td>
+                                        <td>£{{ item.product.total_with_shipping }}</td>
 
-        <div class="shipping-details">
-            <h4>Shipping Information:</h4>
-            <address>
-                {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
-                {{ order.shipping_address.email }}<br>
-                {{ order.shipping_address.address_line1 }}<br>
-                {% if order.shipping_address.address_line2 %}
-                {{ order.shipping_address.line2 }}<br>
-                {% endif %}
-                {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}<br>
-            </address>
-        </div>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
 
-        <div class="order-status">
-            <h4>Order Status:</h4>
-            <p><strong>Status:</strong> {{ order.status|capfirst }}</p>
-            <p><strong>Shipping Status:</strong>
-                {% if order.status == "shipped" %}
-                Shipped
-                {% else %}
-                Not shipped yet
-                {% endif %}
-            </p>
-            <p><strong>Order Date:</strong> {{ order.created_at }}</p>
-        </div>
+                        <div class="d-block d-md-none">
+                            {% for item in order.items.all %}
+                            <table class="table table-bordered mb-3">
+                                <tbody>
+                                    <tr>
+                                        <th>Name</th>
+                                        <td>{{ item.product.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Price</th>
+                                        <td>£{{ item.price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Shipping</th>
+                                        <td>£{{ item.product.shipping }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total</th>
+                                        <td>£{{ item.product.total_with_shipping }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% endfor %}
+                        </div>
 
-        {% if order.tracking_number %}
-        <div class="tracking-info">
-            <h3>Tracking Information:</h3>
-            <p><strong>Shipping Company:</strong> {{ order.tracking_company }}</p>
-            <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+
+                        <!-- Order Summary -->
+                        <div class="order-summary">
+                            <p><strong>Product Cost:</strong> £{{ order.product_cost }}</p>
+                            <p><strong>Shipping Cost:</strong> £{{ order.shipping_cost }}</p>
+                            <p><strong>Total Amount:</strong> £{{ order.total_amount }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Column (Order & Shipping Status and Contact Seller) -->
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        {% with seller=order.items.first.seller %}
+                        <p><strong>Seller:</strong> {{ seller.username }}</p>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#contactSellerModal">
+                            Contact Seller
+                        </button>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
 </div>
-{% endif %}
-
-{% with seller=order.items.first.seller %}
-<p>Seller: {{ seller.username }}</p>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactSellerModal">
-    Contact Seller
-</button>
-{% endwith %}
-
-
 
 {% endblock %}

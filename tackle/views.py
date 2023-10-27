@@ -497,6 +497,7 @@ def distribute_pending_funds():
                 # Optionally, log the error or send a notification.
 
 
+@method_decorator(login_required, name='dispatch')
 class ProductSoldView(View):
     template_name = "product-sold-page.html"
 
@@ -517,7 +518,8 @@ class ProductSoldView(View):
         context = {
             'product': product,
             'order': order,
-            'shipping_address': shipping_address
+            'shipping_address': shipping_address,
+            'form': ContactSellerForm()
         }
         
         return render(request, self.template_name, context)
@@ -526,17 +528,52 @@ class ProductSoldView(View):
         product = get_object_or_404(Product, pk=kwargs['pk'])
         order_item = OrderItem.objects.filter(product=product).first()
 
+        # Ensure order_item exists
+        if not order_item:
+            # Handle the case where there's no order_item, possibly redirecting or sending an error message
+            messages.error(request, "Order item not found.")
+            return redirect('product_sold', pk=product.id)
+
+        order = order_item.order
+
+        # Handle contact buyer form submission
+        form = ContactSellerForm(request.POST)
+        if form.is_valid():
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            seller_email = request.user.email 
+            buyer_email = order.user.email
+
+            # Append the link to the buyer's order page
+            buyer_order_link = request.build_absolute_uri(reverse('order-page', args=[order.id]))
+            message += f"\n\nManage the order details here: {buyer_order_link}"
+
+            if buyer_email:
+                email = EmailMessage(
+                    subject,
+                    message,
+                    'hello@sellyourtackle.co.uk',
+                    [buyer_email],
+                    reply_to=[seller_email],
+                )
+                email.send()
+                messages.success(request, "Your message has been sent to the buyer.")
+                return redirect('product_sold', pk=product.id)
+            else:
+                messages.error(request, "Could not send email. Buyer's email not found.")
+                return redirect('product_sold', pk=product.id)
+
+        # Check if an order item exists
         if order_item:
             order = order_item.order
             action = request.POST.get('action')
-            
+
             # Check if the action is to mark as dispatched
             if action == 'mark_dispatched':
                 order.status = 'shipped'
                 order.save()
-                # Redirect back to the product sold page after updating
                 return redirect('product_sold', pk=product.id)
-            
+
             # Check if the action is to mark as refunded
             elif action == 'mark_refunded':
                 # Refund the order
@@ -558,9 +595,11 @@ class ProductSoldView(View):
                 order.tracking_company = tracking_company
                 order.tracking_number = tracking_number
                 order.save()
+                return redirect('product_sold', pk=product.id)
+            
+        return redirect('product_sold', pk=product.id)
         
-        return redirect('product_sold', pk=product.id)        
-
+@method_decorator(login_required, name='dispatch')
 class OrderPageView(View):
     template_name = "detailed-order-page.html"
     form_class = ContactSellerForm
@@ -625,7 +664,7 @@ class OrderPageView(View):
         
         return render(request, self.template_name, context)
     
-
+@method_decorator(login_required, name='dispatch')
 class OrderConfirmation(View):
     template_name = 'order-confirmation.html'
     

@@ -108,3 +108,4 @@ class OrderItem(models.Model):
 
     def get_total_item_price_with_shipping(self):
         return (self.price * self.quantity) + self.shipping_cost
+
