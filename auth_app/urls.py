@@ -11,7 +11,9 @@ from .views import (
     AboutUsView,
     ContactUsView,
     PrivacyView,
-    TermsView
+    TermsView,
+    ResetPasswordView,
+    ResetPasswordConfirmView
 )
 
 # User actions/views
@@ -45,4 +47,7 @@ urlpatterns = [
     path('contact/', ContactUsView.as_view(), name='contact'),
     path('privacy/', PrivacyView.as_view(), name='privacy'),
     path('terms/', TermsView.as_view(), name='terms'),
+    path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
+    path('reset-password/<str:token>/', ResetPasswordConfirmView.as_view(), name='reset-password-confirm'),
+
 ]

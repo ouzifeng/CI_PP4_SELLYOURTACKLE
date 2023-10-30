@@ -109,3 +109,9 @@ class OrderItem(models.Model):
     def get_total_item_price_with_shipping(self):
         return (self.price * self.quantity) + self.shipping_cost
 
+
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid4, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)

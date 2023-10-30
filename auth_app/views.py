@@ -15,14 +15,15 @@ from django.contrib import messages
 from django.core.mail import send_mail
 
 # Local application/library specific imports
-from .forms import CustomUserSignupForm, UserUpdateForm, ContactForm
-from .email import send_confirmation_email
+from .forms import CustomUserSignupForm, UserUpdateForm, ContactForm, PasswordResetRequestForm
+from .email import send_confirmation_email, send_reset_password_email
 from .models import (
     EmailConfirmationToken,
     CustomUser,
     Order,
     OrderItem,
-    Address
+    Address,
+    PasswordResetToken
 )
 from tackle.models import Product, ProductImage
 
@@ -245,3 +246,70 @@ class Selling(View):
             if first_image:
                 product_images[product.id] = first_image.image.url
         return product_images
+
+class ResetPasswordView(View):
+    template_name = 'reset-password.html'
+
+    def get(self, request, *args, **kwargs):
+        form = PasswordResetRequestForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        print("Inside ResetPasswordView post method")  # <-- Add this
+        form = PasswordResetRequestForm(request.POST)
+        
+        if form.is_valid():
+            print("Form is valid.")  # <-- Add this
+            email = form.cleaned_data['email']
+            print(f"Checking for user with email: {email}")  # <-- Add this
+            user = CustomUser.objects.filter(email=email).first()
+            
+            if user:
+                print(f"Found user with email: {email}")  # <-- Add this
+                # Create token and send email
+                token = PasswordResetToken.objects.create(user=user)
+                reset_link = f"https://www.sellyourtackle.co.uk/auth/reset-password/{token.token}/"
+                print(f"Sending reset password email to {email} with link: {reset_link}")  # <-- Add this
+                send_reset_password_email(user.email, reset_link, user.first_name)  # Uncomment this
+                return redirect('home')  # A page to inform the user that a reset link has been sent
+            else:
+                print(f"No user found with email: {email}")  # <-- Add this
+                form.add_error('email', 'Email not found.')
+        else:
+            print("Form is not valid.")  # <-- Add this
+            print(form.errors)  # <-- Add this to print form errors
+
+        return render(request, self.template_name, {'form': form})
+
+class ResetPasswordConfirmView(View):
+    template_name = 'reset-password-confirm.html'
+    
+    def get(self, request, token, *args, **kwargs):
+        try:
+            reset_token = PasswordResetToken.objects.get(token=token)
+            if reset_token.is_expired():
+                messages.error(request, "The reset link has expired. Please request a new one.")
+                return redirect('reset-password')
+        except PasswordResetToken.DoesNotExist:
+            messages.error(request, "Invalid reset token. Please request a new one.")
+            return redirect('reset-password')
+        
+        form = SetNewPasswordForm()
+        return render(request, self.template_name, {'form': form, 'token': token})
+
+    def post(self, request, token, *args, **kwargs):
+        form = SetNewPasswordForm(request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['password']
+            try:
+                reset_token = PasswordResetToken.objects.get(token=token)
+                user = reset_token.user
+                user.set_password(password)
+                user.save()
+                reset_token.delete()
+                messages.success(request, "Password updated successfully!")
+                return redirect('login')
+            except PasswordResetToken.DoesNotExist:
+                messages.error(request, "Invalid reset token. Please request a new one.")
+                return redirect('reset-password')
+        return render(request, self.template_name, {'form': form, 'token': token})

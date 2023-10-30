@@ -96,3 +96,43 @@ class ContactForm(forms.Form):
     name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
     email_address = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     message = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
+
+
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField()
+    
+    
+class SetNewPasswordForm(forms.Form):
+    password1 = forms.CharField(
+        label='New Password',
+        widget=forms.PasswordInput(attrs={
+            'required': True,
+            'minlength': 8,
+            'title': "Password must be at least 8 characters long, include a mix of letters and numbers."
+        })
+    )
+    password2 = forms.CharField(
+        label='Confirm Password',
+        widget=forms.PasswordInput(attrs={
+            'required': True,
+            'minlength': 8,
+            'title': "Please re-enter the password."
+        })
+    )
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+        
+        if len(password1) < 8:
+            raise forms.ValidationError("Password must be at least 8 characters long.")
+        if not any(char.isdigit() for char in password1):
+            raise forms.ValidationError("Password must contain at least one number.")
+        if not any(char.isalpha() for char in password1):
+            raise forms.ValidationError("Password must contain at least one letter.")
+
+        return password2
+    
