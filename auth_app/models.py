@@ -8,6 +8,7 @@ from django.conf import settings
 # External dependencies
 from decimal import Decimal
 from uuid import uuid4
+from datetime import datetime, timedelta
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -115,3 +116,7 @@ class PasswordResetToken(models.Model):
     token = models.UUIDField(default=uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
+
+    @property
+    def is_expired(self):
+        return datetime.now(timezone.utc) > self.created_at + timedelta(hours=1)
