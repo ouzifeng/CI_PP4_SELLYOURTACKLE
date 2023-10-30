@@ -4,6 +4,15 @@
 {% block content %}
 
 <section class="py-5">
+    {% if needs_stripe %}
+    <div class="alert alert-warning">
+        You need to connect your Stripe account before listing a product.
+    </div>
+    <h5 class="mb-4">Connect Your Bank Account First</h5>
+    <p>To make sure you get paid when your item sells, you first need to connect your bank account. The whole process
+        is managed by Stripe and takes a couple of minutes</p>
+    <a href="{% url 'create_stripe_express_account' %}" class="btn btn-outline-sell">Connect Bank Account</a>
+    {% else %}
     <div class="container px-0 px-md-5">
         <!-- Contact form -->
         <div class="bg-light rounded-3 py-5 px-4 px-md-5 mb-5">
@@ -168,7 +177,7 @@
 </section>
 
 
-
+{% endif %}
 {% endblock %}
 
 {% block page_specific_scripts %}

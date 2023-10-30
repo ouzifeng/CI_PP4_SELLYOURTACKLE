@@ -3,6 +3,7 @@
 {% block content %}
 
 <div class="container mt-4">
+
     <!-- Contact Buyer Modal -->
     <div class="modal fade" id="contactBuyerModal" tabindex="-1" aria-labelledby="contactBuyerModalLabel"
         aria-hidden="true">
@@ -15,13 +16,14 @@
                 <div class="modal-body">
                     <form id="contactBuyerForm" method="post" action="{% url 'product_sold' pk=product.id %}">
                         {% csrf_token %}
-
+                        <!-- Subject Field -->
                         <div class="mb-3">
                             <label for="{{ form.subject.id_for_label }}" class="form-label">Subject</label>
                             <input type="text" class="form-control" id="{{ form.subject.id_for_label }}"
                                 name="{{ form.subject.name }}" placeholder="Subject" required>
                         </div>
 
+                        <!-- Message Field -->
                         <div class="mb-3">
                             <label for="{{ form.message.id_for_label }}" class="form-label">Message</label>
                             <textarea class="form-control" id="{{ form.message.id_for_label }}"
@@ -29,6 +31,7 @@
                                 required></textarea>
                         </div>
 
+                        <!-- Send Button -->
                         <div class="d-grid">
                             <button class="btn btn-primary btn-lg" type="submit">Send Message</button>
                         </div>
@@ -38,86 +41,89 @@
         </div>
     </div>
 
+    <!-- Page Title -->
+    <h2 class="mb-4">Shipping Information</h2>
 
-    <h2>Shipping Information</h2>
-    <hr>
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <h4>Shipping Address</h4>
-            <address>
-                {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
-                {{ order.shipping_address.email }}<br>
-                {{ order.shipping_address.address_line1 }}<br>
-                {% if order.shipping_address.address_line2 %}
-                {{ order.shipping_address.address_line2 }}<br>
-                {% endif %}
-                {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}<br>
-                {{ order.shipping_address.phone_number }}
-            </address>
-
-        </div>
-        <div class="col-md-6">
-            <h4>Shipping Information</h4>
-            <form method="post" action="{% url 'product_sold' product.id %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="shippingCompany">Shipping Company:</label>
-                    <input type="text" class="form-control" id="shippingCompany" name="tracking_company"
-                        value="{{ order.tracking_company }}">
-                    <label for="trackingNumber">Tracking Number:</label>
-                    <input type="text" class="form-control" id="trackingNumber" name="tracking_number"
-                        value="{{ order.tracking_number }}">
+    <!-- Shipping Address & Information -->
+    <div class="row">
+        <!-- Shipping Address -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4 class="card-title">Shipping Address</h4>
+                    <address>
+                        {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
+                        {{ order.shipping_address.address_line1 }}<br>
+                        {% if order.shipping_address.address_line2 %}
+                        {{ order.shipping_address.address_line2 }}<br>
+                        {% endif %}
+                        {{ order.shipping_address.city }}, {{ order.shipping_address.postal_code }}<br>
+                        {{ order.shipping_address.phone_number }}
+                    </address>
+                    <!-- Contact Button -->
+                    <button type="button" class="btn btn-primary btn-block" data-bs-toggle="modal"
+                        data-bs-target="#contactBuyerModal">Contact Buyer</button>
+                    {% if order.status == 'refunded' %}
+                    <br>
+                    <!-- Refund Button -->
+                    <button class="btn btn-danger btn-block disabled mt-4">Order Refunded</button>
+                    <p class="mt-2">Refunded on: {{ order.updated_at|date:"F j, Y" }}</p>
+                    {% else %}
+                    <form method="post" action="{% url 'product_sold' product.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="mark_refunded">
+                        <button type="submit" class="btn btn-danger btn-block">Refund Order</button>
+                    </form>
+                    {% endif %}
                 </div>
-                <button type="submit" class="btn btn-primary mt-4">Update Shipping Info</button>
-            </form>
-
-            {% if order.tracking_company and order.tracking_number %}
-            <div class="mt-4">
-                <h5>Current Shipping Information:</h5>
-                <p><strong>Shipping Company:</strong> {{ order.tracking_company }}</p>
-                <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
             </div>
-            {% endif %}
+        </div>
 
+        <!-- Shipping Information -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4 class="card-title">Shipping Information</h4>
+                    <form method="post" action="{% url 'product_sold' product.id %}">
+                        {% csrf_token %}
+                        <!-- Shipping Company Field -->
+                        <div class="form-group mb-3">
+                            <label for="shippingCompany">Shipping Company:</label>
+                            <input type="text" class="form-control" id="shippingCompany" name="tracking_company"
+                                value="{{ order.tracking_company }}">
+                        </div>
+
+                        <!-- Tracking Number Field -->
+                        <div class="form-group mb-3">
+                            <label for="trackingNumber">Tracking Number:</label>
+                            <input type="text" class="form-control" id="trackingNumber" name="tracking_number"
+                                value="{{ order.tracking_number }}">
+                        </div>
+
+                        <!-- Update Button -->
+                        <button type="submit" class="btn btn-primary">Update Shipping Info</button>
+                    </form>
+                    {% if order.status == 'shipped' %}
+                    <button class="btn btn-success btn-block disabled">Order Dispatched</button>
+                    <p class="text-center mt-2">Dispatched on: {{ order.updated_at|date:"F j, Y" }}</p>
+                    {% else %}
+                    <form method="post" action="{% url 'product_sold' product.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="mark_dispatched">
+                        <button type="submit" class="btn btn-success btn-block mt-4">Mark as Dispatched</button>
+                    </form>
+                    {% endif %}
+                    {% if order.tracking_company and order.tracking_number %}
+                    <div class="mt-4">
+                        <strong>Current Shipping Information:</strong>
+                        <p><strong>Shipping Company:</strong> {{ order.tracking_company }}</p>
+                        <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="row mt-4">
-        <div class="col-md-12 mb-4">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactBuyerModal">
-                Contact Buyer
-            </button>
-        </div>
-        <div class="col-md-12">
-            <h4>Mark as Dispatched</h4>
-            {% if order.status == 'shipped' %}
-            <button class="btn btn-success disabled">Order Dispatched</button>
-            <p class="mt-2">Dispatched on: {{ order.updated_at|date:"F j, Y" }}</p>
-            {% else %}
-            <form method="post" action="{% url 'product_sold' product.id %}">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="mark_dispatched">
-                <button type="submit" class="btn btn-success">Mark as Dispatched</button>
-            </form>
-            {% endif %}
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4>Refund Order</h4>
-            {% if order.status == 'refunded' %}
-            <button class="btn btn-danger disabled">Order Refunded</button>
-            <p class="mt-2">Refunded on: {{ order.updated_at|date:"F j, Y" }}</p>
-            {% else %}
-            <form method="post" action="{% url 'product_sold' product.id %}">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="mark_refunded">
-                <button type="submit" class="btn btn-danger">Refund Order</button>
-            </form>
-            {% endif %}
-        </div>
-    </div>
-
 
 </div>
 

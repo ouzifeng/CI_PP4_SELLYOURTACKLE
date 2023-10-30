@@ -278,8 +278,8 @@ def create_stripe_express_account(request):
         # Create an account link for onboarding
         account_link = stripe.AccountLink.create(
             account=account.id,
-            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth",  # URL to redirect users who need to authenticate again
-            return_url="https://www.sellyourtackle.co.uk/auth/wallet",   # URL to redirect users after they complete the onboarding
+            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth", 
+            return_url="https://www.sellyourtackle.co.uk/list-product/",   
             type="account_onboarding"
         )
 
@@ -303,8 +303,8 @@ def create_stripe_account_link(request):
         # Create an account link for onboarding
         account_link = stripe.AccountLink.create(
             account=request.user.stripe_account_id,
-            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth",  # URL to redirect users who need to authenticate again
-            return_url="https://www.sellyourtackle.co.uk/auth/wallet",   # URL to redirect users after they complete the onboarding
+            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth",  
+            return_url="https://www.sellyourtackle.co.uk/auth/wallet",   
             type="account_onboarding"
         )
 

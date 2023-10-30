@@ -50,7 +50,16 @@ class ListProduct(View):
     template_name = 'list-product.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        if not request.user.stripe_account_id:
+            # Render the page with the message and "Connect with Stripe" button
+            context = {
+                'needs_stripe': True
+            }
+            return render(request, self.template_name, context)
+        else:
+            # Render the normal product listing form
+            return render(request, self.template_name)
+
     
     def post(self, request, *args, **kwargs):
         # Get data from the form
