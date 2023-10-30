@@ -328,12 +328,14 @@ def handle_stripe_return(request):
 
         # Check if the user has completed the necessary requirements
         if stripe_account.details_submitted:
+            request.user.is_stripe_verified = True
+            request.user.save()
             # If all details are submitted, you can allow them to use Stripe features on your platform
-            return redirect('https://www.sellyourtackle.co.uk/auth/wallet')  # Redirect to a dashboard or success page
+            return redirect('https://www.sellyourtackle.co.uk/list-product/')  
         else:
             # If not, you can inform them about the pending requirements or guide them to complete the setup
             return redirect('some_setup_guide_url')  # Redirect to a page where they can see what's pending
 
     except stripe.error.StripeError as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
-    
+

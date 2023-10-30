@@ -50,7 +50,7 @@ class ListProduct(View):
     template_name = 'list-product.html'
 
     def get(self, request, *args, **kwargs):
-        if not request.user.stripe_account_id:
+        if not request.user.is_stripe_verified:
             # Render the page with the message and "Connect with Stripe" button
             context = {
                 'needs_stripe': True
