@@ -48,6 +48,7 @@ class SignupView(View):
     def _create_inactive_user(self, form):
         """Creates an inactive user and returns it."""
         user = form.save(commit=False)
+        user.set_password(form.cleaned_data['password1']) 
         user.is_active = False
         email_prefix = user.email.split('@')[0]
         all_usernames = list(CustomUser.objects.values_list('username', flat=True))
@@ -56,6 +57,7 @@ class SignupView(View):
         token = uuid4()
         EmailConfirmationToken.objects.create(user=user, token=token)
         return user
+
 
     def _send_confirmation_email(self, user):
         """Sends a confirmation email to the user."""
