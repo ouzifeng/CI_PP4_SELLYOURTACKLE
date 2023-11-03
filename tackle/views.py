@@ -18,6 +18,8 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import Q
 from io import BytesIO
 from django.core.mail import EmailMessage
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # Third-party imports
 import stripe
@@ -127,8 +129,6 @@ class ListProduct(View):
         for uploaded_file in request.FILES.getlist('images'):
             processed_image = process_image(uploaded_file)
             # Convert the processed image back to a Django InMemoryUploadedFile to save to the model
-            from io import BytesIO
-            from django.core.files.uploadedfile import InMemoryUploadedFile
             temp_file = BytesIO()
             processed_image.save(temp_file, format='JPEG')
             uploaded_file = InMemoryUploadedFile(temp_file, None, uploaded_file.name, 'image/jpeg', temp_file.tell(), None)
@@ -187,6 +187,7 @@ class EditProduct(View):
         # Check if the "delete_product" button was clicked
         if 'delete_product' in request.POST:
             product.delete()
+            messages.success(request, 'Product deleted successfully!')
             return redirect('selling')
         
         product.name = request.POST.get('name')
@@ -248,7 +249,14 @@ def process_image(image, target_filesize=2.5*1024*1024, max_width=894):
     Process an uploaded image using Pillow to fit the intrinsic size, compress it, and ensure max width.
     """
     img = Image.open(image)
-    print(f"Original Image Size: {img.size}, Original Image Format: {img.format}")
+
+    # Now you can check the mode on the img object
+    if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+        # Create a new background image with white background
+        background = Image.new(img.mode[:-1], img.size, (255, 255, 255))
+        # Paste the image onto the background
+        background.paste(img, img.split()[-1])
+        img = background
 
     # Check if the width exceeds the maximum width and resize if necessary
     if img.width > max_width:

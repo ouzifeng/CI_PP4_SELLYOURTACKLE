@@ -264,7 +264,7 @@ class ResetPasswordView(View):
             if user:
                 # Create token and send email
                 token = PasswordResetToken.objects.create(user=user)
-                reset_link = f"http://127.0.0.1:8000/auth/reset-password/{token.token}/"
+                reset_link = f"https://www.sellyourtackle.co.uk/auth/reset-password/{token.token}/"
                 send_reset_password_email(user.email, reset_link, user.first_name)  # Uncomment this
                 return redirect('home')  # A page to inform the user that a reset link has been sent
             else:
