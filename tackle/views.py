@@ -149,11 +149,8 @@ class ListProduct(View):
         for image_file in images_to_save:
             ProductImage.objects.create(product=product, image=image_file)
 
-        # If successful:
-        context = {
-            'success_message': 'Product added successfully!'
-        }
-        return render(request, self.template_name, context)
+        messages.success(request, 'Product added successfully!')
+        return redirect('selling')
     
 class SearchBrands(View):
     def get(self, request, *args, **kwargs):
