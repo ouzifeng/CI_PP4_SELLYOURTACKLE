@@ -5,7 +5,7 @@ from decimal import Decimal, InvalidOperation
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -20,6 +20,7 @@ from io import BytesIO
 from django.core.mail import EmailMessage
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.images import get_image_dimensions
 
 # Third-party imports
 import stripe
@@ -109,7 +110,7 @@ class ListProduct(View):
         condition = request.POST.get('condition')
         description = request.POST.get('description')
 
-        # Create product instance
+        # Create product instance without saving to database yet
         product = Product(
             brand=brand_instance,
             category=category_instance,
@@ -123,18 +124,30 @@ class ListProduct(View):
             user=request.user,
             visibility=ProductVisibility.LIVE
         )
-        product.save()
 
-        # Handle images
+        # Handle image uploads with format validation
+        valid_image_formats = ['image/jpeg', 'image/png']
+        images_to_save = []
         for uploaded_file in request.FILES.getlist('images'):
+            # Validate image format
+            if uploaded_file.content_type not in valid_image_formats:
+                # If the image format is not valid, do not save the product or images
+                context = {
+                    'error_message': 'Invalid image format. Please upload JPEG or PNG images.'
+                }
+                return render(request, self.template_name, context)
+
+            # If the image format is valid, process and prepare to save
             processed_image = process_image(uploaded_file)
-            # Convert the processed image back to a Django InMemoryUploadedFile to save to the model
             temp_file = BytesIO()
             processed_image.save(temp_file, format='JPEG')
-            uploaded_file = InMemoryUploadedFile(temp_file, None, uploaded_file.name, 'image/jpeg', temp_file.tell(), None)
-            
-            product_image = ProductImage(product=product, image=uploaded_file)
-            product_image.save()
+            temp_file.seek(0)  # Reset file pointer to the beginning
+            images_to_save.append(InMemoryUploadedFile(temp_file, None, uploaded_file.name, 'image/jpeg', temp_file.tell(), None))
+
+        # Now that all validations have passed, save the product and images
+        product.save()
+        for image_file in images_to_save:
+            ProductImage.objects.create(product=product, image=image_file)
 
         # If successful:
         context = {
