@@ -52,6 +52,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'allauth.account.middleware.AccountMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'csp.middleware.CSPMiddleware',
 
 ]
 
@@ -216,4 +217,4 @@ STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+CSP_FRAME_ANCESTORS = ("'self'", 'https://www.sellyourtackle.co.uk', 'https://sellyourtackle.co.uk')
