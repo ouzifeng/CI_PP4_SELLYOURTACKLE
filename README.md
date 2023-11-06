@@ -16,7 +16,7 @@ They belive that the ability to provide their customer base with a more holistic
 
 ## Project Scope
 
-The scope of this project is to build a fully responsive platform which allows users to buy, list and sell fishing tackle to other users. 
+The scope of this project is to build a fully responsive platform which allows users to buy, list and sell fishing tackle to other users. To reduce the complexity of a project which is already complex, it has been agreed that the platform should only allow users to list products one by one. If they want to sell multiple products, they can list their items multiple items, or in a single listing with the amount in the title, i.e. 3x rods
 
 ### Site Owner Goals
 
@@ -46,3 +46,58 @@ The scope of this project is to build a fully responsive platform which allows u
 * Buyer and seller protection from the marketplace owners
 
 ## User Stories
+
+The user requirements given are in depth so I have marked each one with an M = must have, or an N = nice to have
+
+### Users
+
+### Selling
+
+| Number | Action                                                   | M/N |
+|--------|----------------------------------------------------------|-----|
+| 1      | Login and create an account                              | M   |
+| 2      | Use Google as an SSO                                     | N   |
+| 3      | Change their username                                    | N   |
+| 4      | Single form to list tackle                               | N   |
+| 5      | Predefined brands and categories to speed up listing     | N   |
+| 6      | Ability to upload images to product, regardless of size  | M   |
+| 7      | Connect bank account to get paid                         | M   |
+| 8      | Message buyers in case of order issues                   | M   |
+| 9      | View past sales                                          | M   |
+| 10     | See shipping information when an item is sold            | M   |
+| 11     | Input tracking details and send to the buyer             | M   |
+| 12     | Contact page for order disputes                          | M   |
+| 13     | Responsive design for checking listings on the go        | -   |
+| 14     | Edit or delete products unless sold                      | M   |
+| 15     | Reset password in case of forgetting it                  | M   |
+| 16     | Email notification once item is sold                     | M   |
+| 17     | Refund orders if unable to ship                          | M   |
+
+### Buying
+
+| Number | Action                                                    | M/N |
+|--------|-----------------------------------------------------------|-----|
+| 18     | Login and create an account                               | M   |
+| 19     | Use Google as an SSO                                      | N   |
+| 20     | Reset password in case of forgetting it                   | M   |
+| 21     | Area to view past orders                                  | M   |
+| 22     | See tracking information once shipped                     | M   |
+| 23     | View billing and shipping addresses                       | N   |
+| 24     | Negate the need for duplicate address inputs at checkout  | N   |
+| 25     | Different payment options at checkout                     | N   |
+| 26     | Ability to message seller with questions                  | M   |
+| 27     | Ability to message site admins for order help             | M   |
+
+### Admin/Site Owner
+
+| Number | Action                                         | M/N |
+|--------|------------------------------------------------|-----|
+| 28     | View and manage orders in admin dashboard      | M   |
+| 29     | View and manage users in admin dashboard       | M   |
+| 30     | View and manage products in admin dashboard    | M   |
+| 31     | Refund orders on behalf of sellers             | M   |
+
+
+
+
+
