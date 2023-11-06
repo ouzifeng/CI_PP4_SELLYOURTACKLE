@@ -394,6 +394,25 @@ p.info {
     margin: 10px 0;
   }
 
+  .container-main {
+    padding: 10px;
+  }
+
+  .card-price {
+    font-size: 16px !important;
+  }
+
+  .card-text {
+    font-size: 10px
+  }
+
+  .card-conditions {
+    font-size: 12px;
+  }
+
+  .card-footer {
+    font-size: 12px;
+  }
 }
 
 
