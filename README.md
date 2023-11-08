@@ -108,20 +108,20 @@ The user requirements given are in depth so I have marked each one with an M = m
 
 
 <details><summary>Epics</summary>
-![Epics](https://github.com/ouzifeng/sellyourtackle/blob/main/docs/epics.png)
+<img src="docs/epics.png" alt="Epics">
 </details>
 
 
 <details><summary>User Stories</summary>
-![User Stories](https://github.com/ouzifeng/sellyourtackle/blob/main/docs/user_stories.png)
+<img src="docs/user_stories.png" alt="User Stories">
 </details>
 
 <details><summary>Milestones</summary>
-![Milestones](https://github.com/ouzifeng/sellyourtackle/blob/main/docs/milestones.png)
+<img src="docs/milestones.png" alt="Milestones">
 </details>
 
 <details><summary>Kanban Board</summary>
-![Kanban](https://github.com/ouzifeng/sellyourtackle/blob/main/docs/kanban.png)
+<img src="docs/kanban.png" alt="Kanban Board">
 </details>
 
 ## Structure
@@ -159,3 +159,168 @@ Product images are stored in an AWS S3 bucket. This is to reduce server space an
 
 ### Database Structure
 
+The database used is a postgresql db hosted at neon.tech. 
+
+# Models Documentation
+
+The following models were created to represent the database structure for the Tackle application within the website:
+
+## Brand Model
+
+Represents different brands of fishing tackle available within the application.
+
+- **Fields**:
+  - `name`: Stores the brand's name.
+
+## Category Model
+
+Represents various categories of fishing tackle.
+
+- **Fields**:
+  - `name`: Stores the category's name.
+  - `condition_choices`: Enumerates the condition of the tackle (Perfect, Excellent, Good, Fair).
+  - `financial_status_choices`: Enumerates the financial status (Unsold, Sold, Draft, Live).
+
+## Product Model
+
+Represents the products being sold on the application.
+
+- **Fields**:
+  - `name`: Stores the product's name.
+  - `slug`: Stores URL-friendly identifiers for the product.
+  - `variation1`: Stores the first variation detail of the product.
+  - `variation2`: Stores the second variation detail of the product.
+  - `condition`: Stores the condition of the product based on predefined choices.
+  - `description`: Stores a detailed description of the product.
+  - `created_at`: Records the date and time the product was created.
+  - `price`: Stores the price of the product.
+  - `shipping`: Stores the shipping cost of the product.
+- **Relationships**:
+  - `brand`: Links to the Brand model.
+  - `category`: Links to the Category model.
+  - `user`: Links to the User model from the `auth_app`.
+- **Methods**:
+  - `is_in_stock()`: Checks if the product is in stock.
+  - `save(*args, **kwargs)`: Customizes the save operation.
+  - `total_with_shipping()`: Calculates the total price including shipping.
+
+## ProductImage Model
+
+Represents images associated with products.
+
+- **Fields**:
+  - `image`: Stores the image file.
+- **Relationships**:
+  - `product`: Links to the Product model.
+
+## WebhookLog Model
+
+Used for logging webhook events related to orders.
+
+- **Fields**:
+  - `payment_intent_id`: Stores the payment intent ID.
+  - `received_at`: Records when the event was received.
+  - `payload`: Stores the webhook payload.
+  - `header`: Stores the webhook header.
+  - `status`: Stores the status of the webhook event.
+  - `event_type`: Stores the type of the webhook event.
+- **Relationships**:
+  - `order`: Optionally links to an Order model, can be set to NULL on order deletion.
+
+## Address Model
+
+Represents user addresses.
+
+- **Fields**:
+  - `address_type`: Specifies the type of address (e.g., billing or shipping).
+  - `first_name`: Stores the user's first name.
+  - `last_name`: Stores the user's last name.
+  - `email`: Stores the user's email address.
+  - `phone_number`: Stores the user's phone number.
+  - `address_line1`: Stores the address.
+  - `address_line2`: Stores additional address details.
+  - `city`: Stores the city.
+  - `state`: Stores the state.
+  - `postal_code`: Stores the postal code.
+- **Relationships**:
+  - `user`: Links to the User model.
+
+## EmailConfirmationToken Model
+
+Represents email confirmation tokens for verifying user's email addresses.
+
+- **Fields**:
+  - `token`: Stores the email confirmation token.
+- **Relationships**:
+  - `user`: Links to the User model.
+
+## Order Model
+
+Represents orders placed by users.
+
+- **Fields**:
+  - `product_cost`: Stores the cost of the product.
+  - `shipping_cost`: Stores the shipping cost.
+  - `total_amount`: Stores the total amount of the order.
+  - `status`: Stores the order status.
+  - `payment_status`: Stores the payment status.
+  - `payment_intent_id`: Stores the payment intent ID.
+  - `created_at`: Records when the order was created.
+  - `updated_at`: Records when the order was updated.
+  - `tracking_number`: Stores the tracking number.
+  - `tracking_company`: Stores the tracking company.
+- **Relationships**:
+  - `user`: Links to the User model.
+  - `shipping_address`: Links to the Address model for shipping.
+  - `billing_address`: Links to the Address model for billing.
+
+## OrderItem Model
+
+Represents items within an order.
+
+- **Fields**:
+  - `price`: Stores the price of the item.
+  - `quantity`: Stores the quantity of the item.
+  - `shipping_cost`: Stores the shipping cost of the item.
+- **Relationships**:
+  - `order`: Links to the Order model.
+  - `product`: Links to the Product model.
+  - `seller`: Links to the User model.
+- **Methods**:
+  - `get_total_item_price()`: Calculates the total price for the item.
+  - `get_total_item_price_with_shipping()`: Calculates the total price for the item including shipping.
+
+## PasswordResetToken Model
+
+Represents password reset tokens.
+
+- **Fields**:
+  - `token`: Stores the password reset token.
+  - `created_at`: Records when the token was created.
+  - `is_used`: Indicates if the token has been used.
+- **Relationships**:
+  - `user`: Links to the User model.
+- **Methods**:
+  - `is_expired()`: Checks if the token has expired.
+
+
+## User Model (CustomUser)
+
+Represents users within the application with custom fields and behavior.
+
+- **Fields**:
+  - `email`: Stores the user's email and is used as the unique identifier for login.
+  - `first_name`: Stores the user's first name.
+  - `last_name`: Stores the user's last name.
+  - `username`: Stores the user's username.
+  - `date_joined`: Records when the user account was created.
+  - `is_active`: Indicates whether the user's account is active.
+  - `is_staff`: Indicates whether the user can access the admin site.
+  - `stripe_account_id`: Stores the Stripe account ID if the user has connected a Stripe account.
+  - `is_stripe_verified`: Indicates whether the user's Stripe account has been verified.
+  - `balance`: Stores the user's balance for transactions within the application.
+
+- **Methods**:
+  - `create_user(email, password, **extra_fields)`: Creates a new user with the given email and password.
+  - `create_superuser(email, password, **extra_fields)`: Creates a new superuser with the given email and password.
+  - `__str__()`: Returns the user's email.
