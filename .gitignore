@@ -6,3 +6,4 @@ __pycache__/
 *.db
 start_env.ps1
 .env
+db.sqlite3

@@ -67,7 +67,7 @@ The user requirements given are in depth so I have marked each one with an M = m
 | 10     | See shipping information when an item is sold            | M   |
 | 11     | Input tracking details and send to the buyer             | M   |
 | 12     | Contact page for order disputes                          | M   |
-| 13     | Responsive design for checking listings on the go        | -   |
+| 13     | Responsive design for checking listings on the go        | N   |
 | 14     | Edit or delete products unless sold                      | M   |
 | 15     | Reset password in case of forgetting it                  | M   |
 | 16     | Email notification once item is sold                     | M   |
@@ -98,6 +98,57 @@ The user requirements given are in depth so I have marked each one with an M = m
 | 31     | Refund orders on behalf of sellers             | M   |
 
 
+### Project Management
+
+* User Github Kanban to build the project development framework and timeframe
+* Identify Epics and link each user story to an Epic
+* Identify milestones and link each user story to a milestone
+* Use user stories for each card
+* Use backlog, in progress and done as statuses
 
 
+<details><summary>Epics</summary>
+![Epics](docs/epics.png)
+</details>
+
+
+<details><summary>User Stories</summary>
+![User Stories](docs/user_stories.png)
+</details>
+
+<details><summary>Milestones</summary>
+![Milestones](docs/milestones.png)
+</details>
+
+<details><summary>Kanban Board</summary>
+![Kanban](docs/kanban.png)
+</details>
+
+## Structure
+
+### Code Structure
+
+The application is built using the DJango framework, and is broken up into 4 main apps to help with future maintaince, code transparency and further feature building
+
+* admin_app - this houses all the admin dashboard functionality
+* auth_app - this houses all the authentication functionality, including login, logout, registration, password reset and allauth for SSO
+* sellyourtackle - the houses the main app setting and master URL file 
+* tackle - the houses all the functionality related to listing, selling and buying tackle
+
+Within these apps you will find a models.py file, which contains all the models used in the app,a views.py file which contains all the views used in the app, and a urls.py file which contains all the URLs used in the app. When it makes sense to do so, files have been created to silo specific functionality, such as the stripe.py file sound in the auth_app. This file manages the Stripe webhook and user account creation
+
+Within the tackle and auth_app you will also find the relevant templates for each related page. 
+
+Along with the apps, there is a:
+
+* template folder - houses the base template and the landing page template
+* verification-files folder- holds the apple pay verificatio file needed for enabling Apple Pay on the checkout
+* static folder - houses all the static files, such as site images (but not product images), css and javascript
+* Procfile - hosts the gunicorn setting for Heroku
+* manage.py - manages the database and the app
+* requirements.txt - list of thrid party libraries required to be installed when deployed
+
+
+
+### Database Structure
 
