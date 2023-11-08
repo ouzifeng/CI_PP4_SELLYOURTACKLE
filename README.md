@@ -108,20 +108,20 @@ The user requirements given are in depth so I have marked each one with an M = m
 
 
 <details><summary>Epics</summary>
-![Epics](docs/epics.png)
+![Epics](https://github.com/ouzifeng/sellyourtackle/blob/main/docs/epics.png)
 </details>
 
 
 <details><summary>User Stories</summary>
-![User Stories](docs/user_stories.png)
+![User Stories](https://github.com/ouzifeng/sellyourtackle/blob/main/docs/user_stories.png)
 </details>
 
 <details><summary>Milestones</summary>
-![Milestones](docs/milestones.png)
+![Milestones](https://github.com/ouzifeng/sellyourtackle/blob/main/docs/milestones.png)
 </details>
 
 <details><summary>Kanban Board</summary>
-![Kanban](docs/kanban.png)
+![Kanban](https://github.com/ouzifeng/sellyourtackle/blob/main/docs/kanban.png)
 </details>
 
 ## Structure
@@ -149,6 +149,13 @@ Along with the apps, there is a:
 * requirements.txt - list of thrid party libraries required to be installed when deployed
 
 
+### Environment Variables
+
+Enviroment variables are stored in a.env file, which is not tracked by git. This file contains all the sensitive information for the app, such as the database credentials. Once the app is deployed, the.env file is not tracked, and this sensitive information is stored in the Heroku environment variables.
+
+### Product Images
+
+Product images are stored in an AWS S3 bucket. This is to reduce server space and page load times
 
 ### Database Structure
 
