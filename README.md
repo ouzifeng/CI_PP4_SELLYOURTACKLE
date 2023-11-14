@@ -469,11 +469,39 @@ This description met my criteria for a font.
 
 ## Technologies Used
 
-### Languages and frameworks
+### Languages and Frameworks
 
 * HTML
 * CSS
 * Javascript
 * Python
 * Django
+
+### Libraries and Tools
+
+* Am I Responsive
+* AWS S3 Bucket
+* Balsamiq
+* Bootstrap v5.2 
+* Cloudinary
+* Favicon.io
+* Chrome dev tools
+* Font Awesome
+* Git
+* GitHub
+* Google Fonts
+* Heroku Platform
+* jQuery
+* Postgres
+* Stripe
+* AWS SES
+
+## Validation
+
+### HTML
+
+Using The W3C Markup Validation Service
+
+
+
 

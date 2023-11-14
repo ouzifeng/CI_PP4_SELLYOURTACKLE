@@ -45,7 +45,7 @@
             <!-- Logo for Both Desktop and Mobile -->
             <a class="navbar-brand text-center text-lg-left" href="/">
                 <img src="https://sellyourtackle.s3.eu-west-2.amazonaws.com/sell-your-tackle-logo.png"
-                    class="navbar-logo" alt="SELL YOUR TACKLE" />
+                    class="navbar-logo" alt="SELL YOUR TACKLE">
             </a>
 
             <!-- Mobile Top Navbar (Cart Icon, Hamburger) -->
@@ -81,15 +81,18 @@
                     <li class="nav-item">
                         <a class="btn btn-outline-sell" href="{% url 'list-product' %}">Sell Your Tackle</a>
                     </li>
-                    <a href="{% url 'cart' %}" class="position-relative d-none d-lg-block me-3">
-                        <i class="fa-solid fa-cart-shopping fa-lg"></i>
-                        {% if total_items_in_cart > 0 %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ total_items_in_cart }}
-                            <span class="visually-hidden">items in cart</span>
-                        </span>
-                        {% endif %}
-                    </a>
+                    <li class="nav-item position-relative d-none d-lg-block me-3">
+                        <a href="{% url 'cart' %}">
+                            <i class="fa-solid fa-cart-shopping fa-lg"></i>
+                            {% if total_items_in_cart > 0 %}
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ total_items_in_cart }}
+                                <span class="visually-hidden">items in cart</span>
+                            </span>
+                            {% endif %}
+                        </a>
+                    </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"

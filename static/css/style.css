@@ -210,7 +210,7 @@ li .btn {
     margin: auto;
 }
 
-#product-card-img-container {
+.product-card-img-container {
     display: flex;
     justify-content: center;  
     align-items: center;      
@@ -345,7 +345,7 @@ p.info {
     margin-top: 10px;
   }
 
-  #product-card-img-container {
+  .btn {
       display: flex;
       justify-content: center;  
       align-items: center;      

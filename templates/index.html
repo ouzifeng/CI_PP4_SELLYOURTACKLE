@@ -9,7 +9,7 @@
         <div class="row gx-5 align-items-center justify-content-center">
             <div class="col-12 d-block d-sm-none text-center">
                 <img class="img-fluid rounded-3 header-image" src="static/media/sell-used-fishing-tackle.jpg"
-                    alt="..." />
+                    alt="header image">
             </div>
 
             <div class="col-lg-8 col-xl-7 col-xxl-6">
@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center"><img class="img-fluid rounded-3 my-5"
-                    src="static/media/sell-used-fishing-tackle.jpg" alt="..." /></div>
+                    src="static/media/sell-used-fishing-tackle.jpg" alt="Sell Used Tackle"></div>
         </div>
     </div>
 </header>
@@ -39,11 +39,11 @@
     {% for product in products %}
     <div class=" col-6 col-md-3 mb-4">
         <div class="card d-flex flex-column card-clickable" data-url=" {% url 'product' product.slug %}">
-            <div id="product-card-img-container">
+            <div id="product-card-img-container-{{ product.pk }}" class="product-card-img-container">
                 {% for product_image in product.images.all %}
                 {% if forloop.first %}
                 <img src="{{ product_image.image.url }}" alt="{{ product.name }} image" class="img-fluid card-image"
-                    id="product-card-img">
+                    id="product-card-img-{{ product.pk }}">
                 {% endif %}
                 {% endfor %}
             </div>
