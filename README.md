@@ -520,6 +520,16 @@ Using The W3C Markup Validation Service
 <img src="docs/validation/account-settings-html-validation.png" alt="Account Settings HTML Validation">
 </details>
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Freset-password%2F#l330c17">Reset Password</a>
+<summary>Cart</summary>
+<img src="docs/validation/cart-html-validation.png" alt="Cart HTML Validation">
+</details>
+<summary>Checkout</summary>
+<img src="docs/validation/checkout-html-validation.png" alt="Checkout HTML Validation">
+</details>
+<summary>Order Page Buyer</summary>
+<img src="docs/validation/buyer-order-html-validation.png" alt="Order Page Buyer">
+</details>
+
 
 
 
