@@ -108,13 +108,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function moveToPaymentStep() {
-    // Hide Address Details and show Payment Details
-    document.getElementById('addressDetails').style.display = 'none';
-    document.getElementById('paymentDetails').style.display = 'block';
+    var addressDetails = document.getElementById('addressDetails');
+    var paymentDetails = document.getElementById('paymentDetails');
 
-    // Update progress bar to 100%
-    document.getElementById('checkoutProgressBar').style.width = '100%';
+    if (addressDetails) {
+        addressDetails.style.display = 'none';
+    }
+    if (paymentDetails) {
+        paymentDetails.style.display = 'block';
+    }
 }
+
 
 
  
