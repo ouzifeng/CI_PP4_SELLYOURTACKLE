@@ -51,16 +51,20 @@
             <!-- Mobile Top Navbar (Cart Icon, Hamburger) -->
             <div class="d-flex d-lg-none justify-content-between align-items-center">
                 <!-- Cart Icon for Mobile -->
-                <a href="{% url 'cart' %}" class="position-relative me-3">
+                <a href="{% url 'cart' %}" aria-label="View Cart">
                     <i class="fa-solid fa-cart-shopping fa-lg"></i>
                     {% if total_items_in_cart > 0 %}
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         {{ total_items_in_cart }}
                     </span>
-                    {% endif %}
                     <!-- Screen reader only text -->
                     <span class="visually-hidden">View Cart, {{ total_items_in_cart }} items in cart</span>
+                    {% else %}
+                    <!-- Screen reader only text for empty cart -->
+                    <span class="visually-hidden">View Cart, no items in cart</span>
+                    {% endif %}
                 </a>
+
                 <!-- Toggle for smaller screens -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -82,16 +86,21 @@
                         <a class="btn btn-outline-sell" href="{% url 'list-product' %}">Sell Your Tackle</a>
                     </li>
                     <li class="nav-item position-relative d-none d-lg-block me-3">
-                        <a href="{% url 'cart' %}">
+                        <a href="{% url 'cart' %}" aria-label="View Cart">
                             <i class="fa-solid fa-cart-shopping fa-lg"></i>
                             {% if total_items_in_cart > 0 %}
                             <span
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 {{ total_items_in_cart }}
-                                <span class="visually-hidden">items in cart</span>
                             </span>
+                            <!-- Screen reader only text -->
+                            <span class="visually-hidden">View Cart, {{ total_items_in_cart }} items in cart</span>
+                            {% else %}
+                            <!-- Screen reader only text for empty cart -->
+                            <span class="visually-hidden">View Cart, no items in cart</span>
                             {% endif %}
                         </a>
+
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
