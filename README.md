@@ -467,4 +467,13 @@ This description met my criteria for a font.
 </details>
 
 
-#
+## Technologies Used
+
+### Languages and frameworks
+
+* HTML
+* CSS
+* Javascript
+* Python
+* Django
+
