@@ -529,6 +529,10 @@ Using The W3C Markup Validation Service
 <summary>Order Page Buyer</summary>
 <img src="docs/validation/buyer-order-html-validation.png" alt="Order Page Buyer">
 </details>
+<summary>List Product</summary>
+<img src="docs/validation/list-product-html-validation.png" alt="List Product">
+</details>
+
 
 
 

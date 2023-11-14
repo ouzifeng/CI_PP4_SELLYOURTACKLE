@@ -83,14 +83,14 @@
                             </div>
                         </div>
                         <div class="form-floating mb-3">
-                            <select name="condition" id="condition" class="form-control" placeholder="Condition"
-                                required>
-                                <!-- Populate condition options based on your Conditions model. -->
+                            <select name="condition" id="condition" class="form-control" required>
+                                <option value="" disabled selected>Select condition</option>
                                 <option value="PERFECT">Perfect</option>
                                 <option value="EXCELLENT">Excellent</option>
                                 <option value="GOOD">Good</option>
                                 <option value="FAIR">Fair</option>
                             </select>
+
                             <label for="condition">Condition<span class="star">*</span></label>
                         </div>
                         <div class="form-floating mb-3">
@@ -133,7 +133,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
 </section>
