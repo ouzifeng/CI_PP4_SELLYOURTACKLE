@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-2uy*&peq@9$t2#b_$=x9_sg_*gx(-!wxg#qy4h08$64^ak!))+"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost:8000', '127.0.0.1', 'www.sellyourtackle.co.uk', 'sellyourtackle.co.uk']
 CSRF_TRUSTED_ORIGINS = ['https://sellyourtackle.co.uk', 'https://www.sellyourtackle.co.uk']
@@ -215,4 +215,3 @@ STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 
-X_FRAME_OPTIONS = 'SAMEORIGIN'

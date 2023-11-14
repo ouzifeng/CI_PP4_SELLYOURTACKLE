@@ -56,11 +56,11 @@
                     {% if total_items_in_cart > 0 %}
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                         {{ total_items_in_cart }}
-                        <span class="visually-hidden">items in cart</span>
                     </span>
                     {% endif %}
+                    <!-- Screen reader only text -->
+                    <span class="visually-hidden">View Cart, {{ total_items_in_cart }} items in cart</span>
                 </a>
-
                 <!-- Toggle for smaller screens -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
