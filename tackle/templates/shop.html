@@ -100,11 +100,11 @@
         {% for product in products %}
         <div class=" col-6 col-md-3 mb-4">
             <div class="card d-flex flex-column card-clickable" data-url=" {% url 'product' product.slug %}">
-                <div id="product-card-img-container">
+                <div id="product-card-img-container-{{ product.pk }}" class="product-card-img-container">
                     {% for product_image in product.images.all %}
                     {% if forloop.first %}
                     <img src="{{ product_image.image.url }}" alt="{{ product.name }} image" class="img-fluid card-image"
-                        id="product-card-img">
+                        id="product-card-img-{{ product.pk }}">
                     {% endif %}
                     {% endfor %}
                 </div>

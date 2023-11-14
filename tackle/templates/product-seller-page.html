@@ -23,8 +23,9 @@
             <div class="col-sm-2">
                 <div class="form-floating mb-3">
                     <select name="visibility" id="visibility" class="form-control" required>
+                        <option value="" disabled selected>Select visibility</option>
                         {% if product.visibility == "live" %}
-                        <option value="live" selected>Live</option>
+                        <option value="live">Live</option>
                         {% else %}
                         <option value="live">Live</option>
                         {% endif %}
@@ -124,9 +125,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
 </form>
 
 
-</section>
+
 
 {% endblock %}

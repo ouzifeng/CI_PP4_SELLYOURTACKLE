@@ -532,8 +532,14 @@ Using The W3C Markup Validation Service
 <summary>List Product</summary>
 <img src="docs/validation/list-product-html-validation.png" alt="List Product">
 </details>
-
-
+<summary>Seller Product Page Not Sold</summary>
+<img src="docs/validation/seller-product-page-not-sold-html-validation.png" alt="Seller Product Page Not Sold">
+</details>
+<summary>Seller Product Page Sold</summary>
+<img src="docs/validation/seller-product-page-sold-html-validation.png" alt="Seller Product Page Sold">
+</details>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fproduct%2Fkorda-ajcket">Product Page</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fproduct%2Fkorda-ajcket">Shop</a>
 
 
 
