@@ -188,14 +188,6 @@ class ConfirmEmailView(View):
         return HttpResponse("This email has already been confirmed.")
 
 
-@method_decorator(login_required, name='dispatch')
-class MyAccount(View):
-    """Renders the user's account page."""
-    template_name = 'my-account.html'
-    
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
-
 
 @method_decorator(login_required, name='dispatch')
 class Buying(View):

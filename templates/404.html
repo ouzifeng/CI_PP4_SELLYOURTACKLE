@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load custom_filters %}
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <div class="text-center">
+            <h2 class="mt-2 header-404">Whoops! It looks like the page you are looking for doesn't exist</h2>
+            <img class="img-fluid rounded-3 image-404" src="static/media/404.jpg" alt="..." />
+            <a class="btn btn-outline-sell" href="{% url 'home' %}">Take Me Home</a>
+        </div>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+{% endblock %}

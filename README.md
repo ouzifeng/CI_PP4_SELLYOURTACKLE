@@ -324,3 +324,11 @@ Represents users within the application with custom fields and behavior.
   - `create_user(email, password, **extra_fields)`: Creates a new user with the given email and password.
   - `create_superuser(email, password, **extra_fields)`: Creates a new superuser with the given email and password.
   - `__str__()`: Returns the user's email.
+
+These models are visually represented by the ERD below:
+
+![ERD](docs/db-schema.png)
+
+
+## Wireframes
+
