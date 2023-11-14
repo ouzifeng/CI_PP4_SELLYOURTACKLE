@@ -502,6 +502,67 @@ This description met my criteria for a font.
 
 Using The W3C Markup Validation Service
 
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2F">Index</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Flogin%2F">Login</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fsignup%2F">Sign Up</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fabout-us">About Us</a>
+<details>
+<summary>Buying</summary>
+<img src="docs/validation/buying-html-validation.png" alt="Buying HTML Validation">
+</details>
+<summary>Selling</summary>
+<img src="docs/validation/selling-html-validation.png" alt="Selling HTML Validation">
+</details>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fcontact%2F">Contact Us</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fprivacy%2F">Privacy</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fterms%2F">Terms</a>
+<summary>Account Settings</summary>
+<img src="docs/validation/account-settings-html-validation.png" alt="Account Settings HTML Validation">
+</details>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Freset-password%2F#l330c17">Reset Password</a>
 
 
 
+### Accessibility
+
+Accessibility of the website was tested using the WAVE web accessibility evaluation tool.
+
+<details>
+<summary>Index</summary>
+<img src="docs/validation/index-accessibility.png" alt="Index Accessibilty Score">
+</details>
+
+<details>
+<summary>Login</summary>
+<img src="docs/validation/login-accessibility.png" alt="Login Accessibility Score">
+</details>
+
+<details>
+<summary>Sign Up</summary>
+<img src="docs/validation/signup-accessibility.png" alt="Sign Up Accessibility Score">
+</details>
+
+<details>
+<summary>About Us</summary>
+<img src="docs/validation/aboutus-accessibility.png" alt="About Us Accessibility Score">
+</details>
+
+<details>
+<summary>Contact Us</summary>
+<img src="docs/validation/contactus-accessibility.png" alt="Contact Us Accessibility Score">
+</details>
+
+<details>
+<summary>Privacy</summary>
+<img src="docs/validation/privacy-accessibility.png" alt="Privacy Accessibility Score">
+</details>
+
+<details>
+<summary>Terms</summary>
+<img src="docs/validation/terms-accessibility.png" alt="Terms Accessibility Score">
+</details>
+
+<details>
+<summary>Reset Password</summary>
+<img src="docs/validation/resetpassword-accessibility.png" alt="Reset Password Accessibility Score">
+</details>

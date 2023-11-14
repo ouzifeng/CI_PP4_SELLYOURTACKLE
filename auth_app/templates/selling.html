@@ -52,11 +52,10 @@
     <table class="table table-hover d-md-none">
         <thead>
             <tr>
-                <th></th>
-                <th></th>
-                <th class="d-none d-md-table-cell"></th>
-                <th></th>
-                <th class="d-none d-md-table-cell"></th>
+                <th></th> <!-- For the dot icon and product image -->
+                <th></th> <!-- For the product title -->
+                <th></th> <!-- For the product price -->
+                <th></th> <!-- For the product status (sold, etc.) -->
             </tr>
         </thead>
         <tbody>
@@ -70,27 +69,30 @@
             <tr onclick="window.location.href='{{ product_url }}';">
                 <td>
                     <div class="d-flex align-items-center">
+                        <!-- Visibility icon -->
                         {% if product.visibility == 'live' %}
                         <i class="bi bi-dot text-success large-icon"></i>
                         {% else %}
                         <i class="bi bi-dot text-secondary large-icon"></i>
                         {% endif %}
+                        <!-- Product image -->
                         {% if image_url %}
                         <img src="{{ image_url }}" alt="{{ product.name }}" class="product-image-table ml-2">
                         {% endif %}
                     </div>
                 </td>
                 <td>
+                    <!-- Product title -->
                     <span class="product-title-mobile">{{ product.name }}</span>
                 </td>
-                <td class="d-none d-md-table-cell">{{ product.condition }}</td>
-                <td class="d-md-none {% if product.financial_status == 'sold' %}sold-text{% endif %}">
+                <td>
+                    <!-- Product price -->
                     £{{ product.price }}
-                    <br>
-                    {{ product.financial_status|capfirst }} <!-- Updated this line -->
                 </td>
-                <td class="d-md-block d-none">£{{ product.price }}</td>
-                <td class="d-md-block d-none">{{ product.financial_status|capfirst }}</td>
+                <td>
+                    <!-- Product status -->
+                    {{ product.financial_status|capfirst }}
+                </td>
             </tr>
             {% endwith %}
             {% endfor %}
