@@ -1,10 +1,13 @@
+// This JS file is for checkout fuctionality
+/*jshint esversion: 6 */
 
-// Step 2: Create an instance of Elements with the clientSecret
+var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
+var clientSecret = "{{ client_secret }}";
+
 var elements = stripe.elements({
     clientSecret: clientSecret
 });
 
-// Step 3: Create the card element
 var cardElement = elements.create('payment');
 
 // Step 4: Mount the element to the div

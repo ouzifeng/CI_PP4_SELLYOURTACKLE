@@ -1,3 +1,6 @@
+// This JS file is for signup button fuctionality
+/*jshint esversion: 6 */
+
 document.getElementById('signupForm').addEventListener('submit', function (e) {
     var signupButton = document.getElementById('signupButton');
     var buttonText = document.getElementById('buttonText');

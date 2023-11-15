@@ -1,3 +1,7 @@
+// This JS file is for the list a product fuctionality
+/*jshint esversion: 6 */
+/* global $ */
+
 $(document).ready(function() {
     // Function to handle the change event for autocomplete
     function handleAutocompleteChange(event, ui) {

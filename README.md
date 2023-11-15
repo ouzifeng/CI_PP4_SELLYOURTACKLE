@@ -653,3 +653,44 @@ Accessibility of the website was tested using the WAVE web accessibility evaluat
 <summary>Shop</summary>
 <img src="docs/validation/shop-accessibility.png" alt="Shop Accessibility Score">
 </details>
+
+
+### CSS
+
+Tested using the W3C Css Validation Service tool.
+
+<details>
+<summary>CSS Validation</summary>
+<img src="docs/validation/css-validation.png" alt="CSS Validation">
+</details>
+
+### Javascript
+
+Tested using the JSHint JS Validation Service.
+
+checkout.js - the undefined Stripe variable is called using the <script src="https://js.stripe.com/v3/"></script> tag in the HTML of the checkout page. The unused 'moveToPaymentStep' is used in the move to payment button in the HTML of the checkout page:
+
+  <!-- <button type="button" class="btn btn-outline-main mt-3" onclick="moveToPaymentStep()">Move to
+      Payment</button> !-->
+
+<details>
+<summary>Checkout JS</summary>
+<img src="docs/validation/checkout-js-validation.png" alt="Checkout JS">
+</details>
+
+<details>
+<summary>General JS</summary>
+<img src="docs/validation/general-js-validation.png" alt="General JS">
+</details>
+
+<details>
+<summary>List Products JS</summary>
+<img src="docs/validation/listProducts-js-validation.png" alt="List Products JS">
+</details>
+
+<details>
+<summary>Signup JS</summary>
+<img src="docs/validation/signup-js-validation.png" alt="Signup JS">
+</details>
+
+

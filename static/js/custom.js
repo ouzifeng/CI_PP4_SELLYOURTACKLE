@@ -1,3 +1,8 @@
+// This JS file is for general fuctionality
+/*jshint esversion: 6 */
+/* global $ */
+
+
 // Live search dropdown functionality
 const searchInput = document.getElementById('search_text');
 const resultsDropdown = document.createElement('div');
