@@ -195,7 +195,7 @@ class Buying(View):
     template_name = 'buying.html'
     
     def get(self, request, *args, **kwargs):
-        user_orders = Order.objects.filter(user=request.user).prefetch_related('items')
+        user_orders = Order.objects.filter(user=request.user).prefetch_related('items').order_by('-created_at')
         order_product_images = self._get_order_product_images(user_orders)
         paginator = Paginator(user_orders, 10)
         page = request.GET.get('page')
@@ -204,6 +204,7 @@ class Buying(View):
             'user_orders': orders_on_page,
             'order_product_images': order_product_images
         })
+
 
     def _get_order_product_images(self, orders):
         """Returns the first image for each product in the orders."""

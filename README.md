@@ -693,4 +693,10 @@ checkout.js - the undefined Stripe variable is called using the <script src="htt
 <img src="docs/validation/signup-js-validation.png" alt="Signup JS">
 </details>
 
+### Python
+
+CI Python Linter was used to check for PEP8 compliance.
+
+#### Admin App
+
 
