@@ -730,28 +730,31 @@ class ShopView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
+        # Get all live products that are not sold.
         products = Product.objects.filter(visibility=ProductVisibility.LIVE).exclude(financial_status="sold")
         
-        # Retrieve filter criteria from GET parameters
+        # Retrieve filter criteria from GET parameters.
         max_price = self.request.GET.get('price')
-        selected_brand = self.request.GET.get('brand')
-        selected_category = self.request.GET.get('category')
+        selected_brand_id = self.request.GET.get('brand')
+        selected_category_id = self.request.GET.get('category')
 
-        # Apply filters based on the criteria
+        # Apply price filter if max_price is provided.
         if max_price:
             products = products.filter(price__lte=max_price)
 
-        if selected_brand:
-            products = products.filter(brand__name=selected_brand)
+        # Apply brand filter if selected_brand_id is provided.
+        if selected_brand_id:
+            products = products.filter(brand__id=selected_brand_id)
 
-        if selected_category:
-            products = products.filter(category__id=selected_category)
+        # Apply category filter if selected_category_id is provided.
+        if selected_category_id:
+            products = products.filter(category__id=selected_category_id)
 
         context['products'] = products
         
-        # Fetch the available brands and categories from the filtered products
-        context['available_brands'] = Brand.objects.filter(id__in=products.values_list('brand', flat=True)).distinct()
-        context['available_categories'] = Category.objects.filter(id__in=products.values_list('category', flat=True)).distinct()
+        # Get distinct brands and categories for filters dropdown.
+        context['available_brands'] = Brand.objects.filter(product__in=products).distinct()
+        context['available_categories'] = Category.objects.filter(product__in=products).distinct()
 
         return context
 

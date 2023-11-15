@@ -24,14 +24,14 @@
             <form method="GET" action="{% url 'shop' %}">
                 <!-- Price Filter -->
                 <div class="mb-3">
-                    <label for="price" class="form-label">Max Price</label>
-                    <input type="number" class="form-control" id="price" name="price">
+                    <label for="mobilePrice" class="form-label">Max Price</label>
+                    <input type="number" class="form-control" id="mobilePrice" name="price">
                 </div>
 
                 <!-- Brand Filter -->
                 <div class="mb-3">
-                    <label for="brand" class="form-label">Brand</label>
-                    <select name="brand" class="form-select">
+                    <label for="MobileBrand" class="form-label">Brand</label>
+                    <select name="brand" id="MobileBrand" class="form-select">
                         <option value="">Select Brand</option>
                         {% for brand in available_brands %}
                         <option value="{{ brand.id }}">{{ brand.name }}</option>
@@ -41,8 +41,8 @@
 
                 <!-- Category Filter -->
                 <div class="mb-3">
-                    <label for="category" class="form-label">Category</label>
-                    <select name="category" class="form-select">
+                    <label for="MobileCategory" class="form-label">Category</label>
+                    <select name="category" class="form-select" id="MobileCategory">
                         <option value="">Select Category</option>
                         {% for category in available_categories %}
                         <option value="{{ category.id }}">{{ category.name }}</option>
@@ -72,7 +72,7 @@
             <!-- Brand Filter -->
             <div class="mb-3">
                 <label for="brand" class="form-label">Brand</label>
-                <select name="brand" class="form-select">
+                <select name="brand" id="brand" class="form-select">
                     <option value="">Select Brand</option>
                     {% for brand in available_brands %}
                     <option value="{{ brand.id }}">{{ brand.name }}</option>
@@ -83,7 +83,7 @@
             <!-- Category Filter -->
             <div class="mb-3">
                 <label for="category" class="form-label">Category</label>
-                <select name="category" class="form-select">
+                <select name="category" id="category" class="form-select">
                     <option value="">Select Category</option>
                     {% for category in available_categories %}
                     <option value="{{ category.id }}">{{ category.name }}</option>

@@ -492,7 +492,7 @@ This description met my criteria for a font.
 * Google Fonts
 * Heroku Platform
 * jQuery
-* Postgres
+* Postgres via neon.tech
 * Stripe
 * AWS SES
 
@@ -510,36 +510,48 @@ Using The W3C Markup Validation Service
 <summary>Buying</summary>
 <img src="docs/validation/buying-html-validation.png" alt="Buying HTML Validation">
 </details>
+<details>
 <summary>Selling</summary>
 <img src="docs/validation/selling-html-validation.png" alt="Selling HTML Validation">
 </details>
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fcontact%2F">Contact Us</a>
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fprivacy%2F">Privacy</a>
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fterms%2F">Terms</a>
+<details>
 <summary>Account Settings</summary>
 <img src="docs/validation/account-settings-html-validation.png" alt="Account Settings HTML Validation">
 </details>
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Freset-password%2F#l330c17">Reset Password</a>
+<details>
+<details>
 <summary>Cart</summary>
 <img src="docs/validation/cart-html-validation.png" alt="Cart HTML Validation">
 </details>
+<details>
 <summary>Checkout</summary>
 <img src="docs/validation/checkout-html-validation.png" alt="Checkout HTML Validation">
 </details>
+<details>
 <summary>Order Page Buyer</summary>
-<img src="docs/validation/buyer-order-html-validation.png" alt="Order Page Buyer">
+<img src="docs/validation/buyer-order-html-validation.png" alt="Order Page Buyer HTML Validation">
 </details>
+<details>
 <summary>List Product</summary>
-<img src="docs/validation/list-product-html-validation.png" alt="List Product">
+<img src="docs/validation/list-product-html-validation.png" alt="List Product HTML Validation">
 </details>
+<details>
 <summary>Seller Product Page Not Sold</summary>
-<img src="docs/validation/seller-product-page-not-sold-html-validation.png" alt="Seller Product Page Not Sold">
+<img src="docs/validation/seller-product-page-not-sold-html-validation.png" alt="Seller Product Page Not Sold HTML Validation">
 </details>
+<details>
 <summary>Seller Product Page Sold</summary>
-<img src="docs/validation/seller-product-page-sold-html-validation.png" alt="Seller Product Page Sold">
+<img src="docs/validation/seller-product-page-sold-html-validation.png" alt="Seller Product Page Sold HTML Validation">
 </details>
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fproduct%2Fkorda-ajcket">Product Page</a>
-* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fproduct%2Fkorda-ajcket">Shop</a>
+<details>
+<summary>Shop</summary>
+<img src="docs/validation/seller-product-page-sold-html-validation.png" alt="Shop HTML Validation">
+</details>
 
 
 
@@ -585,4 +597,59 @@ Accessibility of the website was tested using the WAVE web accessibility evaluat
 <details>
 <summary>Reset Password</summary>
 <img src="docs/validation/resetpassword-accessibility.png" alt="Reset Password Accessibility Score">
+</details>
+<details>
+
+<summary>Buying</summary>
+<img src="docs/validation/buying-accessibility.png" alt="Buying Accessibility Score">
+</details>
+
+<details>
+<summary>Selling</summary>
+<img src="docs/validation/selling-accessibility.png" alt="Selling Accessibility Score">
+</details>
+
+<details>
+<summary>Account Settings</summary>
+<img src="docs/validation/account-settings-accessibility.png" alt="Account Settings Accessibility Score">
+</details>
+
+<details>
+<summary>Cart</summary>
+<img src="docs/validation/cart-accessibility.png" alt="Cart Accessibility Score">
+</details>
+
+<details>
+<summary>Checkout</summary>
+<img src="docs/validation/checkout-accessibility.png" alt="Checkout Accessibility Score">
+</details>
+
+<details>
+<summary>Order Page Buyer</summary>
+<img src="docs/validation/buyer-order-accessibility.png" alt="Order Page Buyer Accessibility Score">
+</details>
+
+<details>
+<summary>List Product</summary>
+<img src="docs/validation/list-product-accessibility.png" alt="List Product Accessibility Score">
+</details>
+
+<details>
+<summary>Seller Product Page Not Sold</summary>
+<img src="docs/validation/seller-product-page-not-sold-accessibility.png" alt="Seller Product Page Not Sold Accessibility Score">
+</details>
+
+<details>
+<summary>Seller Product Page Sold</summary>
+<img src="docs/validation/seller-product-page-sold-accessibility.png" alt="Seller Product Page Sold Accessibility Score">
+</details>
+
+<details>
+<summary>Product Page</summary>
+<img src="docs/validation/product-page-accessibility.png" alt="Product Page Accessibility Score">
+</details>
+
+<details>
+<summary>Shop</summary>
+<img src="docs/validation/shop-accessibility.png" alt="Shop Accessibility Score">
 </details>

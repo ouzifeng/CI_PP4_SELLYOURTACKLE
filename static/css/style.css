@@ -178,6 +178,7 @@ li .btn {
 .list-group-item.active {
   background-color: #fac28b;
   border-color: #fac28b;
+  color: black;
 }
 
 .progress {
@@ -296,11 +297,6 @@ li .btn {
 
 .translate-middle {
   transform: translate(-90%,-20%)!important;
-}
-
-.sold-text {
-    color: red;
-    font-weight: bold;
 }
 
 .product-thumbnail {
