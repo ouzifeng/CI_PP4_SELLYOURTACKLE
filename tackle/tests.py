@@ -1,12 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
-from .models import Product, Category, Brand  # Specific model imports
-from .forms import CheckoutForm, ContactSellerForm  # Specific form imports
-from .views import ProductPage, ProductDeleteView, SearchView, ShopView  # Specific view imports
+from .models import Product, Category, Brand
+from .forms import CheckoutForm, ContactSellerForm
+from .views import ProductPage, ProductDeleteView, SearchView, ShopView
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-
 
 
 class CategoryModelTest(TestCase):
@@ -17,7 +16,7 @@ class CategoryModelTest(TestCase):
     def test_category_creation(self):
         self.assertEqual(self.category.name, "Test Category")
 
-# Form Tests
+
 class CheckoutFormTest(TestCase):
 
     def test_checkout_form_valid(self):
@@ -35,6 +34,7 @@ class CheckoutFormTest(TestCase):
         form = CheckoutForm(data=form_data)
         self.assertTrue(form.is_valid())
 
+
 class ContactSellerFormTest(TestCase):
 
     def test_contact_seller_form_valid(self):
@@ -48,6 +48,7 @@ class SearchViewTest(TestCase):
     def test_search_view(self):
         response = self.client.get(reverse('search'), {'search_text': 'query'})
         self.assertEqual(response.status_code, 200)
+
 
 class ShopViewTest(TestCase):
 

@@ -699,4 +699,38 @@ CI Python Linter was used to check for PEP8 compliance.
 
 #### Admin App
 
+<details>
+<summary>admin.py</summary>
+<img src="docs/validation/admin_pep.png" alt="Admin.py PEP">
+</details>
+
+
+#### Auth App
+
+<details>
+<summary>email.py</summary>
+<img src="docs/validation/email_pep.png" alt="email.py PEP">
+</details>
+
+<details>
+<summary>forms.py</summary>
+<img src="docs/validation/forms_auth_pep.png" alt="forms.py PEP">
+</details>
+
+<details>
+<summary>models.py</summary>
+<img src="docs/validation/models_auth_app_pep.png" alt="models.py PEP">
+</details>
+
+<details>
+<summary>stripe.py</summary>
+<img src="docs/validation/stripe_pep.png" alt="stripe.py PEP">
+</details>
+
+<details>git
+<summary>views.py</summary>
+<img src="docs/validation/views_auth_app_pep.png" alt="views.py PEP">
+</details>
+
+
 

@@ -1,5 +1,6 @@
 # Django imports
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser, BaseUserManager, PermissionsMixin)
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.crypto import get_random_string
@@ -11,6 +12,8 @@ from decimal import Decimal
 from uuid import uuid4
 from datetime import datetime, timedelta
 
+
+# Custom User Manager
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -35,6 +38,8 @@ class CustomUserManager(BaseUserManager):
             counter += 1
         return username
 
+
+# Custom User Model
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, db_index=True)
     first_name = models.CharField(max_length=30, blank=True)
@@ -45,7 +50,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
     is_stripe_verified = models.BooleanField(default=False)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    balance = models.DecimalField(max_digits=10, decimal_places=2,
+                                  default=Decimal('0.00'))
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -53,6 +59,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+
+# Address Model
 class Address(models.Model):
     TYPE_CHOICES = (('billing', 'Billing'), ('shipping', 'Shipping'))
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -70,37 +78,67 @@ class Address(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.address_type}"
 
+
+# Email Confirmation Token Model
 class EmailConfirmationToken(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     token = models.UUIDField(default=uuid4, editable=False, unique=True)
 
+
+# Order Model
 class Order(models.Model):
-    STATUS_CHOICES = (('pending', 'Pending'), ('paid', 'Paid'), ('shipped', 'Shipped'), ('delivered', 'Delivered'), ('refunded', 'Refunded'))
-    PAYMENT_CHOICES = (('pending', 'Pending'), ('completed', 'Completed'), ('failed', 'Failed'), ('refunded', 'Refunded'), ('rf', 'Refund Failed'))
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, db_index=True)
-    product_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-    payment_status = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='pending')
+    STATUS_CHOICES = (
+        ('pending', 'Pending'), ('paid', 'Paid'), ('shipped', 'Shipped'),
+        ('delivered', 'Delivered'), ('refunded', 'Refunded')
+    )
+    PAYMENT_CHOICES = (
+        ('pending', 'Pending'), ('completed', 'Completed'),
+        ('failed', 'Failed'), ('refunded', 'Refunded'), ('rf', 'Refund Failed')
+    )
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, null=True,
+        blank=True, db_index=True
+    )
+    product_cost = models.DecimalField(max_digits=10, decimal_places=2,
+                                       default=Decimal('0.00'))
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2,
+                                        default=Decimal('0.00'))
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2,
+                                       default=Decimal('0.00'))
+    status = models.CharField(max_length=10,
+                              choices=STATUS_CHOICES, default='pending')
+    payment_status = models.CharField(max_length=10,
+                                      choices=PAYMENT_CHOICES,
+                                      default='pending')
     payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    shipping_address = models.ForeignKey(Address, related_name='shipping_orders', on_delete=models.SET_NULL, null=True, blank=True)
-    billing_address = models.ForeignKey(Address, related_name='billing_orders', on_delete=models.SET_NULL, null=True, blank=True)
+    shipping_address = models.ForeignKey(
+        Address, related_name='shipping_orders', on_delete=models.SET_NULL,
+        null=True, blank=True)
+    billing_address = models.ForeignKey(
+        Address, related_name='billing_orders', on_delete=models.SET_NULL,
+        null=True, blank=True)
     tracking_number = models.CharField(max_length=255, blank=True, null=True)
     tracking_company = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"Order {self.id} - {self.user.email}"
 
+
+# Order Item Model
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name='items',
+                              on_delete=models.CASCADE)
     product = models.ForeignKey('tackle.Product', on_delete=models.PROTECT)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
-    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    seller = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, related_name="sold_items", null=True)
+    shipping_cost = models.DecimalField(max_digits=10,
+                                        decimal_places=2,
+                                        default=Decimal('0.00'))
+    seller = models.ForeignKey(
+        CustomUser, on_delete=models.SET_NULL, related_name="sold_items",
+                                                            null=True)
 
     def get_total_item_price(self):
         return self.price * self.quantity
@@ -112,6 +150,7 @@ class OrderItem(models.Model):
         return (self.price * self.quantity) + self.shipping_cost
 
 
+# Password Reset Token Model
 class PasswordResetToken(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     token = models.UUIDField(default=uuid4, editable=False, unique=True)
@@ -120,4 +159,5 @@ class PasswordResetToken(models.Model):
 
     @property
     def is_expired(self):
-        return datetime.now(timezone.utc) > self.created_at + timedelta(hours=1)
+        expiration_time = self.created_at + timedelta(hours=1)
+        return datetime.now(timezone.utc) > expiration_time
