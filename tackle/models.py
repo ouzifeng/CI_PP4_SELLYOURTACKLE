@@ -21,6 +21,7 @@ class Brand(models.Model):
     def __str__(self):
         return self.name
 
+
 class Category(models.Model):
     name = models.CharField(max_length=200)
 
@@ -29,6 +30,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Condition(models.TextChoices):
     PERFECT = "Perfect", "Perfect - never been used and no blemishes"
@@ -39,9 +41,11 @@ class Condition(models.TextChoices):
     def __str__(self):
         return f"{self.label} {self.additional_info}"
 
+
 class FinancialStatus(models.TextChoices):
     UNSOLD = 'unsold', 'Unsold'
     SOLD = 'sold', 'Sold'
+
 
 class ProductVisibility(models.TextChoices):
     DRAFT = 'draft', 'Draft'
@@ -57,10 +61,16 @@ class Product(models.Model):
     variation2 = models.CharField(max_length=100, blank=True, null=True)
     condition = models.CharField(max_length=100, choices=Condition.choices)
     description = models.TextField(blank=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField(auto_now_add=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    shipping = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal('0.00')
+    )
+    shipping = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal('0.00')
+    )
     financial_status = models.CharField(
         max_length=10,
         choices=FinancialStatus.choices,
@@ -76,7 +86,11 @@ class Product(models.Model):
         return self.financial_status == FinancialStatus.UNSOLD
 
     def __str__(self):
-        return f"Product id: {self.id}, name: {self.name}, brand: {self.brand.name}, category: {self.category.name}, condition: {self.condition}"
+        return (
+            f"Product id: {self.id}, name: {self.name}, "
+            f"brand: {self.brand.name}, category: {self.category.name}, "
+            f"condition: {self.condition}"
+        )
 
     def save(self, *args, **kwargs):
         # Only generate a slug for new products
@@ -84,7 +98,7 @@ class Product(models.Model):
             slug_str = slugify(self.name)
             unique_slug = slug_str
             num = 1
-            
+
             while Product.objects.filter(slug=unique_slug).exists():
                 unique_slug = f"{slug_str}-{num}"
                 num += 1
@@ -92,27 +106,30 @@ class Product(models.Model):
             self.slug = unique_slug
 
         super(Product, self).save(*args, **kwargs)
-        
-    def total_with_shipping(self):
-        return self.price + self.shipping 
 
+    def total_with_shipping(self):
+        return self.price + self.shipping
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=f"product-images/{datetime.now().strftime('%Y/%m/')}")
+    product = models.ForeignKey(
+        Product, related_name="images", on_delete=models.CASCADE
+    )
+    image = models.ImageField(
+        upload_to=f"product-images/{datetime.now().strftime('%Y/%m/')}"
+    )
 
     def __str__(self):
         return str(self.id)
-    
+
 
 class WebhookLog(models.Model):
-    order = models.ForeignKey(Order, null=True, blank=True, on_delete=models.SET_NULL)
+    order = models.ForeignKey(
+        Order, null=True, blank=True, on_delete=models.SET_NULL
+    )
     payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
     received_at = models.DateTimeField(auto_now_add=True)
     payload = models.TextField()
     header = models.CharField(max_length=255)
     status = models.CharField(max_length=255, default='received')
     event_type = models.CharField(max_length=255, null=True, blank=True)
-    
-

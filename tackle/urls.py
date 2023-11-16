@@ -1,6 +1,21 @@
 from django.urls import path
 from . import views
-from .views import ListProduct, EditProduct, ProductPage, HomeView, AddToCartView, CartView, RemoveFromCartView, CheckoutSuccessView, CheckoutView, ProductSoldView, OrderPageView, OrderConfirmation, SearchView, ShopView
+from .views import (
+    ListProduct,
+    EditProduct,
+    ProductPage,
+    HomeView,
+    AddToCartView,
+    CartView,
+    RemoveFromCartView,
+    CheckoutSuccessView,
+    CheckoutView,
+    ProductSoldView,
+    OrderPageView,
+    OrderConfirmation,
+    SearchView,
+    ShopView
+)
 from django.conf import settings
 from django.conf.urls.static import static
 

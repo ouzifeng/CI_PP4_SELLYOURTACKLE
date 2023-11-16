@@ -1,5 +1,6 @@
 from django import forms
 
+
 class CheckoutForm(forms.Form):
     first_name = forms.CharField(max_length=100, required=True)
     last_name = forms.CharField(max_length=100, required=True)
@@ -22,8 +23,8 @@ class CheckoutForm(forms.Form):
     shipping_state = forms.CharField(max_length=100, required=False)
     shipping_postal_code = forms.CharField(max_length=10, required=False)
 
-    payment_method = forms.CharField(widget=forms.HiddenInput())  # Stripe Payment Method ID
-    
+    payment_method = forms.CharField(widget=forms.HiddenInput())
+
     use_different_shipping_address = forms.BooleanField(
         required=False,
         initial=False,

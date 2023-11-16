@@ -727,10 +727,46 @@ CI Python Linter was used to check for PEP8 compliance.
 <img src="docs/validation/stripe_pep.png" alt="stripe.py PEP">
 </details>
 
-<details>git
+<details>
 <summary>views.py</summary>
 <img src="docs/validation/views_auth_app_pep.png" alt="views.py PEP">
 </details>
 
+<details>
+<summary>test.py</summary>
+<img src="docs/validation/test_auth_app_pep.png" alt="test.py PEP">
+</details>
+
+<details>
+<summary>urls.py</summary>
+<img src="docs/validation/urls_auth_app_pep.png" alt="urls.py PEP">
+</details>
 
 
+#### Tackle App
+
+<details>
+<summary>forms.py</summary>
+<img src="docs/validation/forms_tackle_pep.png" alt="forms.py PEP">
+</details>
+
+
+<details>
+<summary>models.py</summary>
+<img src="docs/validation/models_tackle_pep.png" alt="models.py PEP">
+</details>
+
+<details>
+<summary>test.py</summary>
+<img src="docs/validation/test_tackle_pep.png" alt="test.py PEP">
+</details>
+
+<details>
+<summary>urls.py</summary>
+<img src="docs/validation/urls_tackle_pep.png" alt="urls.py PEP">
+</details>
+
+<details>
+<summary>views.py</summary>
+<img src="docs/validation/views_tackle_pep.png" alt="views.py PEP">
+</details>

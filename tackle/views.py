@@ -34,9 +34,9 @@ from .models import (
     Brand, Category, Product, ProductImage,
     ProductVisibility, WebhookLog
 )
-from auth_app.models import Address, CustomUser, CustomUserManager, Order, OrderItem
-
-
+from auth_app.models import (
+    Address, CustomUser, CustomUserManager, Order, OrderItem
+)
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -63,14 +63,12 @@ class ListProduct(View):
             # Render the normal product listing form
             return render(request, self.template_name)
 
-    
     def post(self, request, *args, **kwargs):
         # Get data from the form
         brand_name = request.POST.get('brand')
         category_name = request.POST.get('category')
         price = request.POST.get('price', 0)
         shipping = request.POST.get('shipping', 0)
-        
         # Validation for positive price
         try:
             price = float(price)
@@ -100,7 +98,9 @@ class ListProduct(View):
         except ObjectDoesNotExist:
             # Handle error if brand or category is not found
             context = {
-                'error_message': 'Invalid brand or category. Please select from the suggestions.'
+                'error_message': (
+                    'Invalid brand or category. Select from the dropdown.'
+                )
             }
             return render(request, self.template_name, context)
 
@@ -131,9 +131,10 @@ class ListProduct(View):
         for uploaded_file in request.FILES.getlist('images'):
             # Validate image format
             if uploaded_file.content_type not in valid_image_formats:
-                # If the image format is not valid, do not save the product or images
                 context = {
-                    'error_message': 'Invalid image format. Please upload JPEG or PNG images.'
+                    'error_message': (
+                        'Invalid image format. Please upload JPEG or PNG.'
+                    )
                 }
                 return render(request, self.template_name, context)
 
@@ -142,7 +143,12 @@ class ListProduct(View):
             temp_file = BytesIO()
             processed_image.save(temp_file, format='JPEG')
             temp_file.seek(0)  # Reset file pointer to the beginning
-            images_to_save.append(InMemoryUploadedFile(temp_file, None, uploaded_file.name, 'image/jpeg', temp_file.tell(), None))
+            images_to_save.append(
+                InMemoryUploadedFile(
+                    temp_file, None, uploaded_file.name,
+                    'image/jpeg', temp_file.size, None
+                )
+            )
 
         # Now that all validations have passed, save the product and images
         product.save()
@@ -151,19 +157,25 @@ class ListProduct(View):
 
         messages.success(request, 'Product added successfully!')
         return redirect('selling')
-    
+
+
 class SearchBrands(View):
     def get(self, request, *args, **kwargs):
         if 'term' in request.GET:
-            brands = Brand.objects.filter(name__icontains=request.GET.get('term'))
+            brands = Brand.objects.filter(
+                name__icontains=request.GET.get('term')
+            )
             brand_list = list(brands.values_list('name', flat=True))
             return JsonResponse(brand_list, safe=False)
         return JsonResponse([], safe=False)
 
+
 class SearchCategories(View):
     def get(self, request, *args, **kwargs):
         if 'term' in request.GET:
-            cats = Category.objects.filter(name__icontains=request.GET.get('term'))
+            cats = Category.objects.filter(
+                name__icontains=request.GET.get('term')
+            )
             cat_list = list(cats.values_list('name', flat=True))
             return JsonResponse(cat_list, safe=False)
         return JsonResponse([], safe=False)
@@ -171,12 +183,13 @@ class SearchCategories(View):
 
 class HomeView(TemplateView):
     template_name = 'index.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['products'] = Product.objects.filter(visibility=ProductVisibility.LIVE).exclude(financial_status="sold")
+        context['products'] = Product.objects.filter(
+            visibility=ProductVisibility.LIVE
+        ).exclude(financial_status=FinancialStatus.SOLD)
         return context
-
 
 
 @method_decorator(login_required, name='dispatch')
@@ -192,14 +205,13 @@ class EditProduct(View):
 
     def post(self, request, product_id):
         product = get_object_or_404(Product, id=product_id, user=request.user)
-        
-    
+
         # Check if the "delete_product" button was clicked
         if 'delete_product' in request.POST:
             product.delete()
             messages.success(request, 'Product deleted successfully!')
             return redirect('selling')
-        
+
         product.name = request.POST.get('name')
         product.price = request.POST.get('price')
         product.shipping = request.POST.get('shipping')
@@ -213,9 +225,9 @@ class EditProduct(View):
         product.variation2 = request.POST.get('more-info-2')
         product.description = request.POST.get('description')
         product.visibility = request.POST.get('visibility')
-        
+
         product.save()
-    
+
         images_to_delete = request.POST.getlist('delete_images')
         for image_id in images_to_delete:
             image = ProductImage.objects.get(id=image_id)
@@ -225,15 +237,19 @@ class EditProduct(View):
             processed_image = process_image(uploaded_file)
             temp_file = BytesIO()
             processed_image.save(temp_file, format='JPEG')
-            uploaded_file = InMemoryUploadedFile(temp_file, None, uploaded_file.name, 'image/jpeg', temp_file.tell(), None)
-            
+            uploaded_file = InMemoryUploadedFile(
+                temp_file, None, uploaded_file.name,
+                'image/jpeg', temp_file.tell(), None
+            )
+
             ProductImage.objects.create(product=product, image=uploaded_file)
-     
+
         return redirect('selling')
+
 
 class ProductPage(View):
     template_name = 'product.html'
-    
+
     def get(self, request, slug, *args, **kwargs):
         product = get_object_or_404(Product, slug=slug)
         images = product.images.all()
@@ -242,8 +258,8 @@ class ProductPage(View):
             'images': images
         }
         return render(request, self.template_name, context)
-    
-    
+
+
 @method_decorator(login_required, name='dispatch')
 class ProductDeleteView(DeleteView):
     model = Product
@@ -251,17 +267,21 @@ class ProductDeleteView(DeleteView):
     success_url = reverse_lazy('selling')
 
     def get_queryset(self):
-        return self.model.objects.filter(user=self.request.user)    
-    
+        return self.model.objects.filter(user=self.request.user)
+
 
 def process_image(image, target_filesize=2.5*1024*1024, max_width=894):
     """
-    Process an uploaded image using Pillow to fit the intrinsic size, compress it, and ensure max width.
+    Process an uploaded image using Pillow to fit the intrinsic size,
+    compress it, and ensure max width.
     """
     img = Image.open(image)
 
     # Now you can check the mode on the img object
-    if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+    if img.mode in ('RGBA', 'LA') or (
+        img.mode == 'P' and 'transparency' in img.info
+    ):
+        pass
         # Create a new background image with white background
         background = Image.new(img.mode[:-1], img.size, (255, 255, 255))
         # Paste the image onto the background
@@ -279,9 +299,9 @@ def process_image(image, target_filesize=2.5*1024*1024, max_width=894):
     buffer = BytesIO()
     quality = 100
     img.save(buffer, format="JPEG", quality=quality)
-    
+
     # Reduce quality to meet target file size
-    while len(buffer.getvalue()) > target_filesize and quality > 30: # Set a lower bound for quality
+    while len(buffer.getvalue()) > target_filesize and quality > 30:
         buffer = BytesIO()
         quality -= 2  # Decrease by smaller steps
         img.save(buffer, format="JPEG", quality=quality)
@@ -289,9 +309,7 @@ def process_image(image, target_filesize=2.5*1024*1024, max_width=894):
     # Convert BytesIO buffer image back to PIL Image
     compressed_image = Image.open(buffer)
 
-    return compressed_image  
- 
-
+    return compressed_image
 
 
 class Cart:
@@ -316,14 +334,15 @@ class Cart:
                 'price': str(price),
                 'quantity': 1,
                 'product_id': product.id,
-                'thumbnail_id': product.images.first().id if product.images.first() else None,
+                'thumbnail_id': (
+                    product.images.first().id if
+                    product.images.first() else None
+                ),
                 'shipping_cost': str(product.shipping)
             }
         else:
             self.cart[product_id]['quantity'] += 1
         self.save()
-
-
 
     def save(self):
         """
@@ -342,11 +361,13 @@ class Cart:
 
     def __iter__(self):
         """
-        Iterate over the items in the cart and get the products from the database.
+        Iterate over the items in the cart and get products from the database.
         """
         product_ids = self.cart.keys()
         # Get the product objects and add them to the cart
-        products = Product.objects.filter(id__in=product_ids).prefetch_related('images')
+        products = Product.objects.filter(
+            id__in=product_ids
+        ).prefetch_related('images')
         for product in products:
             self.cart[str(product.id)]['product'] = product
             self.cart[str(product.id)]['product_id'] = product.id
@@ -356,11 +377,11 @@ class Cart:
         for item in self.cart.values():
             item['price'] = Decimal(item['price'])
             item['shipping_cost'] = Decimal(item.get('shipping_cost', 0))
-            item['total_price'] = (item['price'] * item['quantity']) + item['shipping_cost']
+            item['total_price'] = (
+                (item['price'] * item['quantity']) + item['shipping_cost']
+            )
             item['thumbnail'] = (item['thumbnail'])
             yield item
-
-
 
     def __len__(self):
         """
@@ -369,17 +390,22 @@ class Cart:
         return sum(item['quantity'] for item in self.cart.values())
 
     def get_total_price(self):
-        return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
-    
+        return sum(
+            Decimal(item['price']) * item['quantity']
+            for item in self.cart.values()
+        )
+
     def get_shipping_total(self):
-        return sum(Decimal(item['shipping_cost']) * item['quantity'] for item in self.cart.values())
-    
+        return sum(
+            Decimal(item['shipping_cost']) * item['quantity']
+            for item in self.cart.values()
+        )
+
     def get_combined_total(self):
         """
         Get the combined total of product prices and shipping costs.
         """
         return self.get_total_price() + self.get_shipping_total()
-
 
     def clear(self):
         """
@@ -387,17 +413,16 @@ class Cart:
         """
         del self.session[settings.CART_SESSION_ID]
         self.save()
-        
+
     def contains(self, product):
         """Check if the cart contains a particular product."""
         product_id = str(product.id)
         return product_id in self.cart
-     
 
 
 class AddToCartView(View):
     def post(self, request, product_id):
-        cart = Cart(request) 
+        cart = Cart(request)
         product = get_object_or_404(Product, id=product_id)
 
         if not product.is_in_stock():
@@ -405,11 +430,15 @@ class AddToCartView(View):
             return redirect('product', slug=product.slug)
 
         if cart.contains(product):
-            messages.warning(request, f"{product.name} is already in your cart!")
+            messages.warning(
+                request, f"{product.name} is already in your cart!"
+            )
             return redirect('product', slug=product.slug)
 
         cart.add(product, price=product.price)
-        messages.success(request, f"{product.name} has been added to your cart!")
+        messages.success(
+            request, f"{product.name} has been added your cart!"
+        )
         return redirect('cart')
 
 
@@ -418,21 +447,23 @@ class CartView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['cart'] = Cart(self.request)  
+        context['cart'] = Cart(self.request)
         return context
+
 
 class RemoveFromCartView(View):
     def post(self, request, product_id):
-        cart = Cart(request)  
+        cart = Cart(request)
         product = get_object_or_404(Product, id=product_id)
 
         cart.remove(product)
 
         return redirect('cart')
 
+
 class CheckoutView(TemplateView):
     template_name = 'checkout.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Create a SetupIntent
@@ -441,16 +472,18 @@ class CheckoutView(TemplateView):
             context['client_secret'] = setup_intent['client_secret']
         except StripeError as e:
             context['error'] = str(e)  # Handle this error as you see fit
-        
+
         context['cart'] = Cart(self.request)
-        
+
         data = {}  # Initialize an empty dictionary
 
         # Check if user is authenticated
         if self.request.user.is_authenticated:
             user = self.request.user
-            billing_address = Address.objects.filter(user=user, address_type='billing').first()
-            
+            billing_address = Address.objects.filter(
+                user=user, address_type='billing'
+            ).first()
+
             # For billing address
             if billing_address:
                 data.update({
@@ -465,7 +498,6 @@ class CheckoutView(TemplateView):
                     'billing_postal_code': billing_address.postal_code,
                 })
         else:
-            # If user is not authenticated, just initialize the form with empty values
             data.update({
                 'first_name': "",
                 'last_name': "",
@@ -483,13 +515,10 @@ class CheckoutView(TemplateView):
 
         return context
 
-
-
     def post(self, request, *args, **kwargs):
         # This will be where your handle_payment logic will reside
         return HttpResponse("index.html")
-    
-    
+
 
 class CheckoutSuccessView(View):
     def post(self, request):
@@ -499,7 +528,9 @@ class CheckoutSuccessView(View):
 
 def distribute_pending_funds():
     # Fetch all paid orders that haven't been distributed yet.
-    paid_orders = Order.objects.filter(payment_status='completed', status='paid')
+    paid_orders = Order.objects.filter(
+        payment_status='completed', status='paid'
+    )
 
     for order in paid_orders:
         for order_item in order.items.all():
@@ -514,14 +545,9 @@ def distribute_pending_funds():
                     destination=seller.stripe_account_id,
                     transfer_group=str(order.id)
                 )
-                # Optionally, mark this order or order item as distributed in your database.
-                # order.distributed = True
-                # order.save()
 
             except stripe.error.StripeError as e:
-                # Handle any Stripe errors (e.g., insufficient funds, account not fully set up, etc.)
                 print(str(e))
-                # Optionally, log the error or send a notification.
 
 
 @method_decorator(login_required, name='dispatch')
@@ -530,7 +556,7 @@ class ProductSoldView(View):
 
     def get(self, request, *args, **kwargs):
         product = get_object_or_404(Product, pk=kwargs['pk'])
-        
+
         # Get the order item associated with the product
         order_item = OrderItem.objects.filter(product=product).first()
 
@@ -548,7 +574,7 @@ class ProductSoldView(View):
             'shipping_address': shipping_address,
             'form': ContactSellerForm()
         }
-        
+
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
@@ -557,7 +583,6 @@ class ProductSoldView(View):
 
         # Ensure order_item exists
         if not order_item:
-            # Handle the case where there's no order_item, possibly redirecting or sending an error message
             messages.error(request, "Order item not found.")
             return redirect('product_sold', pk=product.id)
 
@@ -568,11 +593,13 @@ class ProductSoldView(View):
         if form.is_valid():
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
-            seller_email = request.user.email 
+            seller_email = request.user.email
             buyer_email = order.user.email
 
             # Append the link to the buyer's order page
-            buyer_order_link = request.build_absolute_uri(reverse('order-page', args=[order.id]))
+            buyer_order_link = request.build_absolute_uri(
+                reverse('order-page', args=[order.id])
+            )
             message += f"\n\nManage the order details here: {buyer_order_link}"
 
             if buyer_email:
@@ -584,10 +611,14 @@ class ProductSoldView(View):
                     reply_to=[seller_email],
                 )
                 email.send()
-                messages.success(request, "Your message has been sent to the buyer.")
+                messages.success(
+                    request, "Your message has been sent to the buyer"
+                )
                 return redirect('product_sold', pk=product.id)
             else:
-                messages.error(request, "Could not send email. Buyer's email not found.")
+                messages.error(
+                    request, "Could not send email. Buyer email not found"
+                )
                 return redirect('product_sold', pk=product.id)
 
         # Check if an order item exists
@@ -623,9 +654,10 @@ class ProductSoldView(View):
                 order.tracking_number = tracking_number
                 order.save()
                 return redirect('product_sold', pk=product.id)
-            
+
         return redirect('product_sold', pk=product.id)
-        
+
+
 @method_decorator(login_required, name='dispatch')
 class OrderPageView(View):
     template_name = "detailed-order-page.html"
@@ -636,11 +668,11 @@ class OrderPageView(View):
 
         # Get the product associated with the order.
         order_item = OrderItem.objects.filter(order=order).first()
-        
+
         product = None
         if order_item:
             product = order_item.product
-        
+
         context = {
             'product': product,
             'order': order,
@@ -663,11 +695,14 @@ class OrderPageView(View):
             seller_email = order_item.seller.email if order_item else None
 
             # Append the link to the seller's order management page
-            seller_order_link = request.build_absolute_uri(reverse('product_sold', args=[order_item.product.id]))
-            message_content += f"\n\nManage the order details here: {seller_order_link}"
+            seller_order_link = request.build_absolute_uri(
+                reverse('product_sold', args=[order_item.product.id])
+            )
+            message_content += (
+                f"\n\nManage the order details here: {seller_order_link}"
+            )
 
             if seller_email:
-                # Create and send the email to the seller with the buyer's details for reply
                 email = EmailMessage(
                     subject,
                     message_content,
@@ -676,9 +711,13 @@ class OrderPageView(View):
                     reply_to=[buyer_email],
                 )
                 email.send()
-                messages.success(request, "Your message has been sent to the seller.")
+                messages.success(
+                    request, "Your message has been sent to the seller"
+                )
             else:
-                messages.error(request, "Could not send email. Seller's email not found.")
+                messages.error(
+                    request, "Could not send email. Sellers email not found"
+                )
 
             return redirect('order-page', pk=kwargs['pk'])
 
@@ -688,22 +727,23 @@ class OrderPageView(View):
             'shipping_address': order.shipping_address,
             'form': form
         }
-        
+
         return render(request, self.template_name, context)
-    
+
+
 @method_decorator(login_required, name='dispatch')
 class OrderConfirmation(View):
     template_name = 'order-confirmation.html'
-    
+
     def get(self, request, pk, *args, **kwargs):
         order = get_object_or_404(Order, pk=pk)
 
         # Fetch all order items associated with the order
         order_items = OrderItem.objects.filter(order=order)
-        
+
         # Extract products from the order items
         products = [item.product for item in order_items]
-        
+
         context = {
             'products': products,  # List of products
             'order': order,
@@ -712,27 +752,30 @@ class OrderConfirmation(View):
 
         return render(request, self.template_name, context)
 
+
 class SearchView(View):
-    
+
     def get(self, request, *args, **kwargs):
         query = request.GET.get('search_text', '')
         products = Product.objects.filter(
-            Q(name__icontains=query) | 
+            Q(name__icontains=query) |
             Q(description__icontains=query)
         ).values('name', 'slug')[:5]  # Limit to top 5 results for dropdown
-        
+
         return JsonResponse(list(products), safe=False)
-    
-    
+
+
 class ShopView(TemplateView):
     template_name = 'shop.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         # Get all live products that are not sold.
-        products = Product.objects.filter(visibility=ProductVisibility.LIVE).exclude(financial_status="sold")
-        
+        products = Product.objects.filter(
+            visibility=ProductVisibility.LIVE
+        ).exclude(financial_status="sold")
+
         # Retrieve filter criteria from GET parameters.
         max_price = self.request.GET.get('price')
         selected_brand_id = self.request.GET.get('brand')
@@ -751,10 +794,13 @@ class ShopView(TemplateView):
             products = products.filter(category__id=selected_category_id)
 
         context['products'] = products
-        
+
         # Get distinct brands and categories for filters dropdown.
-        context['available_brands'] = Brand.objects.filter(product__in=products).distinct()
-        context['available_categories'] = Category.objects.filter(product__in=products).distinct()
+        context['available_brands'] = Brand.objects.filter(
+            product__in=products
+        ).distinct()
+        context['available_categories'] = Category.objects.filter(
+            product__in=products
+        ).distinct()
 
         return context
-

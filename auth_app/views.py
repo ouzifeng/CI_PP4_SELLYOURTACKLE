@@ -169,7 +169,7 @@ class ContactUsView(View):
                     "Contact form submission from "
                     f"{form.cleaned_data['name']}"
                     f"({form.cleaned_data['email_address']})"
-                )m.cleaned_data['email_address'] + ")"
+            )
             message = form.cleaned_data['message']
             send_mail(
                 subject, message, from_email, ['hello@sellyourtackle.co.uk']
