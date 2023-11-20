@@ -496,6 +496,19 @@ User stories 15, 21
 
 User stories 4, 5, 6, 7, 
 
+[Watch the Video](https://www.loom.com/share/aaa662167d904660adce13185f4ae45f?sid=dab718ef-ffb9-49d1-832d-26ebae015893)
+
+### Seller and Account Area
+
+* View products listed for sale
+* Check is product has been sold
+* View past sales
+
+User stories 3, 9, 13
+
+
+
+
 
 ## Technologies Used
 

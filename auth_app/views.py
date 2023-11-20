@@ -219,7 +219,7 @@ class Buying(View):
         user_orders = Order.objects.filter(
             user=request.user
         ).prefetch_related('items').order_by('-created_at')
-        order_product_images = self._get_order_product_images(user_orders)
+        order_product_images = self._get_order_product_images(user_orders, request.user)
         paginator = Paginator(user_orders, 10)
         page = request.GET.get('page')
         orders_on_page = paginator.get_page(page)
@@ -228,18 +228,17 @@ class Buying(View):
             'order_product_images': order_product_images
         })
 
-    def _get_order_product_images(self, orders):
+    def _get_order_product_images(self, orders, user):
         """Returns the first image for each product in the orders."""
         order_product_images = {}
         for order in orders:
             for item in order.items.all():
                 product = item.product
-                user_orders = Order.objects.filter(
-                    user=request.user
-                ).prefetch_related('items').order_by('-created_at')
+                first_image = product.images.first() 
                 if first_image:
                     order_product_images[product.id] = first_image.image.url
         return order_product_images
+
 
 
 @method_decorator(login_required, name='dispatch')
