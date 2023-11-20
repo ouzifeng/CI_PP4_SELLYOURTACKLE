@@ -32,7 +32,7 @@ from stripe.error import StripeError
 from .forms import CheckoutForm, ContactSellerForm
 from .models import (
     Brand, Category, Product, ProductImage,
-    ProductVisibility, WebhookLog
+    ProductVisibility, WebhookLog, FinancialStatus
 )
 from auth_app.models import (
     Address, CustomUser, CustomUserManager, Order, OrderItem

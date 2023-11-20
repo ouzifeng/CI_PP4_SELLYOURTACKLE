@@ -505,48 +505,57 @@ Using The W3C Markup Validation Service
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Flogin%2F">Login</a>
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fsignup%2F">Sign Up</a>
 * <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fabout-us">About Us</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fcontact%2F">Contact Us</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fprivacy%2F">Privacy</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fterms%2F">Terms</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Freset-password%2F#l330c17">Reset Password</a>
+* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fproduct%2Fkorda-ajcket">Product Page</a>
+
 <details>
 <summary>Buying</summary>
 <img src="docs/validation/buying-html-validation.png" alt="Buying HTML Validation">
 </details>
+
 <details>
 <summary>Selling</summary>
 <img src="docs/validation/selling-html-validation.png" alt="Selling HTML Validation">
 </details>
-* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fcontact%2F">Contact Us</a>
-* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fprivacy%2F">Privacy</a>
-* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Fterms%2F">Terms</a>
+
 <details>
 <summary>Account Settings</summary>
 <img src="docs/validation/account-settings-html-validation.png" alt="Account Settings HTML Validation">
 </details>
-* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fauth%2Freset-password%2F#l330c17">Reset Password</a>
-<details>
+
 <details>
 <summary>Cart</summary>
 <img src="docs/validation/cart-html-validation.png" alt="Cart HTML Validation">
 </details>
+
 <details>
 <summary>Checkout</summary>
 <img src="docs/validation/checkout-html-validation.png" alt="Checkout HTML Validation">
 </details>
+
 <details>
 <summary>Order Page Buyer</summary>
 <img src="docs/validation/buyer-order-html-validation.png" alt="Order Page Buyer HTML Validation">
 </details>
+
 <details>
 <summary>List Product</summary>
 <img src="docs/validation/list-product-html-validation.png" alt="List Product HTML Validation">
 </details>
+
 <details>
 <summary>Seller Product Page Not Sold</summary>
 <img src="docs/validation/seller-product-page-not-sold-html-validation.png" alt="Seller Product Page Not Sold HTML Validation">
 </details>
+
 <details>
 <summary>Seller Product Page Sold</summary>
 <img src="docs/validation/seller-product-page-sold-html-validation.png" alt="Seller Product Page Sold HTML Validation">
 </details>
-* <a href="https://validator.w3.org/nu/?doc=https%3A%2F%2Fwww.sellyourtackle.co.uk%2Fproduct%2Fkorda-ajcket">Product Page</a>
+
 <details>
 <summary>Shop</summary>
 <img src="docs/validation/seller-product-page-sold-html-validation.png" alt="Shop HTML Validation">
