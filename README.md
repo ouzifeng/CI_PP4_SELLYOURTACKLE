@@ -465,6 +465,19 @@ These models are visually represented by the ERD below:
 
 ![ERD](docs/db-schema.png)
 
+## Features
+
+### Account Creation & Login
+
+* User can create an account via email
+* User can create an account using Google SSO
+* User can login via email
+* User can login via SSO
+
+User stories: 1, 2, 18, 20
+
+<iframe width="640" height="360" src="https://www.loom.com/embed/f1c2cc65b1fa42708041394d23f55129?sid=0279f1a2-8483-4be0-a131-ef127975d3f3" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
 
 ## Technologies Used
 
