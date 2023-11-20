@@ -40,7 +40,7 @@ class CustomUserSignupFormTest(TestCase):
         form_data = {
             'email': 'validuser@example.com',
             'password1': 'validpassword123',
-            'password2': 'validpassword123',
+            'password2': 'validpassword',
             'first_name': 'Test',
             'last_name': 'User'
         }

@@ -124,6 +124,142 @@ The user requirements given are in depth so I have marked each one with an M = m
 <img src="docs/kanban.png" alt="Kanban Board">
 </details>
 
+## Design
+
+### Colours
+
+Taking inspiration from Reverb, a marketplace for used musical instruments, I wanted a colour theme which reflected calm and traniqulity to reflect the serenity and peacefulness associate with going fishing. I chose a a soft peach colour as the main colour and wanted a few few contrasting colours to go help highlight important areas
+
+![Colour Palette](docs/colors_io.png)
+
+### Fonts 
+
+As the main font I choose the Google font Poppins. Poppins is described as the "geometric shapes keep the type readable in small sizes, while its modern yet timeless curves look striking when blown up on big screens or mobile devices. It's perfect for web and UI designs that demand style, clarity, and legibility".
+
+This description met my criteria for a font. 
+
+
+### Wireframes
+
+<details>
+<summary>404</summary>
+<img src="docs/wireframes/404_desktop.png" alt="404 Desktop">
+<img src="docs/wireframes/404_tablet.png" alt="404 Tablet">
+<img src="docs/wireframes/404_mobile.png" alt="404 Mobile">
+</details>
+
+<details>
+<summary>Account Settings</summary>
+<img src="docs/wireframes/account_settings_desktop.png" alt="Account Settings Desktop">
+<img src="docs/wireframes/account_settings_tablet.png" alt="Account Settings Tablet">
+<img src="docs/wireframes/account_settings_mobile.png" alt="Account Settings Mobile">
+</details>
+
+<details>
+<summary>Buyer Order Page</summary>
+<img src="docs/wireframes/buyer_order_page_desktop.png" alt="Buyer Order Page Desktop">
+<img src="docs/wireframes/buyer_order_page_tablet.png" alt="Buyer Order Page Tablet">
+<img src="docs/wireframes/buyer_order_page_mobile.png" alt="Buyer Order Page Mobile">
+</details>
+
+<details>
+<summary>Buying Selling</summary>
+<img src="docs/wireframes/buying_selling_desktop.png" alt="Buying Selling Desktop">
+<img src="docs/wireframes/buying_selling_tablet.png" alt="Buying Selling Tablet">
+<img src="docs/wireframes/buying_selling_mobile.png" alt="Buying Selling Mobile">
+</details>
+
+<details>
+<summary>Cart</summary>
+<img src="docs/wireframes/cart_desktop.png" alt="Cart Desktop">
+<img src="docs/wireframes/cart_tablet.png" alt="Cart Tablet">
+<img src="docs/wireframes/cart_mobile.png" alt="Cart Mobile">
+</details>
+
+<details>
+<summary>Checkout</summary>
+<img src="docs/wireframes/checkout_desktop.png" alt="Checkout Desktop">
+<img src="docs/wireframes/checkout_tablet.png" alt="Checkout Tablet">
+<img src="docs/wireframes/checkout_mobile.png" alt="Checkout Mobile">
+</details>
+
+<details>
+<summary>Connect Stripe</summary>
+<img src="docs/wireframes/connect_stripe_desktop.png" alt="Connect Stripe Desktop">
+<img src="docs/wireframes/connect_stripe_tablet.png" alt="Connect Stripe Tablet">
+<img src="docs/wireframes/connect_stripe_mobile.png" alt="Connect Stripe Mobile">
+</details>
+
+<details>
+<summary>Edit Product</summary>
+<img src="docs/wireframes/edit_product_desktop.png" alt="Edit Product Desktop View">
+<img src="docs/wireframes/edit_product_tablet.png" alt="Edit Product Tablet View">
+<img src="docs/wireframes/edit_product_mobile.png" alt="Edit Product Mobile View">
+</details>
+
+<details>
+<summary>Forgot Password</summary>
+<img src="docs/wireframes/forgot_password_desktop.png" alt="Forgot Password Desktop View">
+<img src="docs/wireframes/forgot_password_tablet.png" alt="Forgot Password Tablet View">
+<img src="docs/wireframes/forgot_password_mobile.png" alt="Forgot Password Mobile View">
+</details>
+
+<details>
+<summary>Form</summary>
+<img src="docs/wireframes/form_desktop.png" alt="Form Desktop View">
+<img src="docs/wireframes/form_tablet.png" alt="Form Tablet View">
+<img src="docs/wireframes/form_mobile.png" alt="Form Mobile View">
+</details>
+
+<details>
+<summary>Order Confirmation</summary>
+<img src="docs/wireframes/order_confirmation_desktop.png" alt="Order Confirmation Desktop View">
+<img src="docs/wireframes/order_confirmation_tablet.png" alt="Order Confirmation Tablet View">
+<img src="docs/wireframes/order_confirmation_mobile.png" alt="Order Confirmation Mobile View">
+</details>
+
+<details>
+<summary>Home</summary>
+<img src="docs/wireframes/home_desktop.png" alt="Home Desktop View">
+<img src="docs/wireframes/home_tablet.png" alt="Home Tablet View">
+<img src="docs/wireframes/home_mobile.png" alt="Home Mobile View">
+</details>
+
+<details>
+<summary>Login</summary>
+<img src="docs/wireframes/login_desktop.png" alt="Login Desktop View">
+<img src="docs/wireframes/login_tablet.png" alt="Login Tablet View">
+<img src="docs/wireframes/login_mobile.png" alt="Login Mobile View">
+</details>
+
+<details>
+<summary>Product Page</summary>
+<img src="docs/wireframes/product_page_desktop.png" alt="Product Page Desktop View">
+<img src="docs/wireframes/product_page_tablet.png" alt="Product Page Tablet View">
+<img src="docs/wireframes/product_page_mobile.png" alt="Product Page Mobile View">
+</details>
+
+<details>
+<summary>Product Sold</summary>
+<img src="docs/wireframes/product_sold_desktop.png" alt="Product Sold Desktop View">
+<img src="docs/wireframes/product_sold_tablet.png" alt="Product Sold Tablet View">
+<img src="docs/wireframes/product_sold_mobile.png" alt="Product Sold Mobile View">
+</details>
+
+<details>
+<summary>Reset Password</summary>
+<img src="docs/wireframes/reset_password_desktop.png" alt="Reset Password Desktop View">
+<img src="docs/wireframes/reset_password_tablet.png" alt="Reset Password Tablet View">
+<img src="docs/wireframes/reset_password_mobile.png" alt="Reset Password Mobile View">
+</details>
+
+<details>
+<summary>Sign Up</summary>
+<img src="docs/wireframes/signup_desktop.png" alt="Sign Up Desktop View">
+<img src="docs/wireframes/signup_tablet.png" alt="Sign Up Tablet View">
+<img src="docs/wireframes/signup_mobile.png" alt="Sign Up Mobile View">
+</details>
+
 ## Structure
 
 ### Code Structure
@@ -328,143 +464,6 @@ Represents users within the application with custom fields and behavior.
 These models are visually represented by the ERD below:
 
 ![ERD](docs/db-schema.png)
-
-
-## Design
-
-### Colours
-
-Taking inspiration from Reverb, a marketplace for used musical instruments, I wanted a colour theme which reflected calm and traniqulity to reflect the serenity and peacefulness associate with going fishing. I chose a a soft peach colour as the main colour and wanted a few few contrasting colours to go help highlight important areas
-
-![Colour Palette](docs/colour_io_.png)
-
-### Fonts 
-
-As the main font I choose the Google font Poppins. Poppins is described as the "geometric shapes keep the type readable in small sizes, while its modern yet timeless curves look striking when blown up on big screens or mobile devices. It's perfect for web and UI designs that demand style, clarity, and legibility".
-
-This description met my criteria for a font. 
-
-
-### Wireframes
-
-<details>
-<summary>404</summary>
-<img src="docs/wireframes/404_desktop.png" alt="404 Desktop">
-<img src="docs/wireframes/404_tablet.png" alt="404 Tablet">
-<img src="docs/wireframes/404_mobile.png" alt="404 Mobile">
-</details>
-
-<details>
-<summary>Account Settings</summary>
-<img src="docs/wireframes/account_settings_desktop.png" alt="Account Settings Desktop">
-<img src="docs/wireframes/account_settings_tablet.png" alt="Account Settings Tablet">
-<img src="docs/wireframes/account_settings_mobile.png" alt="Account Settings Mobile">
-</details>
-
-<details>
-<summary>Buyer Order Page</summary>
-<img src="docs/wireframes/buyer_order_page_desktop.png" alt="Buyer Order Page Desktop">
-<img src="docs/wireframes/buyer_order_page_tablet.png" alt="Buyer Order Page Tablet">
-<img src="docs/wireframes/buyer_order_page_mobile.png" alt="Buyer Order Page Mobile">
-</details>
-
-<details>
-<summary>Buying Selling</summary>
-<img src="docs/wireframes/buying_selling_desktop.png" alt="Buying Selling Desktop">
-<img src="docs/wireframes/buying_selling_tablet.png" alt="Buying Selling Tablet">
-<img src="docs/wireframes/buying_selling_mobile.png" alt="Buying Selling Mobile">
-</details>
-
-<details>
-<summary>Cart</summary>
-<img src="docs/wireframes/cart_desktop.png" alt="Cart Desktop">
-<img src="docs/wireframes/cart_tablet.png" alt="Cart Tablet">
-<img src="docs/wireframes/cart_mobile.png" alt="Cart Mobile">
-</details>
-
-<details>
-<summary>Checkout</summary>
-<img src="docs/wireframes/checkout_desktop.png" alt="Checkout Desktop">
-<img src="docs/wireframes/checkout_tablet.png" alt="Checkout Tablet">
-<img src="docs/wireframes/checkout_mobile.png" alt="Checkout Mobile">
-</details>
-
-<details>
-<summary>Connect Stripe</summary>
-<img src="docs/wireframes/connect_stripe_desktop.png" alt="Connect Stripe Desktop">
-<img src="docs/wireframes/connect_stripe_tablet.png" alt="Connect Stripe Tablet">
-<img src="docs/wireframes/connect_stripe_mobile.png" alt="Connect Stripe Mobile">
-</details>
-
-<details>
-<summary>Edit Product</summary>
-<img src="docs/wireframes/edit_product_desktop.png" alt="Edit Product Desktop View">
-<img src="docs/wireframes/edit_product_tablet.png" alt="Edit Product Tablet View">
-<img src="docs/wireframes/edit_product_mobile.png" alt="Edit Product Mobile View">
-</details>
-
-<details>
-<summary>Forgot Password</summary>
-<img src="docs/wireframes/forgot_password_desktop.png" alt="Forgot Password Desktop View">
-<img src="docs/wireframes/forgot_password_tablet.png" alt="Forgot Password Tablet View">
-<img src="docs/wireframes/forgot_password_mobile.png" alt="Forgot Password Mobile View">
-</details>
-
-<details>
-<summary>Form</summary>
-<img src="docs/wireframes/form_desktop.png" alt="Form Desktop View">
-<img src="docs/wireframes/form_tablet.png" alt="Form Tablet View">
-<img src="docs/wireframes/form_mobile.png" alt="Form Mobile View">
-</details>
-
-<details>
-<summary>Order Confirmation</summary>
-<img src="docs/wireframes/order_confirmation_desktop.png" alt="Order Confirmation Desktop View">
-<img src="docs/wireframes/order_confirmation_tablet.png" alt="Order Confirmation Tablet View">
-<img src="docs/wireframes/order_confirmation_mobile.png" alt="Order Confirmation Mobile View">
-</details>
-
-<details>
-<summary>Home</summary>
-<img src="docs/wireframes/home_desktop.png" alt="Home Desktop View">
-<img src="docs/wireframes/home_tablet.png" alt="Home Tablet View">
-<img src="docs/wireframes/home_mobile.png" alt="Home Mobile View">
-</details>
-
-<details>
-<summary>Login</summary>
-<img src="docs/wireframes/login_desktop.png" alt="Login Desktop View">
-<img src="docs/wireframes/login_tablet.png" alt="Login Tablet View">
-<img src="docs/wireframes/login_mobile.png" alt="Login Mobile View">
-</details>
-
-<details>
-<summary>Product Page</summary>
-<img src="docs/wireframes/product_page_desktop.png" alt="Product Page Desktop View">
-<img src="docs/wireframes/product_page_tablet.png" alt="Product Page Tablet View">
-<img src="docs/wireframes/product_page_mobile.png" alt="Product Page Mobile View">
-</details>
-
-<details>
-<summary>Product Sold</summary>
-<img src="docs/wireframes/product_sold_desktop.png" alt="Product Sold Desktop View">
-<img src="docs/wireframes/product_sold_tablet.png" alt="Product Sold Tablet View">
-<img src="docs/wireframes/product_sold_mobile.png" alt="Product Sold Mobile View">
-</details>
-
-<details>
-<summary>Reset Password</summary>
-<img src="docs/wireframes/reset_password_desktop.png" alt="Reset Password Desktop View">
-<img src="docs/wireframes/reset_password_tablet.png" alt="Reset Password Tablet View">
-<img src="docs/wireframes/reset_password_mobile.png" alt="Reset Password Mobile View">
-</details>
-
-<details>
-<summary>Sign Up</summary>
-<img src="docs/wireframes/signup_desktop.png" alt="Sign Up Desktop View">
-<img src="docs/wireframes/signup_tablet.png" alt="Sign Up Tablet View">
-<img src="docs/wireframes/signup_mobile.png" alt="Sign Up Mobile View">
-</details>
 
 
 ## Technologies Used
