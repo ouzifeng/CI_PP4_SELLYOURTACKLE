@@ -24,6 +24,7 @@ from django.core.files.images import get_image_dimensions
 
 # Third-party imports
 import stripe
+import os
 from PIL import Image
 from slugify import slugify
 from stripe.error import StripeError
@@ -132,21 +133,19 @@ class ListProduct(View):
             # Validate image format
             if uploaded_file.content_type not in valid_image_formats:
                 context = {
-                    'error_message': (
-                        'Invalid image format. Please upload JPEG or PNG.'
-                    )
+                    'error_message': 'Invalid image format. Please upload JPEG or PNG.'
                 }
                 return render(request, self.template_name, context)
 
             # If the image format is valid, process and prepare to save
-            processed_image = process_image(uploaded_file)
+            processed_image, file_size = process_image(uploaded_file)
             temp_file = BytesIO()
             processed_image.save(temp_file, format='JPEG')
             temp_file.seek(0)  # Reset file pointer to the beginning
             images_to_save.append(
                 InMemoryUploadedFile(
                     temp_file, None, uploaded_file.name,
-                    'image/jpeg', temp_file.size, None
+                    'image/jpeg', file_size, None
                 )
             )
 
@@ -308,8 +307,13 @@ def process_image(image, target_filesize=2.5*1024*1024, max_width=894):
 
     # Convert BytesIO buffer image back to PIL Image
     compressed_image = Image.open(buffer)
+    
+    # Get the size of the buffer
+    buffer.seek(0, os.SEEK_END)  
+    file_size = buffer.tell()    
+    buffer.seek(0)             
 
-    return compressed_image
+    return compressed_image, file_size
 
 
 class Cart:

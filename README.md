@@ -476,7 +476,25 @@ These models are visually represented by the ERD below:
 
 User stories: 1, 2, 18, 20
 
-<iframe width="640" height="360" src="https://www.loom.com/embed/f1c2cc65b1fa42708041394d23f55129?sid=0279f1a2-8483-4be0-a131-ef127975d3f3" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+[Watch the Video](https://www.loom.com/share/e23c32c8354e4aceb6673c5b3bb71d7e?sid=34aea5c1-f325-4e32-a5f2-74496210758b)
+
+### Password Reset
+
+* Users can reset their password if they forget it
+
+[Watch the Video](https://www.loom.com/share/92aaceb7549b47d29293fe0cf1489d43?sid=81db6b9f-f566-404f-bafd-73592ba47017)
+
+User stories 15, 21
+
+### List item for sale
+
+* Users have to have an account to list a product
+* Users have to have connected a Stripe account to list a porduct or they will not be able to get paid
+* Users have to choose spefic categories and brands from a predetermined data set
+* Users just need a single form to list
+
+User stories 4, 5, 6, 7, 
 
 
 ## Technologies Used
