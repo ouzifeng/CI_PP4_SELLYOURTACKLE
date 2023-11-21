@@ -82,20 +82,19 @@ The user requirements given are in depth so I have marked each one with an M = m
 | 20     | Reset password in case of forgetting it                   | M   |
 | 21     | Area to view past orders                                  | M   |
 | 22     | See tracking information once shipped                     | M   |
-| 23     | View billing and shipping addresses                       | N   |
-| 24     | Negate the need for duplicate address inputs at checkout  | N   |
-| 25     | Different payment options at checkout                     | N   |
-| 26     | Ability to message seller with questions                  | M   |
-| 27     | Ability to message site admins for order help             | M   |
+| 23     | Negate the need for duplicate address inputs at checkout  | N   |
+| 24     | Different payment options at checkout                     | N   |
+| 25     | Ability to message seller with questions                  | M   |
+| 26     | Ability to message site admins for order help             | M   |
 
 ### Admin/Site Owner
 
 | Number | Action                                         | M/N |
 |--------|------------------------------------------------|-----|
-| 28     | View and manage orders in admin dashboard      | M   |
-| 29     | View and manage users in admin dashboard       | M   |
-| 30     | View and manage products in admin dashboard    | M   |
-| 31     | Refund orders on behalf of sellers             | M   |
+| 27     | View and manage orders in admin dashboard      | M   |
+| 28     | View and manage users in admin dashboard       | M   |
+| 29     | View and manage products in admin dashboard    | M   |
+| 30     | Refund orders on behalf of sellers             | M   |
 
 
 ### Project Management
@@ -474,7 +473,7 @@ These models are visually represented by the ERD below:
 * User can login via email
 * User can login via SSO
 
-User stories: 1, 2, 18, 20
+User stories: 1, 2, 18, 20, 19
 
 
 [Watch the Video](https://www.loom.com/share/e23c32c8354e4aceb6673c5b3bb71d7e?sid=34aea5c1-f325-4e32-a5f2-74496210758b)
@@ -519,10 +518,34 @@ User stories 3, 9, 13
 
 User stories 8, 10, 11, 14, 17
 
+[Watch the Video](https://www.loom.com/share/f6206b4b263e41b7a3e95c7eabdf345a?sid=07440ff6-bc11-407b-b3b1-ea82bd1ab509)
 
 
+### Contact Page
 
+* Buyers or sellers can contact sell your tackle to help solve any order related or platform related issues
 
+[Watch the Video](https://www.loom.com/share/c11fb73716ce4c689ab3dcf8ceb5447e?sid=a62784c1-ee4e-4d01-a2bb-242b7b18cc80)
+
+User stories 12, 26
+
+### Delete products
+
+* I can delete a product as a seller if it has not been sold
+* Double optin for delete so as to not delete a product my accident
+
+[Watch the Video](https://www.loom.com/share/5a7a15dc706047f993ec7add82b1d0d7?sid=d125b8c8-d8c8-4420-bdc8-af6f015e034e)
+
+User story 14
+
+### Buyer Area
+
+* View purchases
+* See tracking once shipped
+
+[Watch the Video](https://www.loom.com/share/5a7a15dc706047f993ec7add82b1d0d7?sid=d125b8c8-d8c8-4420-bdc8-af6f015e034e)
+
+User stories 21, 22
 
 
 
