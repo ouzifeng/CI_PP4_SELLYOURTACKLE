@@ -154,9 +154,9 @@
 
                         </td>
                         <td>{{ item.product.name }}</td>
-                        <td>{{ item.price }}</td>
-                        <td>{{ item.shipping_cost }}</td>
-                        <td>{{ item.total_price }}</td>
+                        <td>£{{ item.price }}</td>
+                        <td>£{{ item.shipping_cost }}</td>
+                        <td>£{{ item.total_price }}</td>
                         <td>
                             <form method="post" action="{% url 'remove_from_cart' item.product_id %}">
                                 {% csrf_token %}
@@ -180,15 +180,15 @@
                 <tbody>
                     <tr>
                         <td>Total Product Price</td>
-                        <td>{{ cart.get_total_price }}</td>
+                        <td>£{{ cart.get_total_price }}</td>
                     </tr>
                     <tr>
                         <td>Total Shipping Cost</td>
-                        <td>{{ cart.get_shipping_total }}</td>
+                        <td>£{{ cart.get_shipping_total }}</td>
                     </tr>
                     <tr>
                         <td>Combined Total</td>
-                        <td>{{ cart.get_combined_total }}</td>
+                        <td>£{{ cart.get_combined_total }}</td>
                     </tr>
                 </tbody>
             </table>
