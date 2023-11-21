@@ -2,7 +2,7 @@
 /*jshint esversion: 6 */
 
 var stripe = Stripe('pk_test_wuEF85zmTLhJHgtL1wZUVWku003bmEKJ3y');
-var clientSecret = "{{ client_secret }}";
+var clientSecret = document.getElementById('stripe-data').getAttribute('data-client-secret');
 
 var elements = stripe.elements({
     clientSecret: clientSecret

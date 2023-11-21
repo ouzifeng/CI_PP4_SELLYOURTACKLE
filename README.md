@@ -545,7 +545,15 @@ User story 14
 
 [Watch the Video](https://www.loom.com/share/5a7a15dc706047f993ec7add82b1d0d7?sid=d125b8c8-d8c8-4420-bdc8-af6f015e034e)
 
-User stories 21, 22
+User stories 21, 22, 25
+
+### Cart & Checkout Page
+
+* View items in cart and shipping totals before purchasing
+* INput shipping and billing address. If addresses are the same then no need to input twice
+* If you are logged in it will retrieve last shipping & billing information
+* Different payment options - Apple Pay, Google Pay, Credit Card, Paypal
+
 
 
 
