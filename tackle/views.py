@@ -225,24 +225,23 @@ class EditProduct(View):
         product.description = request.POST.get('description')
         product.visibility = request.POST.get('visibility')
 
-        product.save()
-
         images_to_delete = request.POST.getlist('delete_images')
         for image_id in images_to_delete:
             image = ProductImage.objects.get(id=image_id)
             image.delete()
 
         for uploaded_file in request.FILES.getlist('images'):
-            processed_image = process_image(uploaded_file)
+            processed_image, _ = process_image(uploaded_file)
             temp_file = BytesIO()
             processed_image.save(temp_file, format='JPEG')
+            temp_file.seek(0) 
             uploaded_file = InMemoryUploadedFile(
-                temp_file, None, uploaded_file.name,
-                'image/jpeg', temp_file.tell(), None
+                temp_file, 'image', uploaded_file.name, 'image/jpeg', temp_file.tell(), None
             )
-
             ProductImage.objects.create(product=product, image=uploaded_file)
-
+            
+        product.save()
+        messages.success(request, 'Product updated successfully!')
         return redirect('selling')
 
 

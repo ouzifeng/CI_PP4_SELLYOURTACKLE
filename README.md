@@ -506,6 +506,22 @@ User stories 4, 5, 6, 7,
 
 User stories 3, 9, 13
 
+[Watch the Video](https://www.loom.com/share/59607f5e429a433cbe7823561ace51a5?sid=22dc6d67-e707-40cb-b3ce-2bbbb201679c)
+
+### Selling Management
+
+* See where to ship an order
+* Input tracking information
+* Mark order as dispatched
+* Contact buyer in case of an issue
+* Refund order if necessary
+* Edit products if not sold
+
+User stories 8, 10, 11, 14, 17
+
+
+
+
 
 
 
