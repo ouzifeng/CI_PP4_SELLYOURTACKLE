@@ -550,11 +550,24 @@ User stories 21, 22, 25
 ### Cart & Checkout Page
 
 * View items in cart and shipping totals before purchasing
-* INput shipping and billing address. If addresses are the same then no need to input twice
+* Input shipping and billing address. If addresses are the same then no need to input twice
 * If you are logged in it will retrieve last shipping & billing information
 * Different payment options - Apple Pay, Google Pay, Credit Card, Paypal
 
+[Watch the Video](https://www.loom.com/share/986b065b59f944dfb213efb137805c6b?sid=61381892-48cc-4770-97bd-f41e36ea3a79)
 
+User Stories 23, 24
+
+### Admin Dashboard
+
+* View and manage orders
+* View and manage users
+* View and manage products
+* Refund orders on behalf of sellers
+
+[Watch the Video](https://www.loom.com/share/c874b54711c64f5fb0ed2b222d345d3a?sid=b4553a6b-a614-46f6-abbe-e24af9ec36ed)
+
+User Stories 27, 28, 29 30
 
 
 ## Technologies Used
@@ -869,3 +882,54 @@ CI Python Linter was used to check for PEP8 compliance.
 <summary>views.py</summary>
 <img src="docs/validation/views_tackle_pep.png" alt="views.py PEP">
 </details>
+
+## Testing
+
+1. Automated unit testing
+
+* Testing using Django unittest
+* Two test files can be found in the tackle and auth app
+* To run call python manage.py test in the terminal
+
+### Models Tests
+- **CategoryModelTest**
+  - Tests the creation of a Category instance.
+
+### Form Tests
+- **CheckoutFormTest**
+  - Validates the Checkout form with correct data input.
+- **ContactSellerFormTest**
+  - Validates the Contact Seller form with correct data input.
+- **CustomUserSignupFormTest**
+  - Validates the Custom User Signup form with both valid and invalid data input.
+- **ContactFormTest**
+  - Validates the Contact form with correct data input.
+- **PasswordResetRequestFormTest**
+  - Validates the Password Reset Request form with correct data input.
+- **SetNewPasswordFormTest**
+  - Validates the Set New Password form with correct data input.
+
+### View Tests
+- **SearchViewTest**
+  - Tests the search view for correct HTTP response.
+- **ShopViewTest**
+  - Tests the shop view for correct HTTP response.
+- **ConfirmEmailViewTest**
+  - Tests email confirmation process and user activation.
+- **BuyingViewTest**
+  - Tests the buying view for correct HTTP response and template usage.
+
+### CustomUser Model Test
+- **CustomUserModelTest**
+  - Tests the creation of a CustomUser instance.
+
+### Stripe Integration Tests
+- **StripeIntegrationTest**
+  - Tests the Stripe integration, including account link creation, account retrieval, and user Stripe verification.
+
+
+<details>
+<summary>Unit Test Results</summary>
+<img src="docs/testing/unittests.png" alt="unit testing">
+</details>
+
