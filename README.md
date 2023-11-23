@@ -885,17 +885,17 @@ CI Python Linter was used to check for PEP8 compliance.
 
 ## Testing
 
-1. Automated unit testing
+### Automated unit testing
 
 * Testing using Django unittest
 * Two test files can be found in the tackle and auth app
 * To run call python manage.py test in the terminal
 
-### Models Tests
+#### Models Tests
 - **CategoryModelTest**
   - Tests the creation of a Category instance.
 
-### Form Tests
+#### Form Tests
 - **CheckoutFormTest**
   - Validates the Checkout form with correct data input.
 - **ContactSellerFormTest**
@@ -909,7 +909,7 @@ CI Python Linter was used to check for PEP8 compliance.
 - **SetNewPasswordFormTest**
   - Validates the Set New Password form with correct data input.
 
-### View Tests
+#### View Tests
 - **SearchViewTest**
   - Tests the search view for correct HTTP response.
 - **ShopViewTest**
@@ -919,11 +919,11 @@ CI Python Linter was used to check for PEP8 compliance.
 - **BuyingViewTest**
   - Tests the buying view for correct HTTP response and template usage.
 
-### CustomUser Model Test
+#### CustomUser Model Test
 - **CustomUserModelTest**
   - Tests the creation of a CustomUser instance.
 
-### Stripe Integration Tests
+#### Stripe Integration Tests
 - **StripeIntegrationTest**
   - Tests the Stripe integration, including account link creation, account retrieval, and user Stripe verification.
 
@@ -933,3 +933,210 @@ CI Python Linter was used to check for PEP8 compliance.
 <img src="docs/testing/unittests.png" alt="unit testing">
 </details>
 
+All tests pass with "OK" status
+
+### Manual Testing
+
+#### Selling
+
+1. **Login and create an account**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to 'Login/Register' | Registration/Login page loads | Works as expected |
+   | Attempt to register a new account | Account is created and user is logged in | Works as expected |
+
+2. **Use Google as an SSO**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Click on 'Login with Google' | Google SSO process initiates | Works as expected |
+   | Complete Google SSO process | User is logged in through Google account | Works as expected |
+
+3. **Change their username**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to user profile/settings | Profile/Settings page loads | Works as expected |
+   | Update username and save changes | Username is updated successfully | Works as expected |
+
+4. **Single form to list tackle**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to 'List New Tackle' form | Tackle listing form loads | Works as expected |
+   | Fill out the form and submit | New tackle listing is created | Works as expected |
+
+5. **Predefined brands and categories to speed up listing**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Open the listing form | Form with predefined options for brands and categories is visible | Works as expected |
+   | Select options from predefined lists and submit | Listing is created with selected predefined options | Works as expected |
+
+6. **Ability to upload images to product, regardless of size**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to product listing form | Product listing form is accessible | Works as expected |
+   | Upload image of any size and submit | Image is uploaded successfully | Works as expected |
+
+7. **Connect bank account to get paid**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to payment settings | Payment settings page loads | Works as expected |
+   | Connect a bank account | Bank account is connected successfully | Works as expected |
+
+8. **Message buyers in case of order issues**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to the order page | Order details page loads | Works as expected |
+   | Send message to buyer | Message is sent successfully | Works as expected |
+
+9. **View past sales**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to sales history | Sales history page loads | Works as expected |
+   | View list of past sales | Past sales are displayed correctly | Works as expected |
+
+10. **See shipping information when an item is sold**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to sold item details | Sold item details page loads | Works as expected |
+   | View shipping information | Shipping information is displayed correctly | Works as expected |
+
+11. **Input tracking details and send to the buyer**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to sold item details | Sold item details page loads | Works as expected |
+   | Input tracking details and update | Tracking details are updated and sent to the buyer | Works as expected |
+
+12. **Contact page for order disputes**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to the contact page | Contact page loads | Works as expected |
+   | Submit an order dispute | Order dispute is submitted successfully | Works as expected |
+
+13. **Responsive design for checking listings on the go**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Access website on a mobile device | Website is responsive and usable on mobile | Works as expected |
+
+14. **Edit or delete products unless sold**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to product details | Product details page loads | Works as expected |
+   | Edit or delete the product | Product is edited or deleted successfully | Works as expected |
+
+15. **Reset password in case of forgetting it**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Click on 'Forgot Password' | Password reset form/page loads | Works as expected |
+   | Submit email for password reset | Password reset instructions are sent to email | Works as expected |
+
+16. **Email notification once item is sold**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Sell an item | Email notification about the sale is received | Works as expected |
+
+17. **Refund orders if unable to ship**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to sold item details | Sold item details page loads | Works as expected |
+   | Initiate a refund | Refund is processed successfully | Works as expected |
+
+#### Buying
+
+18. **Login and create an account**
+   
+   *Same steps as in Selling section.*
+
+19. **Use Google as an SSO**
+   
+   *Same steps as in Selling section.*
+
+20. **Reset password in case of forgetting it**
+   
+   *Same steps as in Selling section.*
+
+21. **Area to view past orders**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to user profile | Profile page with order history loads | Works as expected |
+   | View order history | List of past orders is displayed | Works as expected |
+
+22. **See tracking information once shipped**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to purchased item details | Purchased item details page loads | Works as expected |
+   | View tracking information | Tracking information is displayed correctly | Works as expected |
+
+23. **Negate the need for duplicate address inputs at checkout**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Proceed to checkout | Checkout page loads with pre-filled address details | Works as expected |
+
+24. **Different payment options at checkout**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to checkout | Checkout page loads | Works as expected |
+   | Select different payment options | Payment options are selectable and functional | Works as expected |
+
+25. **Ability to message seller with questions**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to a product page | Product page loads | Works as expected |
+   | Send a message to the seller | Message is sent successfully | Works as expected |
+
+26. **Ability to message site admins for order help**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Navigate to the contact page | Contact page loads | Works as expected |
+   | Send a message to site admins | Message is sent successfully | Works as expected |
+
+### Admin/Site Owner
+
+27. **View and manage orders in admin dashboard**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Access admin dashboard | Admin dashboard is accessible | Works as expected |
+   | View and manage orders | Orders are viewable and manageable | Works as expected |
+
+28. **View and manage users in admin dashboard**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Access admin dashboard | Admin dashboard is accessible | Works as expected |
+   | View and manage user accounts | User accounts are viewable and manageable | Works as expected |
+
+29. **View and manage products in admin dashboard**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Access admin dashboard | Admin dashboard is accessible | Works as expected |
+   | View and manage products | Products are viewable and manageable | Works as expected |
+
+30. **Refund orders on behalf of sellers**
+   
+   **Step** | **Expected Result** | **Actual Result**
+   ---------|---------------------|----------------
+   | Access admin dashboard, navigate to orders | Orders section in admin dashboard loads | Works as expected |
+   | Initiate a refund for an order | Refund is processed successfully | Works as expected |
