@@ -582,22 +582,38 @@ User Stories 27, 28, 29 30
 
 ### Libraries and Tools
 
-* Am I Responsive
-* AWS S3 Bucket
-* Balsamiq
-* Bootstrap v5.2 
-* Cloudinary
-* Favicon.io
-* Chrome dev tools
-* Font Awesome
-* Git
-* GitHub
-* Google Fonts
-* Heroku Platform
-* jQuery
-* Postgres via neon.tech
-* Stripe
-* AWS SES
+- **Am I Responsive**: Tool for checking responsiveness of web designs across different devices.
+- **AWS S3 Bucket**: Cloud storage for storing files and assets on Amazon Web Services.
+- **Balsamiq**: Rapid wireframing tool for working faster and smarter in design.
+- **Bootstrap**: Front-end framework for developing responsive and mobile-first websites.
+- **Cloudinary**: Cloud-based image and video management service.
+- **Favicon.io**: Tool for creating website favicons.
+- **Chrome Dev Tools**: Built-in Google Chrome browser tools for web developers.
+- **Font Awesome**: Font and icon toolkit based on CSS and Less.
+- **Git**: Distributed version control system for tracking source code changes.
+- **GitHub**: Hosting and version control service using Git.
+- **Google Fonts**: Library of free licensed font families.
+- **Heroku Platform**: Cloud platform as a service supporting various programming languages.
+- **jQuery**: Fast, small, and feature-rich JavaScript library.
+- **Postgres via neon.tech**: Powerful, open-source object-relational database system.
+- **Stripe**: Online payment processing platform.
+- **AWS SES**: Amazon Simple Email Service for cloud-based email sending.
+- **Django Allauth**: Integrated Django applications for authentication and social account integration.
+- **Django Crispy Forms**: Django app for DRY rendering of forms.
+- **Django CSP**: Adds Content Security Policy headers to Django applications.
+- **Django Messages**: Framework for displaying one-time notification messages to users.
+- **Pillow**: Python Imaging Library adding image processing capabilities.
+- **Psycopg2**: PostgreSQL adapter for Python.
+- **Python-dotenv**: Reads key-value pairs from `.env` file and sets them as environment variables.
+- **Requests**: Elegant and simple HTTP library for Python.
+- **Requests OAuthlib**: OAuthlib implementation for Python Requests.
+- **Whitenoise**: Static file serving for Python web apps.
+- **Boto3**: Library for direct access to AWS services.
+- **Gunicorn**: Python WSGI HTTP Server for UNIX.
+- **Mailjet REST**: Tool for sending, tracking, and delivering emails.
+- **Babel**: Toolchain for converting ECMAScript 2015+ code into a backward-compatible version of JavaScript.
+- **Crispy-Bootstrap5**: Integrates Django Crispy Forms with Bootstrap 5.
+
 
 ## Validation
 
@@ -1243,3 +1259,40 @@ The application will then attempt to build and deploy using the Github sourcecod
 <summary>Logs</summary>
 <img src="docs/heroku/logs.png" alt="Heroku logs">
 </details>
+
+### Forking the GitHub Repository
+
+1. Go to the GitHub repository https://github.com/ouzifeng/sellyourtackle
+2. Click on Fork button in top right corner
+3. You will then have a copy of the repository in your own GitHub account.
+   
+### Making a Local Clone
+
+1. Go to the GitHub repository 
+2. Locate the Code button above the list of files and click it
+3. Highlight the "HTTPS" button to clone with HTTPS and copy the link
+4. Open Git Bash
+5. Change the current working directory to the one where you want the cloned directory
+6. Type git clone and paste the URL from the clipboard ($ git clone <span>https://</span>github.com/YOUR-USERNAME/YOUR-REPOSITORY)
+7. Press Enter to create your local clone
+
+## Credits
+
+### Images
+
+Images used were sourced from www.tackletarts.uk 
+
+### Code
+
+* Bootstrap was used wherever possible to speed up development. Examples of this are the navigation menu
+* AWS S3 bucket is used to store and serve product images
+* Cloudflare is being used as a CDN and for security monitoring
+* Mailjet is being used as the SMTP service provider
+* Stripe is being used as the payment facilitator 
+
+
+
+## Acknowledgements
+
+### Special thanks to the following:
+- My Mentor Mo Shami
