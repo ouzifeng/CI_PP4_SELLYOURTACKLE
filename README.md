@@ -1140,3 +1140,44 @@ All tests pass with "OK" status
    ---------|---------------------|----------------
    | Access admin dashboard, navigate to orders | Orders section in admin dashboard loads | Works as expected |
    | Initiate a refund for an order | Refund is processed successfully | Works as expected |
+
+### Device Testing & Browser Compatibility
+
+Using the Chrome extension "Mobile simulator, responsive testing tool" the platform has been tested on:
+
+* Samsung Galaxy S20
+* Galaxy Z flip
+* Apple iPhone 5
+* Apple iPhone 11
+* Apple iPhone 13 pro
+* iPad Mini
+* iPad Pro 11
+* Microsoft Surface Duo
+* Galaxy S7 Tab
+* Macbook Air
+
+and the following browsers
+
+* Chrome
+* Firefox
+* Safari
+* Bing
+
+## Bug Fixes
+
+| **Bug** | **Fix** |
+| ------- | ------- |
+| Checkout issue where `client_secret` was not being passed to Stripe | Modified the checkout process to correctly pass the `client_secret` to Stripe for secure transactions |
+| Edit product image upload issue where `process_image` function returned a tuple | Updated the `process_image` function to handle image processing correctly and return the appropriate data format |
+| Undefined user request in the buying view | Implemented a check to ensure user requests are defined and valid in the buying view |
+| Image upload on list tackle returning a tuple | Modified the image upload function to correctly handle and return image data, resolving the tuple return issue |
+| No defined key for paginating orders on selling and buying page | Implemented pagination keys to correctly handle order lists on both selling and buying pages |
+| Blank condition for product status on seller product page | Added checks to handle blank conditions and display appropriate product status |
+| Set empty condition statement on list product page | Established condition statements to handle and display content correctly when the list is empty |
+| JavaScript issue where it could not find address element on checkout page | Corrected the JavaScript code to properly locate and interact with the address element during checkout |
+| Image upload to product RGB(A) issue and messaging when product is deleted | Fixed the image upload function to support RGB(A) formats and added user feedback for product deletions |
+| Bug where user password was not being saved on signup | Modified the user registration process to ensure passwords are correctly saved and encrypted |
+| Sold/unsold URL redirects not working in the selling area | Corrected URL routing to ensure proper redirection between sold and unsold product views in the selling area |
+| Issue with custom username not being created when user doesn't exist | Implemented a fallback mechanism to create custom usernames when default user data is unavailable |
+
+
