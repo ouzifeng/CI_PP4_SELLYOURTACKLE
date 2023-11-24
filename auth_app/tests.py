@@ -13,7 +13,9 @@ User = get_user_model()
 
 
 class CustomUserModelTest(TestCase):
-
+    """
+    Test class for CustomUser model. Tests user creation functionality.
+    """
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             email='testuser@example.com', password='password123'
@@ -24,7 +26,10 @@ class CustomUserModelTest(TestCase):
 
 
 class CustomUserSignupFormTest(TestCase):
-
+    """
+    Test class for CustomUserSignupForm. Validates form data for both valid and
+    invalid inputs.
+    """
     def test_signup_form_valid(self):
         form_data = {
             'email': 'validuser@example.com',
@@ -49,7 +54,9 @@ class CustomUserSignupFormTest(TestCase):
 
 
 class ContactFormTest(TestCase):
-
+    """
+    Test class for the ContactForm. Ensures form validation for correct inputs.
+    """
     def test_contact_form_valid(self):
         form_data = {
             'name': 'Test Name',
@@ -61,7 +68,10 @@ class ContactFormTest(TestCase):
 
 
 class PasswordResetRequestFormTest(TestCase):
-
+    """
+    Test class for PasswordResetRequestForm. Verifies form handling and
+    validation for password reset requests.
+    """
     def test_password_reset_request_form_valid(self):
         form_data = {'email': 'user@example.com'}
         form = PasswordResetRequestForm(data=form_data)
@@ -69,7 +79,10 @@ class PasswordResetRequestFormTest(TestCase):
 
 
 class SetNewPasswordFormTest(TestCase):
-
+    """
+    Test class for SetNewPasswordForm. Checks form validation for setting
+    new passwords.
+    """
     def test_set_new_password_form_valid(self):
         form_data = {
             'password1': 'newpassword123',
@@ -80,7 +93,10 @@ class SetNewPasswordFormTest(TestCase):
 
 
 class ConfirmEmailViewTest(TestCase):
-
+    """
+    Test class for ConfirmEmailView. Tests email confirmation functionality and
+    user activation process.
+    """
     def setUp(self):
         self.user = User.objects.create_user(
             email='testuser@example.com',
@@ -103,7 +119,10 @@ class ConfirmEmailViewTest(TestCase):
 
 
 class BuyingViewTest(TestCase):
-
+    """
+    Test class for the Buying view. Ensures that the buying view functions
+    correctly and uses the expected template.
+    """
     def setUp(self):
         self.user = User.objects.create_user(
             email='testbuyer@example.com', password='password123'
@@ -118,11 +137,13 @@ class BuyingViewTest(TestCase):
         self.assertTemplateUsed(response, 'buying.html')
 
 
-# Stripe Integration Tests
 @patch('stripe.AccountLink.create')
 @patch('stripe.Account.retrieve')
 class StripeIntegrationTest(TestCase):
-
+    """
+    Test class for Stripe integration. Mocks Stripe API calls and tests
+    Stripe account link creation, account retrieval, and verification.
+    """
     def setUp(self):
         self.user = User.objects.create_user(
             email='teststripe@example.com',

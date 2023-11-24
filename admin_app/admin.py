@@ -5,6 +5,11 @@ import stripe
 
 
 class OrderAdmin(admin.ModelAdmin):
+    """
+    Customizes the Django admin interface for Order models,
+    including list display, filtering options, and search
+    capabilities.
+    """
     list_display = (
         'id',
         'user',
@@ -35,12 +40,21 @@ admin.site.register(Order, OrderAdmin)
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
+    """
+    Configures the Django admin interface for CustomUser models,
+    specifically setting up list display and search functionality.
+    """
+
     list_display = ('email', 'date_joined', 'last_login')
     search_fields = ('email',)
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    """
+    Tailors the Django admin interface for Product models,
+    including list display, filter options, and search fields.
+    """
     list_display = ('name', 'price', 'financial_status', 'created_at')
     list_filter = ('financial_status',)
     search_fields = ('name', 'description', 'financial_status')

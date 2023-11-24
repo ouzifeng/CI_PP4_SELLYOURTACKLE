@@ -2,6 +2,9 @@ from django import forms
 
 
 class CheckoutForm(forms.Form):
+    """
+    Builds the checkout form
+    """
     first_name = forms.CharField(max_length=100, required=True)
     last_name = forms.CharField(max_length=100, required=True)
     email = forms.EmailField(required=True)
@@ -33,5 +36,8 @@ class CheckoutForm(forms.Form):
 
 
 class ContactSellerForm(forms.Form):
+    """
+    Builds the conact form on the contact us page
+    """
     subject = forms.CharField(max_length=100)
     message = forms.CharField(widget=forms.Textarea)

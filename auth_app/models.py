@@ -13,8 +13,11 @@ from uuid import uuid4
 from datetime import datetime, timedelta
 
 
-# Custom User Manager
 class CustomUserManager(BaseUserManager):
+    """
+    Custom user manager for CustomUser model, with helper methods for creating
+    users and superusers.
+    """
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
@@ -39,8 +42,11 @@ class CustomUserManager(BaseUserManager):
         return username
 
 
-# Custom User Model
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    """
+    Custom user model that extends AbstractBaseUser and PermissionsMixin.
+    Includes fields for email, name, username, and related properties.
+    """
     email = models.EmailField(unique=True, db_index=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
@@ -60,8 +66,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-# Address Model
 class Address(models.Model):
+    """
+    Address model representing user addresses with types such as billing
+    and shipping. Contains details like phone number, city, and postal code.
+    """
     TYPE_CHOICES = (('billing', 'Billing'), ('shipping', 'Shipping'))
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     address_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
@@ -79,14 +88,19 @@ class Address(models.Model):
         return f"{self.first_name} {self.last_name} - {self.address_type}"
 
 
-# Email Confirmation Token Model
 class EmailConfirmationToken(models.Model):
+    """
+    Model for generating and handling email confirmation tokens for users.
+    """
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     token = models.UUIDField(default=uuid4, editable=False, unique=True)
 
 
-# Order Model
 class Order(models.Model):
+    """
+    Order model representing user orders. Includes fields for status, payment
+    details, shipping and billing addresses, and tracking information.
+    """
     STATUS_CHOICES = (
         ('pending', 'Pending'), ('paid', 'Paid'), ('shipped', 'Shipped'),
         ('delivered', 'Delivered'), ('refunded', 'Refunded')
@@ -126,8 +140,11 @@ class Order(models.Model):
         return f"Order {self.id} - {self.user.email}"
 
 
-# Order Item Model
 class OrderItem(models.Model):
+    """
+    Model representing individual items within an order. Links to the Order
+    model and contains product, price, and quantity details.
+    """
     order = models.ForeignKey(Order, related_name='items',
                               on_delete=models.CASCADE)
     product = models.ForeignKey('tackle.Product', on_delete=models.PROTECT)
@@ -150,8 +167,11 @@ class OrderItem(models.Model):
         return (self.price * self.quantity) + self.shipping_cost
 
 
-# Password Reset Token Model
 class PasswordResetToken(models.Model):
+    """
+    Model for generating and handling password reset tokens. Includes methods
+    for checking token expiration.
+    """
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     token = models.UUIDField(default=uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)

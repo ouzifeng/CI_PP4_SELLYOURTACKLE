@@ -96,6 +96,7 @@ class CustomLoginView(LoginView):
 
 @method_decorator(login_required, name='dispatch')
 class WalletView(TemplateView):
+    """Displays the account settings page."""
     template_name = 'wallet.html'
 
     def get_context_data(self, **kwargs):
@@ -154,6 +155,7 @@ class AboutUsView(View):
 
 
 class ContactUsView(View):
+    """Renders the contact page."""
     template_name = 'contact.html'
 
     def get(self, request, *args, **kwargs):
@@ -189,7 +191,6 @@ class ConfirmEmailPageView(View):
 
 class ConfirmEmailView(View):
     """Handles email confirmation logic."""
-
     def get(self, request, user_id, token, *args, **kwargs):
         try:
             token_obj = EmailConfirmationToken.objects.get(
@@ -219,7 +220,12 @@ class Buying(View):
         user_orders = Order.objects.filter(
             user=request.user
         ).prefetch_related('items').order_by('-created_at')
-        order_product_images = self._get_order_product_images(user_orders, request.user)
+        user = request.user
+        user_orders_param = user_orders
+        user_param = user
+        order_product_images = self._get_order_product_images(
+            user_orders_param, user_param
+        )
         paginator = Paginator(user_orders, 10)
         page = request.GET.get('page')
         orders_on_page = paginator.get_page(page)
@@ -234,11 +240,10 @@ class Buying(View):
         for order in orders:
             for item in order.items.all():
                 product = item.product
-                first_image = product.images.first() 
+                first_image = product.images.first()
                 if first_image:
                     order_product_images[product.id] = first_image.image.url
         return order_product_images
-
 
 
 @method_decorator(login_required, name='dispatch')
@@ -265,6 +270,7 @@ class Selling(View):
 
 
 class ResetPasswordView(View):
+    """Renders the reset password page."""
     template_name = 'reset-password.html'
 
     def get(self, request, *args, **kwargs):
@@ -279,7 +285,6 @@ class ResetPasswordView(View):
             user = CustomUser.objects.filter(email=email).first()
 
             if user:
-                # Create token and send email
                 token = PasswordResetToken.objects.create(user=user)
                 reset_link = (
                     f"https://www.sellyourtackle.co.uk/auth/reset-password/"
@@ -298,6 +303,7 @@ class ResetPasswordView(View):
 
 
 class ResetPasswordConfirmView(View):
+    """Renders the confirm password reset feature."""
     template_name = 'reset-password-confirm.html'
 
     def get(self, request, token, *args, **kwargs):

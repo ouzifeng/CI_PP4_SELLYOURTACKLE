@@ -13,6 +13,9 @@ from auth_app.models import Order
 
 
 class Brand(models.Model):
+    """
+    Represents a brand in the database. Stores brand name.
+    """
     name = models.CharField(max_length=200)
 
     class Meta:
@@ -23,6 +26,9 @@ class Brand(models.Model):
 
 
 class Category(models.Model):
+    """
+    Represents a category of products. Stores category name.
+    """
     name = models.CharField(max_length=200)
 
     class Meta:
@@ -33,26 +39,40 @@ class Category(models.Model):
 
 
 class Condition(models.TextChoices):
-    PERFECT = "Perfect", "Perfect - never been used and no blemishes"
-    EXCELLENT = "Excellent", "Excellent- a few minor cosmetic issues"
-    GOOD = "Good", "Good - some dings and scratches"
-    FAIR = "Fair", "Fair - extensive cosmetic issues"
+    """
+    Enum for product conditions,
+    offering choices like Perfect, Excellent, Good, and Fair.
+    """
+    PERFECT = "Perfect",
+    EXCELLENT = "Excellent",
+    GOOD = "Good",
+    FAIR = "Fair",
 
     def __str__(self):
         return f"{self.label} {self.additional_info}"
 
 
 class FinancialStatus(models.TextChoices):
+    """
+    Enum for product visibility status, with choices like Draft and Live.
+    """
     UNSOLD = 'unsold', 'Unsold'
     SOLD = 'sold', 'Sold'
 
 
 class ProductVisibility(models.TextChoices):
+    """
+    Enum for product visibility status, with choices like Draft and Live.
+    """
     DRAFT = 'draft', 'Draft'
     LIVE = 'live', 'Live'
 
 
 class Product(models.Model):
+    """
+    Represents a product in the database. Stores details like brand, category,
+    name, slug, condition, user, price, and shipping information.
+    """
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
@@ -93,7 +113,6 @@ class Product(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        # Only generate a slug for new products
         if not self.pk:
             slug_str = slugify(self.name)
             unique_slug = slug_str
@@ -112,6 +131,10 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
+    """
+    Represents an image of a product.
+    Links to the Product model and stores the image.
+    """
     product = models.ForeignKey(
         Product, related_name="images", on_delete=models.CASCADE
     )
@@ -124,6 +147,10 @@ class ProductImage(models.Model):
 
 
 class WebhookLog(models.Model):
+    """
+    Represents an image of a product.
+    Links to the Product model and stores the image.
+    """
     order = models.ForeignKey(
         Order, null=True, blank=True, on_delete=models.SET_NULL
     )

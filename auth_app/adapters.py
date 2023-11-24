@@ -2,12 +2,14 @@ from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from auth_app.models import CustomUser
 
-class CustomAccountAdapter(DefaultAccountAdapter):
 
+class CustomAccountAdapter(DefaultAccountAdapter):
+    """
+    Extends DefaultAccountAdapter to customize the user population process
+    during social login. It activates existing users if they are not active.
+    """
     def populate_user(self, request, sociallogin, data):
         user = super().populate_user(request, sociallogin, data)
-        
-        # Check if the user exists and is inactive, then make them active
         try:
             existing_user = CustomUser.objects.get(email=user.email)
             if not existing_user.is_active:
@@ -18,16 +20,19 @@ class CustomAccountAdapter(DefaultAccountAdapter):
 
         return user
 
-class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
+class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
+    """
+    Extends DefaultSocialAccountAdapter to customize the auto-signup
+    process for social accounts. It allows auto-signup and connects existing
+    users based on email.
+    """
     def is_auto_signup_allowed(self, request, sociallogin):
-        # Check if user exists
         user = sociallogin.user
-        if user.id:  # User already exists, skip signup form
+        if user.id:
             return True
         if CustomUser.objects.filter(email=user.email).exists():
-            # If a user exists with this email, we should link the social account to this user
             existing_user = CustomUser.objects.get(email=user.email)
             sociallogin.connect(request, existing_user)
-            return True  # Skip the signup form
-        return False  # Show the signup form
+            return True
+        return False

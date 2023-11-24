@@ -14,15 +14,21 @@ from django.urls import reverse
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+
 @csrf_exempt
 def stripe_webhook(request):
+    """
+    View for handling Stripe webhook events. It logs the webhook event,
+    verifies the signature, and processes different Stripe event types
+    like 'payment_intent.succeeded', 'payment_intent.payment_failed',
+    and 'account.updated'.
+    """
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event = None
 
-    # Create a new webhook log instance
     webhook_log = WebhookLog(
-        payload=payload.decode('utf-8'),  # Assuming payload is bytes
+        payload=payload.decode('utf-8'),
         header=sig_header,
         status='received',
     )
@@ -50,24 +56,18 @@ def stripe_webhook(request):
             order.status = 'paid'
             order.save()
 
-            # Update financial_status for each product associated with the order
-            print(f"finding order")  # DEBUG
             for order_item in order.items.all():
-                print(f"Processing order item with ID: {order_item.id}")  # DEBUG
                 product = order_item.product
-                print(f"Product associated with order item: {product.id}")  # DEBUG
                 product.financial_status = 'sold'
                 product.save()
-
 
             webhook_log.order = order
             webhook_log.status = 'success'
             webhook_log.save()
-            # Additional post-payment logic, like sending a confirmation email, can be added here
+
         except Order.DoesNotExist:
             webhook_log.status = 'order not found'
             webhook_log.save()
-            # Handle cases where the order is not found
 
     elif event.type == 'payment_intent.payment_failed':
         payment_intent = event.data.object
@@ -81,52 +81,43 @@ def stripe_webhook(request):
             webhook_log.order = order
             webhook_log.status = 'payment failed'
             webhook_log.save()
-            # Additional logic for handling payment failures, like notifying the user, can be added here
+
         except Order.DoesNotExist:
             webhook_log.status = 'order not found'
             webhook_log.save()
-            # Handle cases where the order is not found
-            
+
     elif event.type == 'account.updated':
         account = event.data.object
-        # Get associated user from your database
         try:
             user = CustomUser.objects.get(stripe_account_id=account.id)
-            
-            # Check and update user information if needed
+
             if account.details_submitted:
                 user.is_stripe_verified = True
                 user.save()
                 webhook_log.status = 'account verified'
             else:
-                # Optionally, you can reset verification if details are no longer submitted
-                # (This might be useful in scenarios where Stripe requires additional information later on.)
                 user.is_stripe_verified = False
                 user.save()
                 webhook_log.status = 'account updated but not verified'
-            
-            # If you want to notify the user, you can send an email or set a flag here.
-            # ...
 
         except CustomUser.DoesNotExist:
             webhook_log.status = 'user not found for Stripe account'
-            
-        webhook_log.save()
-        # Handle cases where the user is not found for the given Stripe account ID
 
-        
+        webhook_log.save()
 
     return JsonResponse({'status': 'success'})
 
 
-
 @csrf_exempt
 def handle_payment(request):
-    # Extract the payment method from POST data
+    """
+    View for handling the payment process. It creates a Stripe payment
+    intent and handles the entire checkout process, including order creation,
+    address handling, and Stripe transfer initiation.
+    """
     payment_method_id = request.POST.get('payment_method')
 
     try:
-        # Determine the user for the order
         if request.user.is_authenticated:
             user = request.user
         else:
@@ -144,9 +135,9 @@ def handle_payment(request):
                 )
 
         cart = Cart(request)
-        total_amount = int((cart.get_total_price() + cart.get_shipping_total()) * 100)
+        total_amount = int(cart.get_total_price() + cart.get_shipping_total())
+        total_amount *= 100
 
-        # Step 3: Create "Pending" Order
         order = Order(
             user=user,
             product_cost=cart.get_total_price(),
@@ -156,7 +147,6 @@ def handle_payment(request):
         )
         order.save()
 
-        # Step 4: Save Addresses
         billing_address = Address(
             user=user,
             address_type='billing',
@@ -177,8 +167,10 @@ def handle_payment(request):
             shipping_address = Address(
                 user=user,
                 address_type='shipping',
-                first_name=request.POST.get('shipping_first_name', request.POST['first_name']),
-                last_name=request.POST.get('shipping_last_name', request.POST['last_name']),
+                first_name=request.POST.get('shipping_first_name',
+                                            request.POST['first_name']),
+                last_name=request.POST.get('shipping_last_name',
+                                           request.POST['last_name']),
                 address_line1=request.POST['shipping_address_line1'],
                 address_line2=request.POST.get('shipping_address_line2', ""),
                 city=request.POST['shipping_city'],
@@ -191,7 +183,6 @@ def handle_payment(request):
             order.shipping_address = billing_address
         order.save()
 
-        # Step 5: Initiate Payment with Stripe
         payment_intent = stripe.PaymentIntent.create(
             amount=total_amount,
             currency='gbp',
@@ -199,18 +190,16 @@ def handle_payment(request):
             confirmation_method='manual',
             confirm=True,
             return_url="https://www.sellyourtackle.co.uk",
-                metadata={
+            metadata={
                 'user_email': user.email,
                 'user_first_name': user.first_name,
                 'user_last_name': user.last_name
             }
         )
 
-        # Step 6: Associate Payment Intent ID
         order.payment_intent_id = payment_intent.id
         order.save()
 
-        # Step 7: Save Order Items and Step 8: Transfer Amount to Seller
         for item in cart:
             order_item = OrderItem.objects.create(
                 order=order,
@@ -220,9 +209,8 @@ def handle_payment(request):
                 seller=item['product'].user
             )
 
-            # Use the total_amount from the Order and add user details
             stripe.Transfer.create(
-                amount=int(order.total_amount * 100),  # Use the order's total_amount
+                amount=int(order.total_amount * 100),
                 currency='gbp',
                 destination=order_item.seller.stripe_account_id,
                 metadata={
@@ -232,37 +220,37 @@ def handle_payment(request):
                 }
             )
 
-        # Step 9: Clear Cart
-        cart.clear()  # Uncomment if you want to clear the cart
+        cart.clear()
 
-        # Step 10: Return Success Response
-        return JsonResponse({'success': True, 'redirect_url': reverse('order-confirmation', args=[order.pk])})
-
-
+        redirect_url = reverse('order-confirmation', args=[order.pk])
+        return JsonResponse({'success': True, 'redirect_url': redirect_url})
 
     except stripe.error.StripeError as e:
         return JsonResponse({'error': str(e)})
 
     except Exception as e:
-        return JsonResponse({'error': 'An unexpected error occurred: ' + str(e)})
-
-
+        error_message = 'An unexpected error occurred: ' + str(e)
+        return JsonResponse({'error': error_message})
 
 
 def create_stripe_express_account(request):
-    # Ensure the user is authenticated before proceeding
+    """
+    View for creating a new Stripe Express account for the user.
+    It checks user authentication, creates a Stripe account, and
+    redirects to the Stripe account setup page.
+    """
     if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
+        response_data = {'status': 'error', 'message': 'Not authenticated'}
+        return JsonResponse(response_data)
 
-    # Create an Express account
     try:
         account = stripe.Account.create(
           country="GB",
           type="express",
           business_type="individual",
           business_profile={
-              "url": "https://www.sellyourtackle.co.uk", 
-              "product_description": "Selling fishing equipment on TackleTarts.",
+              "url": "https://www.sellyourtackle.co.uk",
+              "product_description": "Sell fishing equipment on TackleTarts.",
               "mcc": "5941",
           },
           capabilities={
@@ -271,40 +259,40 @@ def create_stripe_express_account(request):
           }
         )
 
-        # Store the account ID in the user's profile
         request.user.stripe_account_id = account.id
         request.user.save()
-        
-        # Create an account link for onboarding
         account_link = stripe.AccountLink.create(
             account=account.id,
-            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth", 
-            return_url="https://www.sellyourtackle.co.uk/list-product/",   
+            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth",
+            return_url="https://www.sellyourtackle.co.uk/list-product/",
             type="account_onboarding"
         )
 
         return redirect(account_link.url)
-     
+
     except stripe.error.StripeError as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
-    
-    
-def create_stripe_account_link(request):
-    # Ensure the user is authenticated before proceeding
-    if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
 
-    # Ensure the user has a Stripe account ID
+def create_stripe_account_link(request):
+    """
+    View for creating a Stripe account link for existing users.
+    It ensures user authentication and generates a Stripe account
+    link for the user's account onboarding.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Unauthenticated'})
+
     if not request.user.stripe_account_id:
-        return JsonResponse({'status': 'error', 'message': 'Stripe account not found for user'})
+        error_message = 'Stripe account not found for user'
+        response_data = {'status': 'error', 'message': error_message}
+        return JsonResponse(response_data)
 
     try:
-        # Create an account link for onboarding
         account_link = stripe.AccountLink.create(
             account=request.user.stripe_account_id,
-            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth",  
-            return_url="https://www.sellyourtackle.co.uk/auth/wallet",   
+            refresh_url="https://www.sellyourtackle.co.uk/auth/reauth",
+            return_url="https://www.sellyourtackle.co.uk/auth/wallet",
             type="account_onboarding"
         )
 
@@ -313,29 +301,32 @@ def create_stripe_account_link(request):
     except stripe.error.StripeError as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
-def handle_stripe_return(request):
-    # Ensure the user is authenticated before proceeding
-    if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
 
-    # Ensure the user has a Stripe account ID
+def handle_stripe_return(request):
+    """
+    View for handling the return from Stripe account setup.
+    It checks the user's authentication and Stripe account details,
+    verifies if the account setup is completed, and redirects
+    to appropriate pages based on the Stripe account status.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Unauthenticated'})
+
     if not request.user.stripe_account_id:
-        return JsonResponse({'status': 'error', 'message': 'Stripe account not found for user'})
+        error_message = 'Stripe account not found for user'
+        response_data = {'status': 'error', 'message': error_message}
+        return JsonResponse(response_data)
 
     try:
-        # Retrieve the Stripe account details
-        stripe_account = stripe.Account.retrieve(request.user.stripe_account_id)
+        stripe_account_id = request.user.stripe_account_id
+        stripe_account = stripe.Account.retrieve(stripe_account_id)
 
-        # Check if the user has completed the necessary requirements
         if stripe_account.details_submitted:
             request.user.is_stripe_verified = True
             request.user.save()
-            # If all details are submitted, you can allow them to use Stripe features on your platform
-            return redirect('https://www.sellyourtackle.co.uk/list-product/')  
+            return redirect('https://www.sellyourtackle.co.uk/list-product/')
         else:
-            # If not, you can inform them about the pending requirements or guide them to complete the setup
-            return redirect('some_setup_guide_url')  # Redirect to a page where they can see what's pending
+            return redirect('some_setup_guide_url')
 
     except stripe.error.StripeError as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
-

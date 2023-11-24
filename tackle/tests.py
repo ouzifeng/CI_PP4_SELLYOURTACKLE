@@ -9,7 +9,10 @@ User = get_user_model()
 
 
 class CategoryModelTest(TestCase):
-
+    """
+    Test class for the Category model.
+    Tests the creation of Category instances.
+    """
     def setUp(self):
         self.category = Category.objects.create(name="Test Category")
 
@@ -18,7 +21,10 @@ class CategoryModelTest(TestCase):
 
 
 class CheckoutFormTest(TestCase):
-
+    """
+    Test class for the CheckoutForm.
+    Validates the form for correct data inputs.
+    """
     def test_checkout_form_valid(self):
         form_data = {
             'first_name': 'John',
@@ -36,7 +42,10 @@ class CheckoutFormTest(TestCase):
 
 
 class ContactSellerFormTest(TestCase):
-
+    """
+    Test class for the ContactSellerForm.
+    Ensures the form is valid with correct inputs.
+    """
     def test_contact_seller_form_valid(self):
         form_data = {'subject': 'Test Subject', 'message': 'Test message'}
         form = ContactSellerForm(data=form_data)
@@ -44,14 +53,19 @@ class ContactSellerFormTest(TestCase):
 
 
 class SearchViewTest(TestCase):
-
+    """
+    Test class for the SearchView.
+    Verifies the functionality of the search feature.
+    """
     def test_search_view(self):
         response = self.client.get(reverse('search'), {'search_text': 'query'})
         self.assertEqual(response.status_code, 200)
 
 
 class ShopViewTest(TestCase):
-
+    """
+    Test class for the ShopView. Tests the view response and functionality.
+    """
     def test_shop_view(self):
         response = self.client.get(reverse('shop'))
         self.assertEqual(response.status_code, 200)
