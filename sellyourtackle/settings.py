@@ -115,7 +115,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'sellyourtackle',
-        'USER': 'ouzifeng',
+        'USER': os.environ.get('DATABASE_USER'),
         'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
         'HOST': 'ep-shiny-flower-350995.eu-central-1.aws.neon.tech',
         'PORT': '5432',

@@ -1181,3 +1181,65 @@ and the following browsers
 | Issue with custom username not being created when user doesn't exist | Implemented a fallback mechanism to create custom usernames when default user data is unavailable |
 
 
+## Heroku Deployment
+
+For the official Heroku deployment documentation, please visit <a href="https://devcenter.heroku.com/articles/git">here</a> 
+
+1. Step One
+
+Make sure your github repo for the build is up to update. You will be automatically deploying the latest code from your github repo. Items to confirm:
+
+* Your requirement.txt file contains all the dependencies needed for the project. Run pip freeze > requirements.txt in the terminal if unsure
+* You have migrated all changed to the database before deploying. Run python manage.py makemigrations and python manage.py migrate in the terminal
+* Check all passwords and other sensitive information are stored in a .env file and are called throughout the build as environment variables, not hardcoded anywhere
+* You have a Procfile in the root of the project with the following content: web: gunicorn sellyourtackle.wsgi 
+* You are connected to an external postgres database and have the necessary environment variables set in the settings.py file for connecting to it. This build is using a Serverless Postgres DB hosted at www.neon.tech 
+* Ensure debug is set to "FALSE" in the settings.py file
+
+
+2. Step Two
+
+Visit <a href="https://id.heroku.com/login">Heroku</a> and login. If you do not have an account create one.
+
+<details>
+<summary>Login</summary>
+<img src="docs/heroku/login.png" alt="Heroku Login">
+</details>
+
+3. Step 3
+
+Create a new app, choose a name and the region closest to where the majority of your users will sit
+
+
+<details>
+<summary>Create App</summary>
+<img src="docs/heroku/create-app.png" alt="Heroku create app">
+</details>
+
+
+4. Step 4
+
+Within the new app, go to the Settings tab and navigate to Config Vars. Add the necessary environment variables from the .env file here
+
+
+<details>
+<summary>Set Config Vars</summary>
+<img src="docs/heroku/config_vars.png" alt="Heroku config vars">
+</details>
+
+
+5. Next go to the "Deploy" tab. Click on "Connect to GitHub" and select your repo. Click on "Enable Automatic Deploys" and then "Deploy Branch"
+
+<details>
+<summary>Deployment</summary>
+<img src="docs/heroku/config_vars.png" alt="Heroku deployment">
+</details>
+
+6. Monitor logs
+
+The application will then attempt to build and deploy using the Github sourcecode. You can monitor the logs by going to the "More" tab in the top right and clicking on "View logs". If it fails for any reason you will be able to debug from there
+
+<details>
+<summary>Logs</summary>
+<img src="docs/heroku/logs.png" alt="Heroku logs">
+</details>
