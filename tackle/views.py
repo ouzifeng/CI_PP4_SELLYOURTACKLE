@@ -38,6 +38,9 @@ from .models import (
 from auth_app.models import (
     Address, CustomUser, CustomUserManager, Order, OrderItem
 )
+from auth_app.email import (
+    send_order_confirmation_email, send_product_sold_email
+)
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -752,7 +755,6 @@ class OrderPageView(View):
         return render(request, self.template_name, context)
 
 
-@method_decorator(login_required, name='dispatch')
 class OrderConfirmation(View):
     """
     View for order confirmation.
@@ -762,8 +764,12 @@ class OrderConfirmation(View):
 
     def get(self, request, pk, *args, **kwargs):
         order = get_object_or_404(Order, pk=pk)
-
         order_items = OrderItem.objects.filter(order=order)
+
+        send_order_confirmation_email(order)
+
+        for item in order_items:
+            send_product_sold_email(item)
 
         products = [item.product for item in order_items]
 
