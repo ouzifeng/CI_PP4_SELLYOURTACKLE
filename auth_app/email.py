@@ -129,7 +129,7 @@ def send_product_sold_email(order_item):
     <html>
         <body>
             <p>Hi {seller_first_name},</p>
-            <p>Congratulations! Your product '{product_name}' has been sold.</p>
+            <p>Congratulations! Your '{product_name}' has been sold.</p>
             <p>Quantity Sold: {quantity_sold}</p>
             <p>Total Price: £{total_price}</p>
             <p>Please prepare the item for shipping.</p>
