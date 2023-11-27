@@ -791,7 +791,9 @@ class SearchView(View):
         query = request.GET.get('search_text', '')
         products = Product.objects.filter(
             Q(name__icontains=query) |
-            Q(description__icontains=query)
+            Q(description__icontains=query),
+            financial_status=FinancialStatus.UNSOLD.value,
+            visibility=ProductVisibility.LIVE.value
         ).values('name', 'slug')[:5]
 
         return JsonResponse(list(products), safe=False)

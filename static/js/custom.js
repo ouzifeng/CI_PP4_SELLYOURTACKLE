@@ -9,12 +9,21 @@ const resultsDropdown = document.createElement('div');
 resultsDropdown.classList.add('search-dropdown');
 searchInput.parentElement.appendChild(resultsDropdown);
 
-searchInput.addEventListener('keyup', function() {
+searchInput.addEventListener('keyup', function(event) {
+    // Check for Enter key press
+    if (event.key === "Enter") {
+        const firstItem = resultsDropdown.querySelector('a');
+        if (firstItem) {
+            window.location.href = firstItem.href;  
+            return;
+        }
+    }
+
     if (this.value.length > 2) {
         fetch(`/search/?search_text=${this.value}`)
         .then(response => response.json())
         .then(data => {
-            resultsDropdown.innerHTML = '';  // Clear previous results
+            resultsDropdown.innerHTML = '';  
             if (data.length > 0) {
                 data.forEach(product => {
                     let item = document.createElement('a');
@@ -23,7 +32,6 @@ searchInput.addEventListener('keyup', function() {
                     resultsDropdown.appendChild(item);
                 });
             } else {
-                // If there are no results, display a message
                 resultsDropdown.innerHTML = `
                     <span class="no-results">
                         <a href="/shop">Sorry, no matches for this item. Click to browse all products</a>

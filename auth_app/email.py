@@ -132,7 +132,8 @@ def send_product_sold_email(order_item):
             <p>Congratulations! Your '{product_name}' has been sold.</p>
             <p>Quantity Sold: {quantity_sold}</p>
             <p>Total Price: £{total_price}</p>
-            <p>Please prepare the item for shipping.</p>
+            <p>Please login to view the shipping details</p>
+            <p>www.sellyourtackle.co.uk/auth/selling</p>
             <p>Thanks,</p>
             <p>The Sell Your Tackle Team</p>
         </body>
