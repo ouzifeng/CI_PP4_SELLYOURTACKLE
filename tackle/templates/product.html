@@ -41,12 +41,14 @@
         <h5>Shipping cost: £{{ product.shipping }}</h5>
         <h5>Condition: {{ product.condition }}</h5>
 
+        {% if is_available %}
         <form method="post" action="{% url 'add_to_cart' product.id %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-outline-main">Add to Cart</button>
         </form>
-
-
+        {% else %}
+        <button type="button" class="btn btn-secondary" disabled>Item Sold</button>
+        {% endif %}
     </div>
 </div>
 <div class="row">

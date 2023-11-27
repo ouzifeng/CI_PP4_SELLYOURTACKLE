@@ -270,9 +270,11 @@ class ProductPage(View):
     def get(self, request, slug, *args, **kwargs):
         product = get_object_or_404(Product, slug=slug)
         images = product.images.all()
+        is_available = product.financial_status != FinancialStatus.SOLD.value
         context = {
             'product': product,
-            'images': images
+            'images': images,
+            'is_available': is_available
         }
         return render(request, self.template_name, context)
 
