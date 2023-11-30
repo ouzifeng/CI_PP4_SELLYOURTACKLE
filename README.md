@@ -1274,6 +1274,17 @@ The following security measures are in place:
 | Sold/unsold URL redirects not working in the selling area | Corrected URL routing to ensure proper redirection between sold and unsold product views in the selling area |
 | Issue with custom username not being created when user doesn't exist | Implemented a fallback mechanism to create custom usernames when default user data is unavailable |
 
+Console Errors:
+
+The checkout page dispays these errors and warnings in the console:
+
+<details>
+<summary>Console Errors</summary>
+<img src="docs/validation/checkout-js-errors.png" alt="Console Errors">
+</details>
+
+This is due to the Stripe being set to test mode within the account. To fix these, it the settings would have to be changed to live mode.
+
 ## Planned Improvments For The Next Build
 
 1. More email notifications, i.e. for when an order is refunded notify buyer
@@ -1374,7 +1385,17 @@ Images used were sourced from www.tackletarts.uk
 * Mailjet is being used as the SMTP service provider
 * Stripe is being used as the payment facilitator 
 
+## Testing
 
+For testing the checkout, use the following credit card details to make a purchase:
+
+When testing interactively, use a card number, such as 4242 4242 4242 4242. Enter the card number in the Dashboard or in any payment form.
+
+Use a valid future date, such as 12/34.
+Use any three-digit CVC (four digits for American Express cards).
+Use any value you like for other form fields.
+
+Thus is Stripe's default test payment credit card. While Google and Paypal will allow checkout, they do not function the same unless the Stripe account is set to live mode.
 
 ## Acknowledgements
 
