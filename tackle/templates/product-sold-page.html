@@ -104,7 +104,7 @@
                         <button type="submit" class="btn btn-primary">Update Shipping Info</button>
                     </form>
                     {% if order.status == 'shipped' %}
-                    <button class="btn btn-success btn-block disabled">Order Dispatched</button>
+                    <button class="btn btn-success btn-block disabled mt-3">Order Dispatched</button>
                     <p class="text-center mt-2">Dispatched on: {{ order.updated_at|date:"F j, Y" }}</p>
                     {% else %}
                     <form method="post" action="{% url 'product_sold' product.id %}">
