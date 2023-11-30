@@ -555,7 +555,7 @@ User story 14
 * View purchases
 * See tracking once shipped
 
-[Watch the Video](https://www.loom.com/share/5a7a15dc706047f993ec7add82b1d0d7?sid=d125b8c8-d8c8-4420-bdc8-af6f015e034e)
+[Watch the Video](https://www.loom.com/share/ef4a6378aafa448bbdfdbf43345ff0d0?sid=9001265e-fa55-4e1e-93fd-bc7271649b2a)
 
 User stories 21, 22, 25
 
@@ -581,13 +581,6 @@ User Stories 23, 24
 
 User Stories 27, 28, 29 30
 
-
-### Buying & Selling Order Confirmation Email
-
-* Once a buyer places a successful order an email is sent out to the buyer confirming the order
-* Once a buyer places a successful order an email is sent out to the seller notifying them
-
-[Watch the Video](https://www.loom.com/share/bc8673b7de52488f978fca82ed8293f3?sid=bf556561-8081-433b-bc76-a617560b552e)
 
 ## Technologies Used
 
