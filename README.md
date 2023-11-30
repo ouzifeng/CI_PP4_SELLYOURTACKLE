@@ -464,6 +464,8 @@ These models are visually represented by the ERD below:
 
 ![ERD](docs/db-schema.png)
 
+Note: The ERD modeling tool only allows up to 10 models to be displayed at a time.
+
 ## Features
 
 ### Account Creation & Login
@@ -476,7 +478,7 @@ These models are visually represented by the ERD below:
 User stories: 1, 2, 18, 20, 19
 
 
-[Watch the Video](https://www.loom.com/share/e23c32c8354e4aceb6673c5b3bb71d7e?sid=34aea5c1-f325-4e32-a5f2-74496210758b)
+[Watch the Video](https://www.loom.com/share/f1c2cc65b1fa42708041394d23f55129?sid=ff9d6956-d7fc-4e7a-84fd-ce820427d003)
 
 ### Password Reset
 
@@ -519,6 +521,16 @@ User stories 3, 9, 13
 User stories 8, 10, 11, 14, 17
 
 [Watch the Video](https://www.loom.com/share/f6206b4b263e41b7a3e95c7eabdf345a?sid=07440ff6-bc11-407b-b3b1-ea82bd1ab509)
+
+### Buying and Selling Emails
+
+* Once an order has been placed, the buyer receives an email notification
+* Once an order has been placed, the seller receives an email notification
+
+User story 16
+
+[Watch the Video](https://www.loom.com/share/5f0b661b46374919abed97fe4908aa33?sid=77631aca-9043-4c0d-ac48-9df026ad0f13)
+
 
 
 ### Contact Page
