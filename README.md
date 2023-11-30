@@ -1186,6 +1186,17 @@ and the following browsers
 * Safari
 * Bing
 
+## Security
+
+The following security measures are in place:
+
+1. All passwords and security keys are stored as environment variable in Heroku
+2. GitGuardian monitors the Github repo for security issues
+3. OAuth callback urls and authorised Javascript origins for SSO are setup to only accept requests from *.sellyourtackle.co.uk
+4. Passwords are stored as hashes in the database, to prevent password leaks in the event of a database hack
+5. Certain pages are only accessible to logged in users, relative to their account i.e. buying and selling pages, listing tackle for sale
+6. Admin area is only accessible to Django super users
+
 ## Bug Fixes
 
 | **Bug** | **Fix** |
