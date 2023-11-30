@@ -974,12 +974,16 @@ All tests pass with "OK" status
    | Navigate to 'Login/Register' | Registration/Login page loads | Works as expected |
    | Attempt to register a new account | Account is created and user is logged in | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/5111b3286f41424c909dab23e112ffe5?sid=e8e7b1e4-bdbb-43a4-bd91-04a5e0e2d012)   
+
 2. **Use Google as an SSO**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Click on 'Login with Google' | Google SSO process initiates | Works as expected |
    | Complete Google SSO process | User is logged in through Google account | Works as expected |
+
+[Watch the Video](https://www.loom.com/share/4fa3f6b627804ec7abef1d0bd66f2886?sid=5ee134e2-010d-4f78-bd35-51a6d9c0ffee)   
 
 3. **Change their username**
    
@@ -988,12 +992,16 @@ All tests pass with "OK" status
    | Navigate to user profile/settings | Profile/Settings page loads | Works as expected |
    | Update username and save changes | Username is updated successfully | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/79e922e803904514978cd5e15f4b9cf2?sid=101cadf8-5db2-40be-8fd8-27b267ddd7d7)  
+
 4. **Single form to list tackle**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Navigate to 'List New Tackle' form | Tackle listing form loads | Works as expected |
    | Fill out the form and submit | New tackle listing is created | Works as expected |
+
+[Watch the Video](https://www.loom.com/share/932bfbed8093427684ffc94ecef667bb?sid=02c86b23-9d8c-4e45-8175-8c67c3780e6d)    
 
 5. **Predefined brands and categories to speed up listing**
    
@@ -1002,12 +1010,16 @@ All tests pass with "OK" status
    | Open the listing form | Form with predefined options for brands and categories is visible | Works as expected |
    | Select options from predefined lists and submit | Listing is created with selected predefined options | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/50563ea829b8451fac8f7f24baf06925?sid=86f13c63-5e6b-4a9e-bf4f-ca5a5513fa11)    
+
 6. **Ability to upload images to product, regardless of size**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Navigate to product listing form | Product listing form is accessible | Works as expected |
    | Upload image of any size and submit | Image is uploaded successfully | Works as expected |
+
+[Watch the Video](https://www.loom.com/share/2098f23e82934bd99cdd1fa41f43578e?sid=966e507b-ed15-4471-bb87-290b12589e02)     
 
 7. **Connect bank account to get paid**
    
@@ -1016,12 +1028,17 @@ All tests pass with "OK" status
    | Navigate to payment settings | Payment settings page loads | Works as expected |
    | Connect a bank account | Bank account is connected successfully | Works as expected |
 
+
+[Watch the Video from the 1:07 mark](https://www.loom.com/share/aaa662167d904660adce13185f4ae45f?sid=dab718ef-ffb9-49d1-832d-26ebae015893)   
+
 8. **Message buyers in case of order issues**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Navigate to the order page | Order details page loads | Works as expected |
    | Send message to buyer | Message is sent successfully | Works as expected |
+
+[Watch the Video from the 1:35 mark](https://www.loom.com/share/f6206b4b263e41b7a3e95c7eabdf345a?sid=8a1d7d43-120b-40cc-b73b-09f42e889908)    
 
 9. **View past sales**
    
@@ -1030,6 +1047,9 @@ All tests pass with "OK" status
    | Navigate to sales history | Sales history page loads | Works as expected |
    | View list of past sales | Past sales are displayed correctly | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/336b03df9b6d4e7786a85e33d6282b83?sid=cab484de-e734-490f-9023-13194c5b736b)   
+
+
 10. **See shipping information when an item is sold**
    
    **Step** | **Expected Result** | **Actual Result**
@@ -1037,12 +1057,16 @@ All tests pass with "OK" status
    | Navigate to sold item details | Sold item details page loads | Works as expected |
    | View shipping information | Shipping information is displayed correctly | Works as expected |
 
-11. **Input tracking details and send to the buyer**
+[Watch the Video](https://www.loom.com/share/c5814322472241e98bc2dfc3ffc41c5b?sid=4b59c7fa-cef5-4e90-bfae-05ef99d64198)   
+
+11. **Input tracking details**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Navigate to sold item details | Sold item details page loads | Works as expected |
-   | Input tracking details and update | Tracking details are updated and sent to the buyer | Works as expected |
+   | Input tracking details and update | Tracking details are updated and are visible to the buyer | Works as expected |
+
+[Watch the Video](https://www.loom.com/share/c5814322472241e98bc2dfc3ffc41c5b?sid=4b59c7fa-cef5-4e90-bfae-05ef99d64198)   
 
 12. **Contact page for order disputes**
    
@@ -1051,11 +1075,15 @@ All tests pass with "OK" status
    | Navigate to the contact page | Contact page loads | Works as expected |
    | Submit an order dispute | Order dispute is submitted successfully | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/c11fb73716ce4c689ab3dcf8ceb5447e?sid=34162feb-4ad9-470f-8c85-ba32dc75de6b)      
+
 13. **Responsive design for checking listings on the go**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Access website on a mobile device | Website is responsive and usable on mobile | Works as expected |
+
+[Watch the Video](https://www.loom.com/share/b6be86fdff7f462b9db37cff8bd073a3?sid=fdcf432b-d28a-47e9-bfd1-10c369439d6c)     
 
 14. **Edit or delete products unless sold**
    
@@ -1064,6 +1092,8 @@ All tests pass with "OK" status
    | Navigate to product details | Product details page loads | Works as expected |
    | Edit or delete the product | Product is edited or deleted successfully | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/5b41f0d5bc8e430fb6bed9e7e07cb8e9?sid=267da2b9-a440-462b-83f4-af0887665280)   
+
 15. **Reset password in case of forgetting it**
    
    **Step** | **Expected Result** | **Actual Result**
@@ -1071,11 +1101,15 @@ All tests pass with "OK" status
    | Click on 'Forgot Password' | Password reset form/page loads | Works as expected |
    | Submit email for password reset | Password reset instructions are sent to email | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/92aaceb7549b47d29293fe0cf1489d43?sid=f5628ae3-3e37-4296-88f7-e600933402810)    
+
 16. **Email notification once item is sold**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Sell an item | Email notification about the sale is received | Works as expected |
+
+[Watch the Video](https://www.loom.com/share/5f0b661b46374919abed97fe4908aa33?sid=d8864154-9a8b-4df3-aaab-63a316bbb9f5)   
 
 17. **Refund orders if unable to ship**
    
@@ -1083,6 +1117,10 @@ All tests pass with "OK" status
    ---------|---------------------|----------------
    | Navigate to sold item details | Sold item details page loads | Works as expected |
    | Initiate a refund | Refund is processed successfully | Works as expected |
+
+The refund process sends a notification to Stripe, once Stripe has refunded the amount requested it sends a webhooks back to the database with an updated financial status to "refunded". Once that webhook is received the order status is updated to "refunded".
+
+[Watch the Video](https://www.loom.com/share/178bbcea24d549eba988d421c594dc9b?sid=136bc6ab-0e93-431f-96a2-86d2d816fde3)   
 
 #### Buying
 
@@ -1105,6 +1143,8 @@ All tests pass with "OK" status
    | Navigate to user profile | Profile page with order history loads | Works as expected |
    | View order history | List of past orders is displayed | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/4541245c92a4482ebcf15c3d00ef39f2?sid=5ed4da74-9605-477e-92f9-5a7e701d918f)     
+
 22. **See tracking information once shipped**
    
    **Step** | **Expected Result** | **Actual Result**
@@ -1112,11 +1152,15 @@ All tests pass with "OK" status
    | Navigate to purchased item details | Purchased item details page loads | Works as expected |
    | View tracking information | Tracking information is displayed correctly | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/c8f59eca66e94f9fb24378e4bcb62d4b?sid=5d2ad7fa-53dd-41d2-bf57-1759d1a0f8c5)   
+
 23. **Negate the need for duplicate address inputs at checkout**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Proceed to checkout | Checkout page loads with pre-filled address details | Works as expected |
+
+[Watch the Video](https://www.loom.com/share/7da6cd8373d64ab0b51c8cb7dc85f7a6?sid=32221143-f9b8-4325-98c3-39a3f32ee8cd)      
 
 24. **Different payment options at checkout**
    
@@ -1125,12 +1169,17 @@ All tests pass with "OK" status
    | Navigate to checkout | Checkout page loads | Works as expected |
    | Select different payment options | Payment options are selectable and functional | Works as expected |
 
+[Watch the Video](https://www.loom.com/share/c0292c72c53d4b058726082b8a3db1af?sid=f5d7d738-4874-4afe-84b7-ef208d33113c) 
+
+
 25. **Ability to message seller with questions**
    
    **Step** | **Expected Result** | **Actual Result**
    ---------|---------------------|----------------
    | Navigate to a product page | Product page loads | Works as expected |
    | Send a message to the seller | Message is sent successfully | Works as expected |
+
+  [Watch the Video](https://www.loom.com/share/d0bfd89e6f6c474fba7f6b27ddd25fc3?sid=b4bea4e1-51e7-4282-b3be-069be34a8329)  
 
 26. **Ability to message site admins for order help**
    
@@ -1139,7 +1188,13 @@ All tests pass with "OK" status
    | Navigate to the contact page | Contact page loads | Works as expected |
    | Send a message to site admins | Message is sent successfully | Works as expected |
 
+Same as point 12   
+
 ### Admin/Site Owner
+
+All of these tests can be viewed in one video below
+
+[Watch the Video](https://www.loom.com/share/8cb5e1767a2741b3aa68ca36ef6ce812?sid=d7e130ee-92cd-413a-8c5b-2e9200727704)  
 
 27. **View and manage orders in admin dashboard**
    
@@ -1218,6 +1273,12 @@ The following security measures are in place:
 | Bug where user password was not being saved on signup | Modified the user registration process to ensure passwords are correctly saved and encrypted |
 | Sold/unsold URL redirects not working in the selling area | Corrected URL routing to ensure proper redirection between sold and unsold product views in the selling area |
 | Issue with custom username not being created when user doesn't exist | Implemented a fallback mechanism to create custom usernames when default user data is unavailable |
+
+## Planned Improvments For The Next Build
+
+1. More email notifications, i.e. for when an order is refunded notify buyer
+2. Have the tracking on the actual order page as well as the order table
+3. Offer partial refunds for orders
 
 
 ## Heroku Deployment
