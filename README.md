@@ -90,6 +90,7 @@ They believe that the ability to provide their customer base with a more holisti
   - [Commission](#commission)  
   - [Security](#security)
   - [Bug Fixes](#bug-fixes)
+  - [Database Indexing](#database-indexing)
   - [Planned Improvments For The Next Build](#planned-improvments-for-the-next-build)
   - [Heroku Deployment](#heroku-deployment)
     - [Forking the GitHub Repository](#forking-the-github-repository)
@@ -1431,6 +1432,10 @@ The checkout page dispays these errors and warnings in the console:
 </details>
 
 This is due to the Stripe being set to test mode within the account. To fix these, it the settings would have to be changed to live mode.
+
+## Database Indexing
+
+The column for the product name has been indexed to improve serach result speeds
 
 ## Planned Improvments For The Next Build
 
