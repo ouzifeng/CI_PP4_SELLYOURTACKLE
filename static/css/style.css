@@ -446,8 +446,14 @@ p.info {
    
   .btn-outline-primary {
     margin-top: 20px;
-  }    
+  }   
+  
+  .container-main {
+    padding: 10px !important;
+  }
+
+  li .btn {
+    margin-top: 10px;
+  }
 }
-
-
 

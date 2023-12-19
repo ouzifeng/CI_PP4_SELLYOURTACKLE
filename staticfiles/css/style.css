@@ -439,7 +439,16 @@ p.info {
    
   .btn-outline-primary {
     margin-top: 20px;
-  }    
+  }   
+  
+  .container-main {
+    padding: 10px !important;
+  }
+
+  .header-image {
+    display: none !important;
+  }
+
 }
 
 
