@@ -8,7 +8,7 @@ A large fishing tackle shop chain has approach me to help them solve a business 
 
 Their executive team has tasked the chief revenue officer to find new avenues for revenue growth. One area she is keen to grow into is the used tackle market. The executive team likes this idea, but they want to protect their brand equity by first testing the model under a different business name "Sell Your Tackle" while they learn the ins and outs of running a C2C business. ALthough they have understood the risk of this model cannibalising their new tackle sales, they believe the used tackle market is big enough so that sales from this segment outweigh any drop off in sales of new tackle.
 
-They belive that the ability to provide their customer base with a more holistic solution will drive sales expodentially in the future, and futher solidify their spot as the numner 1 place to purchase fishign tackle in the UK. Their leadership team has approached me with a clear and well defined scope of exactly what they need, and have asked me to excecute the build for them
+They believe that the ability to provide their customer base with a more holistic solution will drive sales expodentially in the future, and futher solidify their spot as the numner 1 place to purchase fishign tackle in the UK. Their leadership team has approached me with a clear and well defined scope of exactly what they need, and have asked me to excecute the build for them
 
 ![Responsive Image](docs/sellyourtackle-responsive.png)
 [Live Site](https://www.sellyourtackle.co.uk/)
@@ -17,6 +17,7 @@ They belive that the ability to provide their customer base with a more holistic
 
 - [Sell Your Tackle](#sell-your-tackle)
     - [Use Case](#use-case)
+  - [Table of Contents](#table-of-contents)
   - [Project Scope](#project-scope)
     - [Site Owner Goals](#site-owner-goals)
     - [User Goals](#user-goals)
@@ -49,9 +50,9 @@ They belive that the ability to provide their customer base with a more holistic
   - [Order Model](#order-model)
   - [OrderItem Model](#orderitem-model)
   - [PasswordResetToken Model](#passwordresettoken-model)
-  - [User Model (CustomUser)](#user-model-(customuser))
+  - [User Model (CustomUser)](#user-model-customuser)
   - [Features](#features)
-    - [Account Creation & Login](#account-creation-&-login)
+    - [Account Creation \& Login](#account-creation--login)
     - [Password Reset](#password-reset)
     - [List item for sale](#list-item-for-sale)
     - [Seller and Account Area](#seller-and-account-area)
@@ -60,7 +61,7 @@ They belive that the ability to provide their customer base with a more holistic
     - [Contact Page](#contact-page)
     - [Delete products](#delete-products)
     - [Buyer Area](#buyer-area)
-    - [Cart & Checkout Page](#cart-&-checkout-page)
+    - [Cart \& Checkout Page](#cart--checkout-page)
     - [Admin Dashboard](#admin-dashboard)
   - [Technologies Used](#technologies-used)
     - [Languages and Frameworks](#languages-and-frameworks)
@@ -82,10 +83,10 @@ They belive that the ability to provide their customer base with a more holistic
       - [CustomUser Model Test](#customuser-model-test)
       - [Stripe Integration Tests](#stripe-integration-tests)
     - [Manual Testing](#manual-testing)
-      - [Selling](#selling)
-      - [Buying](#buying)
-    - [Admin/Site Owner](#adminsite-owner)
-    - [Device Testing & Browser Compatibility](#device-testing-&-browser-compatibility)
+      - [Selling](#selling-1)
+      - [Buying](#buying-1)
+    - [Admin/Site Owner](#adminsite-owner-1)
+    - [Device Testing \& Browser Compatibility](#device-testing--browser-compatibility)
   - [Security](#security)
   - [Bug Fixes](#bug-fixes)
   - [Planned Improvments For The Next Build](#planned-improvments-for-the-next-build)
@@ -95,9 +96,9 @@ They belive that the ability to provide their customer base with a more holistic
   - [Credits](#credits)
     - [Images](#images)
     - [Code](#code)
-  - [Testing](#testing)
+  - [Testing](#testing-1)
   - [Acknowledgements](#acknowledgements)
-    - [Special thanks to the following:](#special-thanks-to-the-following:)
+    - [Special thanks to the following:](#special-thanks-to-the-following)
 
 
 ## Project Scope
@@ -106,7 +107,7 @@ The scope of this project is to build a fully responsive platform which allows u
 
 ### Site Owner Goals
 
-* To take a 10% commission on all products sold through the platform
+* To begin with, offer commission free sales. But they want to understand how to add a fee once the platform has hit a critical mass
 * To allow users to list, buy and sell tackle
 * To grow their business in an area they previously have had no traction in
 * To learn how to run a C2C business
