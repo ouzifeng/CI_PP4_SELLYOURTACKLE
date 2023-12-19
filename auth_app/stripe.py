@@ -203,27 +203,16 @@ def handle_payment(request):
         order.save()
 
         for item in cart:
-            commission_amount = (
-                item["price"] * item["quantity"] * settings.STRIPE_COMMISSION_RATE
-            )
-            seller_amount = int(
-                item["price"]
-                * item["quantity"]
-                * 100
-                * (1 - settings.STRIPE_COMMISSION_RATE)
-            )
-
             order_item = OrderItem.objects.create(
                 order=order,
                 product_id=item["product_id"],
                 price=item["price"],
                 quantity=item["quantity"],
                 seller=item["product"].user,
-                commission=commission_amount,
             )
 
             stripe.Transfer.create(
-                amount=seller_amount,
+                amount=int(order.total_amount * 100),
                 currency="gbp",
                 destination=order_item.seller.stripe_account_id,
                 metadata={
