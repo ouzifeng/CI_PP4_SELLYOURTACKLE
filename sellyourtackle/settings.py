@@ -220,4 +220,4 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 
 
 # Commission Rate
-STRIPE_COMMISSION_RATE = 0.10  # mulitply by 100 to get commission. i.e 0.10 = 10%
+STRIPE_COMMISSION_RATE = 0.10  # equals 10% commission

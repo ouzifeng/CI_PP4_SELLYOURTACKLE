@@ -87,6 +87,7 @@ They believe that the ability to provide their customer base with a more holisti
       - [Buying](#buying-1)
     - [Admin/Site Owner](#adminsite-owner-1)
     - [Device Testing \& Browser Compatibility](#device-testing--browser-compatibility)
+  - [Commission](#commission)  
   - [Security](#security)
   - [Bug Fixes](#bug-fixes)
   - [Planned Improvments For The Next Build](#planned-improvments-for-the-next-build)
@@ -1332,6 +1333,65 @@ and the following browsers
 * Firefox
 * Safari
 * Bing
+
+
+## Commission
+
+A variable has been added to the settings.py "STRIPE_COMMISSION_RATE". This is current set to 10% but is not called. To implement this the function handle_payment in the stripe.py file inthe auth_app needs to be changed from:
+
+        for item in cart:
+            order_item = OrderItem.objects.create(
+                order=order,
+                product_id=item["product_id"],
+                price=item["price"],
+                quantity=item["quantity"],
+                seller=item["product"].user,
+            )
+
+            stripe.Transfer.create(
+                amount=int(order.total_amount * 100),
+                currency="gbp",
+                destination=order_item.seller.stripe_account_id,
+                metadata={
+                    "user_email": user.email,
+                    "user_first_name": user.first_name,
+                    "user_last_name": user.last_name,
+                },
+            )
+
+to:
+
+        for item in cart:
+            # Calculate the commission and the amount to be transferred
+            commission_amount = item['price'] * item['quantity'] * settings.STRIPE_COMMISSION_RATE
+            seller_amount = int(item['price'] * item['quantity'] * 100 * (1 - settings.STRIPE_COMMISSION_RATE))
+
+            # Create the order item and save the commission
+            order_item = OrderItem.objects.create(
+                order=order,
+                product_id=item['product_id'],
+                price=item['price'],
+                quantity=item['quantity'],
+                seller=item['product'].user,
+                commission=commission_amount
+            )
+
+            # Create a Stripe Transfer to the seller
+            stripe.Transfer.create(
+                amount=seller_amount,
+                currency='gbp',
+                destination=order_item.seller.stripe_account_id,
+                metadata={
+                    'user_email': user.email,
+                    'user_first_name': user.first_name,
+                    'user_last_name': user.last_name
+                }
+            )
+
+This will take into account the numerical value set in the commission variable and transfer the commission amount to the admin's Stripe account.      
+
+
+
 
 ## Security
 
