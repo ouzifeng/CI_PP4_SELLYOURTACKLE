@@ -1437,7 +1437,7 @@ This is due to the Stripe being set to test mode within the account. To fix thes
 
 The column for the product name has been indexed to improve serach result speeds
 
-## Planned Improvments For The Next Build
+## Planned Improvements For The Next Build
 
 1. More email notifications, i.e. for when an order is refunded notify buyer
 2. Have the tracking on the actual order page as well as the order table
