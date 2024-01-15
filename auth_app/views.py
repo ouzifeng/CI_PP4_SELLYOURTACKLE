@@ -293,7 +293,7 @@ class ResetPasswordView(View):
                 send_reset_password_email(
                     user.email, reset_link, user.first_name
                 )
-                message.success(request, 'A password link has to emailed.')
+                messages.success(request, 'A password link has been emailed.')
                 return redirect('home')
             else:
                 form.add_error('email', 'Email not found.')
@@ -353,4 +353,3 @@ class ResetPasswordConfirmView(View):
             self.template_name,
             {'form': form, 'token': token}
         )
-        
