@@ -252,7 +252,7 @@ def create_stripe_express_account(request):
             business_type="individual",
             business_profile={
                 "url": "https://www.sellyourtackle.co.uk",
-                "product_description": "Sell fishing equipment on TackleTarts.",
+                "product_description": "Sell fishing tackle on TackleTarts.",
                 "mcc": "5941",
             },
             capabilities={

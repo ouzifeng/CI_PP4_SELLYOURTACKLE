@@ -20,7 +20,7 @@ from .forms import (
     UserUpdateForm,
     ContactForm,
     PasswordResetRequestForm,
-    SetNewPasswordForm
+    SetNewPasswordForm,
 )
 from .email import send_confirmation_email, send_reset_password_email
 from .models import (
@@ -29,7 +29,7 @@ from .models import (
     Order,
     OrderItem,
     Address,
-    PasswordResetToken
+    PasswordResetToken,
 )
 from tackle.models import Product, ProductImage
 
@@ -40,7 +40,7 @@ class SignupView(View):
     def get(self, request, *args, **kwargs):
         """Renders the signup form."""
         form = CustomUserSignupForm()
-        return render(request, 'signup.html', {'form': form})
+        return render(request, "signup.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
         """Processes the signup form submission."""
@@ -48,23 +48,18 @@ class SignupView(View):
         if form.is_valid():
             user = self._create_inactive_user(form)
             self._send_confirmation_email(user)
-            return redirect('confirm-email-link')
+            return redirect("confirm-email-link")
 
-        return render(request, 'signup.html',
-                      {'form': form, 'errors': form.errors})
+        return render(request, "signup.html", {"form": form, "errors": form.errors})
 
     def _create_inactive_user(self, form):
         """Creates an inactive user and returns it."""
         user = form.save(commit=False)
-        user.set_password(form.cleaned_data['password1'])
+        user.set_password(form.cleaned_data["password1"])
         user.is_active = False
-        email_prefix = user.email.split('@')[0]
-        all_usernames = list(
-            CustomUser.objects.values_list('username', flat=True)
-        )
-        user.username = CustomUser.objects.generate_unique_username(
-            email_prefix
-        )
+        email_prefix = user.email.split("@")[0]
+        all_usernames = list(CustomUser.objects.values_list("username", flat=True))
+        user.username = CustomUser.objects.generate_unique_username(email_prefix)
         user.save()
         token = uuid4()
         EmailConfirmationToken.objects.create(user=user, token=token)
@@ -82,7 +77,8 @@ class SignupView(View):
 
 class LogoutView(RedirectView):
     """Handles user logout."""
-    pattern_name = 'home'
+
+    pattern_name = "home"
 
     def get(self, request, *args, **kwargs):
         logout(request)
@@ -91,30 +87,32 @@ class LogoutView(RedirectView):
 
 class CustomLoginView(LoginView):
     """Custom login view."""
-    template_name = 'login.html'
+
+    template_name = "login.html"
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class WalletView(TemplateView):
     """Displays the account settings page."""
-    template_name = 'wallet.html'
+
+    template_name = "wallet.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        context['balance'] = user.balance
-        context['form'] = UserUpdateForm(instance=user)
+        context["balance"] = user.balance
+        context["form"] = UserUpdateForm(instance=user)
 
         # Fetching addresses
         billing_address = Address.objects.filter(
-            user=user, address_type='billing'
+            user=user, address_type="billing"
         ).first()
         shipping_address = Address.objects.filter(
-            user=user, address_type='shipping'
+            user=user, address_type="shipping"
         ).first()
 
-        context['billing_address'] = billing_address
-        context['shipping_address'] = shipping_address
+        context["billing_address"] = billing_address
+        context["shipping_address"] = shipping_address
 
         return context
 
@@ -123,16 +121,17 @@ class WalletView(TemplateView):
         if form.is_valid():
             form.save()
             messages.success(request, "Username updated successfully!")
-            return redirect('wallet')
+            return redirect("wallet")
         else:
             context = self.get_context_data(**kwargs)
-            context['form'] = form
+            context["form"] = form
             return render(request, self.template_name, context)
 
 
 class PrivacyView(View):
     """Renders the about us page."""
-    template_name = 'privacy.html'
+
+    template_name = "privacy.html"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -140,7 +139,8 @@ class PrivacyView(View):
 
 class TermsView(View):
     """Renders the about us page."""
-    template_name = 'terms.html'
+
+    template_name = "terms.html"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -148,7 +148,8 @@ class TermsView(View):
 
 class AboutUsView(View):
     """Renders the privacy page."""
-    template_name = 'about.html'
+
+    template_name = "about.html"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -156,34 +157,34 @@ class AboutUsView(View):
 
 class ContactUsView(View):
     """Renders the contact page."""
-    template_name = 'contact.html'
+
+    template_name = "contact.html"
 
     def get(self, request, *args, **kwargs):
         form = ContactForm()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = ContactForm(request.POST)
         if form.is_valid():
-            from_email = 'hello@sellyourtackle.co.uk'
+            from_email = "hello@sellyourtackle.co.uk"
 
             subject = (
-                    "Contact form submission from "
-                    f"{form.cleaned_data['name']}"
-                    f"({form.cleaned_data['email_address']})"
+                "Contact form submission from "
+                f"{form.cleaned_data['name']}"
+                f"({form.cleaned_data['email_address']})"
             )
-            message = form.cleaned_data['message']
-            send_mail(
-                subject, message, from_email, ['hello@sellyourtackle.co.uk']
-            )
+            message = form.cleaned_data["message"]
+            send_mail(subject, message, from_email, ["hello@sellyourtackle.co.uk"])
             messages.success(request, "Email sent successfully!")
-            return redirect('contact')
-        return render(request, self.template_name, {'form': form})
+            return redirect("contact")
+        return render(request, self.template_name, {"form": form})
 
 
 class ConfirmEmailPageView(View):
     """Renders the email confirmation page."""
-    template_name = 'confirm-email.html'
+
+    template_name = "confirm-email.html"
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -191,6 +192,7 @@ class ConfirmEmailPageView(View):
 
 class ConfirmEmailView(View):
     """Handles email confirmation logic."""
+
     def get(self, request, user_id, token, *args, **kwargs):
         try:
             token_obj = EmailConfirmationToken.objects.get(
@@ -205,21 +207,24 @@ class ConfirmEmailView(View):
             user.save()
             token_obj.delete()
             login(request, user)
-            messages.success(request, 'Account activated.')
-            return redirect('home')
+            messages.success(request, "Account activated.")
+            return redirect("home")
 
         return HttpResponse("This email has already been confirmed.")
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class Buying(View):
     """Displays the user's orders."""
-    template_name = 'buying.html'
+
+    template_name = "buying.html"
 
     def get(self, request, *args, **kwargs):
-        user_orders = Order.objects.filter(
-            user=request.user
-        ).prefetch_related('items').order_by('-created_at')
+        user_orders = (
+            Order.objects.filter(user=request.user)
+            .prefetch_related("items")
+            .order_by("-created_at")
+        )
         user = request.user
         user_orders_param = user_orders
         user_param = user
@@ -227,12 +232,16 @@ class Buying(View):
             user_orders_param, user_param
         )
         paginator = Paginator(user_orders, 10)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         orders_on_page = paginator.get_page(page)
-        return render(request, self.template_name, {
-            'user_orders': orders_on_page,
-            'order_product_images': order_product_images
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                "user_orders": orders_on_page,
+                "order_product_images": order_product_images,
+            },
+        )
 
     def _get_order_product_images(self, orders, user):
         """Returns the first image for each product in the orders."""
@@ -246,18 +255,20 @@ class Buying(View):
         return order_product_images
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class Selling(View):
     """Displays the products that the user is selling."""
-    template_name = 'selling.html'
+
+    template_name = "selling.html"
 
     def get(self, request, *args, **kwargs):
         user_products = Product.objects.filter(user=request.user)
         product_images = self._get_product_images(user_products)
-        return render(request, self.template_name, {
-            'user_products': user_products,
-            'product_images': product_images
-        })
+        return render(
+            request,
+            self.template_name,
+            {"user_products": user_products, "product_images": product_images},
+        )
 
     def _get_product_images(self, products):
         """Returns the first image for each product."""
@@ -271,17 +282,18 @@ class Selling(View):
 
 class ResetPasswordView(View):
     """Renders the reset password page."""
-    template_name = 'reset-password.html'
+
+    template_name = "reset-password.html"
 
     def get(self, request, *args, **kwargs):
         form = PasswordResetRequestForm()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def post(self, request, *args, **kwargs):
         form = PasswordResetRequestForm(request.POST)
 
         if form.is_valid():
-            email = form.cleaned_data['email']
+            email = form.cleaned_data["email"]
             user = CustomUser.objects.filter(email=email).first()
 
             if user:
@@ -290,49 +302,43 @@ class ResetPasswordView(View):
                     f"https://www.sellyourtackle.co.uk/auth/reset-password/"
                     f"{token.token}/"
                 )
-                send_reset_password_email(
-                    user.email, reset_link, user.first_name
+                send_reset_password_email(user.email, reset_link, user.first_name)
+                messages.success(
+                    request, "A password reset link has been sent to your email."
                 )
-                return redirect('home')
+                return redirect("home")
             else:
-                form.add_error('email', 'Email not found.')
+                form.add_error("email", "Email not found.")
         else:
             print(form.errors)
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
 
 class ResetPasswordConfirmView(View):
     """Renders the confirm password reset feature."""
-    template_name = 'reset-password-confirm.html'
+
+    template_name = "reset-password-confirm.html"
 
     def get(self, request, token, *args, **kwargs):
         try:
             reset_token = PasswordResetToken.objects.get(token=token)
             if reset_token.is_expired:
                 messages.error(
-                    request,
-                    "The reset link has expired. Please request a new one."
+                    request, "The reset link has expired. Please request a new one."
                 )
-                return redirect('reset-password')
+                return redirect("reset-password")
         except PasswordResetToken.DoesNotExist:
-            messages.error(
-                request,
-                "Invalid reset token. Please request a new one."
-            )
-            return redirect('reset-password')
+            messages.error(request, "Invalid reset token. Please request a new one.")
+            return redirect("reset-password")
 
         form = SetNewPasswordForm()
-        return render(
-            request,
-            self.template_name,
-            {'form': form, 'token': token}
-        )
+        return render(request, self.template_name, {"form": form, "token": token})
 
     def post(self, request, token, *args, **kwargs):
         form = SetNewPasswordForm(request.POST)
         if form.is_valid():
-            password = form.cleaned_data['password1']
+            password = form.cleaned_data["password1"]
             try:
                 reset_token = PasswordResetToken.objects.get(token=token)
                 user = reset_token.user
@@ -340,15 +346,10 @@ class ResetPasswordConfirmView(View):
                 user.save()
                 reset_token.delete()
                 messages.success(request, "Password updated successfully!")
-                return redirect('login')
+                return redirect("login")
             except PasswordResetToken.DoesNotExist:
                 messages.error(
-                    request,
-                    "Invalid reset token. Please request a new one."
+                    request, "Invalid reset token. Please request a new one."
                 )
-                return redirect('reset-password')
-        return render(
-            request,
-            self.template_name,
-            {'form': form, 'token': token}
-        )
+                return redirect("reset-password")
+        return render(request, self.template_name, {"form": form, "token": token})
