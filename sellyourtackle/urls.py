@@ -10,8 +10,15 @@ urlpatterns = [
     path('auth/', include('auth_app.urls')),
     path('', include('tackle.urls')),
     path('accounts/', include('allauth.urls')),
-    re_path(r'^\.well-known/apple-developer-merchantid-domain-association$', serve, {
-        'document_root': os.path.join(settings.BASE_DIR, 'verification-files', '.well-known'),
-        'path': 'apple-developer-merchantid-domain-association'
-    }),
+    re_path(
+        r'^\.well-known/apple-developer-merchantid-domain-association$',
+        serve, {
+            'document_root': os.path.join(
+                settings.BASE_DIR,
+                'verification-files',
+                '.well-known'
+            ),
+            'path': 'apple-developer-merchantid-domain-association'
+        }
+    ),
 ]
